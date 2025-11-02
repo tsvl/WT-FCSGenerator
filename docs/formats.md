@@ -34,7 +34,7 @@ APDS-FS armor power arrays (if present in the source) are flattened into scalar 
 
 - APDS0, APDS100, APDS200, ..., APDS10000 — armor power values (mm) indexed by distance in meters
 
-Blocks are separated by a blank line. Example (truncated, from examples/Data/ussr_bmp_2m.txt):
+Blocks are separated by a blank line. Example (truncated, from Data/ussr_bmp_2m.txt):
 
 Name:30mm_UOF8
 Type:he_frag_i
@@ -63,7 +63,7 @@ distance_m    time_s    penetration_mm
 - time_s: time of flight to that distance in seconds
 - penetration_mm: integer or float penetration in mm (0 for HE and non-penetrating munitions)
 
-Rows start at 0 distance and increase monotonically. Example (truncated, from examples/Ballistic/ussr_bmp_2m/UBR6.txt):
+Rows start at 0 distance and increase monotonically. Example (truncated, from Ballistic/ussr_bmp_2m/UBR6.txt):
 
 0.000	0	65
 121.166	0.1	62

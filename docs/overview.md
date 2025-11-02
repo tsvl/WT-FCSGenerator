@@ -6,7 +6,7 @@ This project generates user sights for War Thunder ground vehicles by transformi
 2) Make Ballistic → produces per-shell ballistic tables
 3) Make Sights → renders sight .blk scripts from the ballistics and localization
 
-The pipeline is intentionally file-based, which makes the stages loosely coupled and easy to re-run independently. You can use the provided examples directory to understand inputs/outputs of each stage without running the app.
+The pipeline is intentionally file-based, which makes the stages loosely coupled and easy to re-run independently. 
 
 ## Repository layout
 
@@ -19,12 +19,7 @@ The pipeline is intentionally file-based, which makes the stages loosely coupled
   - datamine-to-data.md — extraction rules from datamine to Data/
   - cli-stage1.md — CLI spec for Stage 1 rewrite
   - refactor-plan.md — plan for rewriting the pipeline in Rust
-- examples/ — reference inputs/outputs to illustrate the pipeline
-  - Datamine/ — sample .blkx inputs
-  - Data/ — stage 1 outputs (per-vehicle .txt)
-  - Ballistic/ — stage 2 outputs (per-vehicle, per-shell .txt)
-  - Localization/ — CSVs used for labels in sights
-  - UserSights/ — sample final .blk files
+
 - assets/ — utility scripts and a full reference Datamine/ tree
 
 ## The three-stage pipeline
