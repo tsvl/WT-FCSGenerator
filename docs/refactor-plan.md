@@ -14,7 +14,7 @@ We’ll replace the app stage-by-stage with external command-line tools. Initial
 
 #### CLI spec (first cut)
 
-- Command: `fcsgen convert-datamine` (details: see docs/cli-stage1.md)
+- Command: `fcsgen convert-datamine` (details: see cli-stage1.md)
 - Inputs:
    - --datamine-root <dir> (required): path containing aces.vromfs.bin_u/gamedata/...
    - --vehicle <id> | --vehicles <glob>: vehicle id(s) or glob(s) under units/tankmodels/*.blkx
