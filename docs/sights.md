@@ -8,7 +8,7 @@ All families consume:
 - Localization/FCS.csv for UI labels and units
 
 All families output:
-- UserSights/<vehicle>/.../*.blk scripts
+- UserSights/<vehicle>/.../*.blk files
 
 Below are the currently implemented families.
 

@@ -14,12 +14,17 @@ The pipeline is intentionally file-based, which makes the stages loosely coupled
   - Form1.cs — UI + orchestration for all three stages and helpers (ballistics, HE penetration, pairing rules)
   - TochkaAM.cs — Tochka-SM2 sight generator
   - Luch.cs, Luch_Lite.cs, Duga.cs, Duga2.cs, Sector.cs — other sight generators
+- docs/ — documentation
+  - formats.md — file formats for Data/, Ballistic/, and UserSights/
+  - datamine-to-data.md — extraction rules from datamine to Data/
+  - cli-stage1.md — CLI spec for Stage 1 rewrite
+  - refactor-plan.md — plan for rewriting the pipeline in Rust
 - examples/ — reference inputs/outputs to illustrate the pipeline
   - Datamine/ — sample .blkx inputs
   - Data/ — stage 1 outputs (per-vehicle .txt)
   - Ballistic/ — stage 2 outputs (per-vehicle, per-shell .txt)
   - Localization/ — CSVs used for labels in sights
-  - UserSights/ — sample final .blk outputs
+  - UserSights/ — sample final .blk files
 - assets/ — utility scripts and a full reference Datamine/ tree
 
 ## The three-stage pipeline

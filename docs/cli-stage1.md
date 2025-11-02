@@ -7,7 +7,7 @@ A standalone tool to replace the WinForms Button1 step. Reads War Thunder datami
 
 ## Command
 
-`fcs convert-datamine --datamine-root <dir> [--vehicle <id> | --vehicles <glob> ...] [options]`
+`fcsgen convert-datamine --datamine-root <dir> [--vehicle <id> | --vehicles <glob> ...] [options]`
 
 ## Options
 
@@ -58,11 +58,11 @@ A standalone tool to replace the WinForms Button1 step. Reads War Thunder datami
 
 Process a single vehicle and emit legacy `.txt` only:
 
-`fcs convert-datamine --datamine-root D:\\WT-Datamine --vehicle ussr_bmp_2m --emit legacy --out-data .\\Data`
+`fcsgen convert-datamine --datamine-root D:\\WT-Datamine --vehicle ussr_bmp_2m --emit legacy --out-data .\\Data`
 
 Process all Chinese vehicles, emit both JSON and legacy outputs in parallel:
 
-`fcs convert-datamine --datamine-root D:\\WT-Datamine --vehicles cn_* --out-data .\\Data --out-json .\\.fcs\\json --threads 8`
+`fcsgen convert-datamine --datamine-root D:\\WT-Datamine --vehicles cn_* --out-data .\\Data --out-json .\\.fcs\\json --threads 8`
 
 ## Validation workflow
 
