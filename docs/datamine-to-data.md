@@ -1,6 +1,6 @@
 # Stage 1 — Datamine → Data/*.txt (authoritative mapping)
 
-This document exhaustively describes how the Stage 1 "Convert Datamine" step parses War Thunder datamine JSON (.blkx extracted as JSON) and writes the intermediate Data/<vehicle>.txt file. It covers:
+This document exhaustively describes how the Stage 1 "Convert Datamine" step parses War Thunder datamine JSON (.blkx extracted as JSON) and writes the intermediate `Data/{vehicle}.txt` file. It covers:
 
 - Every field written to the Data file
 - Exactly where each field comes from in the datamine JSON and the expected type
@@ -14,6 +14,7 @@ The implementation lives in `Form1.Button1_Click` in `src/Form1.cs` (around line
 
 The Data file starts with a header, then an arbitrary number of projectile blocks. Example (abridged):
 
+```data
 WeaponPath:gameData/Weapons/groundModels_weapons/30mm_2A42_user_cannon.blkx
 RocketPath:gameData/Weapons/groundModels_weapons/152mm_9M133_launcher_user_cannon.blkx
 ZoomIn:6.14
@@ -29,11 +30,12 @@ Cx:0.29841
 ExplosiveMass:0.049
 ExplosiveType:a_ix_2
 …
+```
 
 ## Header fields (per-vehicle)
 
 - WeaponPath
-  - Source: vehicle file `aces.vromfs.bin_u/gamedata/units/tankmodels/<vehicle>.blkx`
+  - Source: vehicle file `aces.vromfs.bin_u/gamedata/units/tankmodels/{vehicle}.blkx`
   - Extracted when a line contains `"groundModels_weapons"`.
   - Code takes the 4th quoted token (`line.Split('"')[3]`) and appends `x` to force `.blkx` extension.
   - Notes: relies on string scanning; path must appear quoted on one line.
@@ -52,7 +54,7 @@ ExplosiveType:a_ix_2
 
 - ZoomIn/Out second pair (secondary optics)
   - Source: the next `"cockpit"` block encountered.
-  - Behavior mirrors the primary pair; if present, the app also generates an additional `<vehicle>_ModOptic.txt` where the primary ZoomIn/Out are replaced by this second pair.
+  - Behavior mirrors the primary pair; if present, the app also generates an additional `{vehicle}_ModOptic.txt` where the primary ZoomIn/Out are replaced by this second pair.
 
 - HasLaser
   - Source: any line in the vehicle file containing the substring `laser`.
@@ -138,10 +140,10 @@ This approach is error-prone because it depends on textual proximity and coarse 
 
 After gathering header + blocks, Stage 1 loads `lang.vromfs.bin_u\\lang\\units.csv` to resolve the vehicle’s localization key:
 
-- It searches for a line containing `<vehicle_basename>_shop` (case-insensitive).
+- It searches for a line containing `{vehicle_basename}_shop` (case-insensitive).
 - Takes the first column (strips quotes and `_shop`) as `LangName2`.
-- Writes the Data file as `Data/<LangName2>.txt`.
-- If a second Zoom pair exists, writes `Data/<LangName2>_ModOptic.txt` with ZoomIn/Out replaced by the secondary values.
+- Writes the Data file as `Data/{LangName2}.txt`.
+- If a second Zoom pair exists, writes `Data/{LangName2}_ModOptic.txt` with ZoomIn/Out replaced by the secondary values.
 
 Note: This makes Stage 1 depend on a localization CSV and (subtly) on its structure.
 
@@ -176,8 +178,8 @@ Recommendation: Surface these as data from the datamine where available, or at l
 To improve robustness while maintaining compatibility, introduce a JSON intermediate (we can still emit the legacy .txt for the current pipeline):
 
 - vehicle
-  - id: `<vehicle_basename>`
-  - key: `<LangName2>`
+  - id: `{vehicle_basename}`
+  - key: `{LangName2}`
   - zooms: `[{ in, out, label: "primary" }, { in, out, label: "secondary" }]` (optional second)
   - hasLaser: boolean
   - modules: { weaponPath, rocketPaths: [] }
@@ -196,6 +198,7 @@ To improve robustness while maintaining compatibility, introduce a JSON intermed
   - source: { modulePath, presentInVehicle: true/false, presenceMethod: "structured"|"heuristic" }
 
 Mapping rules:
+
 - Prefer `ballisticCaliber`; fallback to `caliber`.
 - For arrays (cx, bulletName): take first logical entry; preserve the array too if helpful.
 - For APDS/APFSDS: collect all `ArmorPower{N}m` into `armorPowerSeries` regardless of the type prefix.

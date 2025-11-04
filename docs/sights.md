@@ -3,18 +3,21 @@
 This document summarizes the supported sight generators, their inputs, key options, and outputs. All sight generators expose a Create(...) method that assembles a .blk script string from ballistic tables and user options.
 
 All families consume:
-- Ballistic/<vehicle>/*.txt tables for one or more shells
-- Data/<vehicle>.txt metadata (zoom, HasLaser)
-- Localization/FCS.csv for UI labels and units
+
+- `Ballistic/{vehicle}/{shell}.txt` tables for one or more shells
+- `Data/{vehicle}.txt` metadata (zoom, HasLaser)
+- `Localization/FCS.csv` for UI labels and units
 
 All families output:
-- UserSights/<vehicle>/.../*.blk files
+
+- `UserSights/{vehicle}/{sight}.blk` files
 
 Below are the currently implemented families.
 
 ## Tochka-SM2 (TochkaAM.cs)
 
 Variants:
+
 - Base — single shell ballistic scale
 - DoubleShells — overlays a second shell’s scale (subject to CanUseDoubleShell pairing rules)
 - Laser — adds rangefinder/laser behavior and ellipse movement
@@ -22,17 +25,20 @@ Variants:
 - Howitzer — adds high-arc ticks and coarse scale
 
 Features:
+
 - Fixed distance tick spacing derived from sensitivity and zoom
 - Optional draw of time-of-flight, armor power, and shell labels
 - Preemptive lead lines based on speed presets
-- Localized labels (FCS.csv)
+- Localized labels (`FCS.csv`)
 
 Inputs:
+
 - Ballistic table(s) as text; when Double, the second shell is parsed separately
 - Options such as showTime, showAp, inner/outer frame radii, tick density, colors, and language
 
 Outputs:
-- .blk with drawCircles, drawLines, and drawTexts sections matching the selected options
+
+- `.blk` with drawCircles, drawLines, and drawTexts sections matching the selected options
 
 ## Luch (Luch.cs) and Luch Lite (Luch_Lite.cs)
 
