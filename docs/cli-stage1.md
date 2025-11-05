@@ -66,5 +66,5 @@ Process all Chinese vehicles, emit both JSON and legacy outputs in parallel:
 
 ## Validation workflow
 
-- Compare outputs to `examples/Data/*.txt` using a small diff harness.
+- Compare outputs to `examples/Data/{vehicle}.txt` using a small diff harness.
 - Start with a representative corpus (1–2 per nation) covering: primary gun + APHE, APDS/APFSDS with series, ATGM carriers (2 rockets), vehicle with secondary optics, and an SPAA.

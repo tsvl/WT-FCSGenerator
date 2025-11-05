@@ -8,7 +8,7 @@ We’ll replace the app stage-by-stage with external command-line tools. Initial
 
 ### Milestone A — Stage 1 rewrite (Datamine → Data)
 
-- Deliverable: a standalone CLI that reads datamine and produces both the robust JSON intermediate and the legacy Data/*.txt files.
+- Deliverable: a standalone CLI that reads datamine and produces both the robust JSON intermediate and the legacy `Data/{vehicle}.txt` files.
 - Language: Rust (fast, great ecosystem for WT tooling; easy to parallelize).
 - WinForms change: Button1_Click calls the CLI with configured paths; nothing else.
 
@@ -16,14 +16,14 @@ We’ll replace the app stage-by-stage with external command-line tools. Initial
 
 - Command: `fcsgen convert-datamine` (details: see cli-stage1.md)
 - Inputs:
-  - `--datamine-root {dir}` (required): path containing aces.vromfs.bin_u/gamedata/...
-  - --vehicle {id} | --vehicles {glob}: vehicle id(s) or glob(s) under units/tankmodels/*.blkx
-  - --lang-csv {file}: units.csv for resolving `{LangName2}` (optional; if absent, use basename)
-  - --out-data {dir}: output directory for legacy Data/*.txt (default: Data/)
-  - --out-json {dir}: output directory for JSON intermediates (optional)
-  - --emit `legacy|json|both` (default: both)
-  - --threads {n} (default: num_cpus)
-  - --log-level `info|debug|trace` (default: info)
+  - `--datamine-root {dir}` (required): path containing `aces.vromfs.bin_u/gamedata/...`
+  - `--vehicle {id} | --vehicles {glob}`: vehicle id(s) or glob(s) under `units/tankmodels/*.blkx`
+  - `--lang-csv {path}`: `units.csv` for resolving `{LangName2}` (optional; if absent, use basename)
+  - `--out-data {dir}`: output directory for legacy `Data/{vehicle}.txt` (default: `Data/`)
+  - `--out-json {dir}`: output directory for JSON intermediates (optional)
+  - `--emit {legacy|json|both}` (default: `both`)
+  - `--threads {int}` (default: number of logical CPUs)
+  - `--log-level {info|debug|trace}` (default: `info`)
 - Exit codes: 0 success; non-zero per failure category (parse, IO, schema).
 - Logging: structured (json lines) with a human pretty mode.
 
@@ -35,7 +35,7 @@ We’ll replace the app stage-by-stage with external command-line tools. Initial
 
 #### Test & validation
 
-- Golden diffs vs examples/Data/*.txt for a representative vehicle set per nation and weapon family.
+- Golden diffs vs `examples/Data/{vehicle}.txt` for a representative vehicle set per nation and weapon family.
 - Strict mode: require exact match; lenient mode: allow cosmetic whitespace differences.
 - Edge suites: bulletName arrays; APFSDS series; dummy gunner0; multi-rocket vehicles; alternate cockpits.
 

@@ -1,4 +1,4 @@
-# Stage 1 — Datamine → Data/*.txt (authoritative mapping)
+# Stage 1 — Datamine → Data/{vehicle}.txt (authoritative mapping)
 
 This document exhaustively describes how the Stage 1 "Convert Datamine" step parses War Thunder datamine JSON (.blkx extracted as JSON) and writes the intermediate `Data/{vehicle}.txt` file. It covers:
 
@@ -318,5 +318,5 @@ Instead of substring checks, determine presence structurally:
 
 ### Validation plan
 
-- For a sample set of vehicles (one per family), generate a JSON intermediate and legacy .txt, then diff with `examples/Data/*.txt` to surface deltas.
+- For a sample set of vehicles (one per family), generate a JSON intermediate and legacy .txt, then diff with `examples/Data/{vehicle}.txt` to surface deltas.
 - Investigate deltas; adjust rules (e.g., dummy gunner0 handling, second optics discovery) and iterate.
