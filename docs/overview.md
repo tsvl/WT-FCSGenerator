@@ -59,7 +59,7 @@ Output:
 
 Input:
 
-- Ballistic tables from stage 2, `Data/{vehicle}.txt` metadata, `Localization/FCS.csv`, and `Localization/units_weaponry.csv` (Tochka and possible Luchs only).
+- Ballistic tables from stage 2, `Data/{vehicle}.txt` metadata, `Localization/FCS.csv`, and `Localization/units_weaponry.csv` (only needed for Tochka and possibly Luch sights).
 
 Process:
 
