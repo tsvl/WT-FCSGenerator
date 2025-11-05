@@ -2,38 +2,38 @@
 
 A standalone tool to replace the WinForms Button1 step. Reads War Thunder datamine and emits:
 
-- Legacy `Data/<vehicle>.txt` files (for current pipeline)
+- Legacy `Data/{vehicle}.txt` files (for current pipeline)
 - Optional JSON intermediate with full fidelity (for future stages)
 
 ## Command
 
-`fcsgen convert-datamine --datamine-root <dir> [--vehicle <id> | --vehicles <glob> ...] [options]`
+`fcsgen convert-datamine --datamine-root {dir} [--vehicle {id} | --vehicles {glob} ...] [options]`
 
 ## Options
 
-- --datamine-root <dir> (required)
+- `--datamine-root {dir}` (required)
   Path containing `aces.vromfs.bin_u/gamedata/...`.
 
-- --vehicle <id>
-  Vehicle id (basename of `units/tankmodels/<id>.blkx`). May be repeated.
+- `--vehicle {id}`
+  Vehicle id (basename of `units/tankmodels/{id}.blkx`). May be repeated.
 
-- --vehicles <glob>
+- `--vehicles {glob}`
   Glob under `units/tankmodels/*.blkx` (e.g., `ussr_*`, `*_abrams_*`). May be repeated.
 
-- --lang-csv <file>
-  Path to `units.csv` to resolve `<LangName2>`; if omitted, emitter uses the vehicle basename.
+- `--lang-csv {file}`
+  Path to `units.csv` to resolve `{LangName2}`; if omitted, emitter uses the vehicle basename.
 
-- --out-data <dir> (default: `Data/`)
+- `--out-data {dir}` (default: `Data/`)
   Destination for legacy `.txt` outputs.
 
-- --out-json <dir>
+- `--out-json {dir}`
   Destination for JSON intermediates (if `--emit` includes json).
 
-- --emit `legacy|json|both` (default: `both`)
+- `--emit {legacy|json|both}` (default: `both`)
 
-- --threads <n> (default: number of logical CPUs)
+- `--threads {n}` (default: number of logical CPUs)
 
-- --log-level `info|debug|trace` (default: `info`)
+- `--log-level {info|debug|trace}` (default: `info`)
 
 ## Behavior
 
@@ -66,5 +66,5 @@ Process all Chinese vehicles, emit both JSON and legacy outputs in parallel:
 
 ## Validation workflow
 
-- Compare outputs to `examples/Data/*.txt` using a small diff harness.
+- Compare outputs to `examples/Data/{vehicle}.txt` using a small diff harness.
 - Start with a representative corpus (1–2 per nation) covering: primary gun + APHE, APDS/APFSDS with series, ATGM carriers (2 rockets), vehicle with secondary optics, and an SPAA.

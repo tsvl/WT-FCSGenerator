@@ -63,11 +63,11 @@ The `dev` branch exists from the v2.0.0 cleanup effort and may be used in the fu
 We use [Conventional Commits](https://www.conventionalcommits.org/) for clear, structured commit messages:
 
 ```
-<type>[optional scope]: <description>
+{type}[({scope})]: {description}
 
-[optional body]
+{body}
 
-[optional footer(s)]
+{footer(s)}
 ```
 
 ### Commit Types

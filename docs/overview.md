@@ -6,7 +6,7 @@ This project generates user sights for War Thunder ground vehicles by transformi
 2) Make Ballistic → produces per-shell ballistic tables
 3) Make Sights → renders sight .blk scripts from the ballistics and localization
 
-The pipeline is intentionally file-based, which makes the stages loosely coupled and easy to re-run independently. 
+The pipeline is intentionally file-based, which makes the stages loosely coupled and easy to re-run independently.
 
 ## Repository layout
 
@@ -20,46 +20,55 @@ The pipeline is intentionally file-based, which makes the stages loosely coupled
   - cli-stage1.md — CLI spec for Stage 1 rewrite
   - refactor-plan.md — plan for rewriting the pipeline in Rust
 
-- assets/ — utility scripts and a full reference Datamine/ tree
+- assets/ — utility scripts and pregenerated data files.
 
 ## The three-stage pipeline
 
 ### 1) Convert Datamine (Button1_Click)
 
 Input:
+
 - War Thunder datamine exports, primarily .blkx files under aces.vromfs.bin_u/gamedata/units/tankmodels and weapon/rocket modules.
 
 Process:
+
 - Parse vehicle .blkx to find weapon and rocket module paths, cockpit FOV (zoom), and laser presence.
 - Parse weapon/rocket .blkx to enumerate projectiles and extract physical parameters: mass, caliber, muzzle velocity, drag (Cx), explosive mass/type, DeMarre coefficients, and (for APDS-FS) armor power series.
 - Normalize values (e.g., average Cx arrays if a list is present).
 - Resolve human-readable names from Localization CSVs (e.g., units_weaponry.csv).
 
 Output:
-- Data/<vehicle>.txt — compact text file with a header (paths, zoom, HasLaser) and multiple Name blocks with projectile parameters. See docs/formats.md for schema.
+
+- `Data/{vehicle}.txt` — compact text file with a header (paths, zoom, HasLaser) and multiple Name blocks with projectile parameters. See docs/formats.md for schema.
 
 ### 2) Make Ballistic (Button3_Click)
 
 Input:
-- Data/<vehicle>.txt from stage 1.
+
+- `Data/{vehicle}.txt` from stage 1.
 
 Process:
+
 - For each Name block (skipping rockets, smoke, practice, etc.), compute a trajectory and penetration curve by numerical integration using the code’s Ballistic(...) helper. AP/APHE/APDS use DeMarre; APDS-FS may use supplied ArmorPower arrays. HE shells have zero penetration but still produce a trajectory.
 
 Output:
-- Ballistic/<vehicle>/<shell>.txt — a tabular file with three columns: distance (m), time (s), penetration (mm). See docs/formats.md for details.
+
+- `Ballistic/{vehicle}/{shell}.txt` — a tabular file with three columns: distance (m), time (s), penetration (mm). See docs/formats.md for details.
 
 ### 3) Make Sights (Button2_Click)
 
 Input:
-- Ballistic tables from stage 2, Data/<vehicle>.txt metadata, and Localization/*.csv.
+
+- Ballistic tables from stage 2, `Data/{vehicle}.txt` metadata, `Localization/FCS.csv`, and `Localization/units_weaponry.csv` (only needed for Tochka and possibly Luch sights).
 
 Process:
+
 - For the selected sight family (Tochka-SM2, Luch, Luch Lite, Duga, Duga-2, Sector), read ballistic tables and options from the UI, compute geometry (ticks, labels, preemptive lines), and render a sight script string via the sight’s Create(...) method.
 - Variants (e.g., DoubleShells, Laser, Rocket, Howitzer) adjust data sources or drawing logic.
 
 Output:
-- UserSights/<vehicle>/.../*.blk — ready-to-use sight scripts.
+
+- `UserSights/{vehicle}/{sight}.blk` — ready-to-use sight files.
 
 ## Core components
 
