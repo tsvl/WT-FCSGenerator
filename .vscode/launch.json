@@ -8,7 +8,7 @@
       "name": "C#: FCSGenerator Debug",
       "type": "dotnet",
       "request": "launch",
-      "projectPath": "${workspaceFolder}/Source/FCS.csproj"
+      "projectPath": "${workspaceFolder}/src/FCS.csproj"
     }
   ]
 }
