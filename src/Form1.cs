@@ -2172,8 +2172,15 @@ namespace FCS
                                                     {
                                                         if (line1.Contains("\"" + BulletName + "\""))
                                                         {
-                                                            LangName = line1.Split(';')[Pos];
-                                                            LangName = LangName.Replace("\"", "");
+                                                            var parts = line1.Split(';');
+                                                            if (Pos < parts.Length)
+                                                            {
+                                                                LangName = parts[Pos].Replace("\"", "");
+                                                            }
+                                                            else
+                                                            {
+                                                                LangName = (parts.Length > 1 ? parts[1].Replace("\"", "") : BulletName.Split('/')[0]);
+                                                            }
                                                         }
                                                     }
                                                     if (HasRocket == true)
@@ -2184,8 +2191,15 @@ namespace FCS
                                                         {
                                                             if (line1.Contains("\"" + RocketName + "\""))
                                                             {
-                                                                LangRocketName = line1.Split(';')[Pos];
-                                                                LangRocketName = LangRocketName.Replace("\"", "");
+                                                                var partsR = line1.Split(';');
+                                                                if (Pos < partsR.Length)
+                                                                {
+                                                                    LangRocketName = partsR[Pos].Replace("\"", "");
+                                                                }
+                                                                else
+                                                                {
+                                                                    LangRocketName = (partsR.Length > 1 ? partsR[1].Replace("\"", "") : RocketName.Split('/')[0]);
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -2317,8 +2331,15 @@ namespace FCS
                                         {
                                             if (line1.Contains("\"" + BulletName + "\""))
                                             {
-                                                LangName = line1.Split(';')[Pos];
-                                                LangName = LangName.Replace("\"", "");
+                                                var parts = line1.Split(';');
+                                                if (Pos < parts.Length)
+                                                {
+                                                    LangName = parts[Pos].Replace("\"", "");
+                                                }
+                                                else
+                                                {
+                                                    LangName = (parts.Length > 1 ? parts[1].Replace("\"", "") : BulletName.Split('/')[0]);
+                                                }
                                             }
                                         }
                                         string SightType = "Base";
@@ -2430,8 +2451,15 @@ namespace FCS
                                     {
                                         if (line1.Contains("\"" + BulletName + "\""))
                                         {
-                                            LangName = line1.Split(';')[Pos];
-                                            LangName = LangName.Replace("\"", "");
+                                            var parts = line1.Split(';');
+                                            if (Pos < parts.Length)
+                                            {
+                                                LangName = parts[Pos].Replace("\"", "");
+                                            }
+                                            else
+                                            {
+                                                LangName = (parts.Length > 1 ? parts[1].Replace("\"", "") : BulletName.Split('/')[0]);
+                                            }
                                         }
                                     }
                                     string SightType = "Rocket";
@@ -2625,13 +2653,27 @@ namespace FCS
                                                     {
                                                         if (line1.Contains("\"" + BulletName + "\""))
                                                         {
-                                                            LangName = line1.Split(';')[Pos];
-                                                            LangName = LangName.Replace("\"", "");
+                                                            var parts = line1.Split(';');
+                                                            if (Pos < parts.Length)
+                                                            {
+                                                                LangName = parts[Pos].Replace("\"", "");
+                                                            }
+                                                            else
+                                                            {
+                                                                LangName = (parts.Length > 1 ? parts[1].Replace("\"", "") : BulletName.Split('/')[0]);
+                                                            }
                                                         }
                                                         if (line1.Contains("\"" + BulletName2 + "\""))
                                                         {
-                                                            LangName2 = line1.Split(';')[Pos];
-                                                            LangName2 = LangName2.Replace("\"", "");
+                                                            var parts2 = line1.Split(';');
+                                                            if (Pos < parts2.Length)
+                                                            {
+                                                                LangName2 = parts2[Pos].Replace("\"", "");
+                                                            }
+                                                            else
+                                                            {
+                                                                LangName2 = (parts2.Length > 1 ? parts2[1].Replace("\"", "") : BulletName2.Split('/')[0]);
+                                                            }
                                                         }
                                                     }
                                                     string SightType = "Double";
@@ -2790,8 +2832,15 @@ namespace FCS
                                                     {
                                                         if (line1.Contains("\"" + BulletName + "\""))
                                                         {
-                                                            LangName = line1.Split(';')[Pos];
-                                                            LangName = LangName.Replace("\"", "");
+                                                            var parts = line1.Split(';');
+                                                            if (Pos < parts.Length)
+                                                            {
+                                                                LangName = parts[Pos].Replace("\"", "");
+                                                            }
+                                                            else
+                                                            {
+                                                                LangName = (parts.Length > 1 ? parts[1].Replace("\"", "") : BulletName.Split('/')[0]);
+                                                            }
                                                         }
                                                     }
                                                     if (HasRocket == true)
@@ -2802,8 +2851,15 @@ namespace FCS
                                                         {
                                                             if (line1.Contains("\"" + RocketName + "\""))
                                                             {
-                                                                LangRocketName = line1.Split(';')[Pos];
-                                                                LangRocketName = LangRocketName.Replace("\"", "");
+                                                                var partsR = line1.Split(';');
+                                                                if (Pos < partsR.Length)
+                                                                {
+                                                                    LangRocketName = partsR[Pos].Replace("\"", "");
+                                                                }
+                                                                else
+                                                                {
+                                                                    LangRocketName = (partsR.Length > 1 ? partsR[1].Replace("\"", "") : RocketName.Split('/')[0]);
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -2935,8 +2991,15 @@ namespace FCS
                                         {
                                             if (line1.Contains("\"" + BulletName + "\""))
                                             {
-                                                LangName = line1.Split(';')[Pos];
-                                                LangName = LangName.Replace("\"", "");
+                                                var parts = line1.Split(';');
+                                                if (Pos < parts.Length)
+                                                {
+                                                    LangName = parts[Pos].Replace("\"", "");
+                                                }
+                                                else
+                                                {
+                                                    LangName = (parts.Length > 1 ? parts[1].Replace("\"", "") : BulletName.Split('/')[0]);
+                                                }
                                             }
                                         }
                                         string SightType = "Laser";
@@ -3088,8 +3151,15 @@ namespace FCS
                                                     {
                                                         if (line1.Contains("\"" + BulletName + "\""))
                                                         {
-                                                            LangName = line1.Split(';')[Pos];
-                                                            LangName = LangName.Replace("\"", "");
+                                                            var parts = line1.Split(';');
+                                                            if (Pos < parts.Length)
+                                                            {
+                                                                LangName = parts[Pos].Replace("\"", "");
+                                                            }
+                                                            else
+                                                            {
+                                                                LangName = (parts.Length > 1 ? parts[1].Replace("\"", "") : BulletName.Split('/')[0]);
+                                                            }
                                                         }
                                                     }
                                                     if (HasRocket == true)
@@ -3100,8 +3170,15 @@ namespace FCS
                                                         {
                                                             if (line1.Contains("\"" + RocketName + "\""))
                                                             {
-                                                                LangRocketName = line1.Split(';')[Pos];
-                                                                LangRocketName = LangRocketName.Replace("\"", "");
+                                                                var partsR = line1.Split(';');
+                                                                if (Pos < partsR.Length)
+                                                                {
+                                                                    LangRocketName = partsR[Pos].Replace("\"", "");
+                                                                }
+                                                                else
+                                                                {
+                                                                    LangRocketName = (partsR.Length > 1 ? partsR[1].Replace("\"", "") : RocketName.Split('/')[0]);
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -3230,8 +3307,15 @@ namespace FCS
                                         {
                                             if (line1.Contains("\"" + BulletName + "\""))
                                             {
-                                                LangName = line1.Split(';')[Pos];
-                                                LangName = LangName.Replace("\"", "");
+                                                var parts = line1.Split(';');
+                                                if (Pos < parts.Length)
+                                                {
+                                                    LangName = parts[Pos].Replace("\"", "");
+                                                }
+                                                else
+                                                {
+                                                    LangName = (parts.Length > 1 ? parts[1].Replace("\"", "") : BulletName.Split('/')[0]);
+                                                }
                                             }
                                         }
                                         string SightType = "Howitzer";
