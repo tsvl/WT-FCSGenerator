@@ -4831,6 +4831,45 @@ namespace FCS
                 label3.Visible = true;
                 trackBar1.Visible = true;
             }
+            if (comboBox1.Text == "Luch" || comboBox1.Text == "Luch Lite")
+            {
+                // Ensure stale options from other sight types are cleared
+                checkedListBox1.Items.Clear();
+                checkedListBox2.Items.Clear();
+                checkedListBox3.Items.Clear();
+
+                // Only a single base variant exists for Luch/Luch Lite sights
+                checkedListBox1.Items.Add("Base Version", true);
+
+                // Nations list kept for consistency with other sight generators
+                checkedListBox2.Items.Add("Select all", true);
+                checkedListBox2.Items.Add("USA", true);
+                checkedListBox2.Items.Add("Germany", true);
+                checkedListBox2.Items.Add("USSR", true);
+                checkedListBox2.Items.Add("Britain", true);
+                checkedListBox2.Items.Add("Japan", true);
+                checkedListBox2.Items.Add("China", true);
+                checkedListBox2.Items.Add("Italy", true);
+                checkedListBox2.Items.Add("France", true);
+                checkedListBox2.Items.Add("Sweden", true);
+                checkedListBox2.Items.Add("Israel", true);
+
+                // No optional draw features specific to Luch; keep list minimal
+                checkedListBox3.Items.Add("Draw Distance Corrections", true);
+
+                // Reuse sensible defaults from Duga (could be adjusted later)
+                textBox10.Text = "120, 0.01"; // Rangefinder Pos
+                textBox9.Text = "0.05, 0.05"; // Distance Pos
+                textBox8.Text = "120, -0.01"; // Detect Ally Pos
+                trackBar1.Value = 50;
+
+                // Hide controls not used by Luch/Luch Lite
+                textBox6.Visible = false;
+                label9.Visible = false;
+                label2.Visible = false;
+                label3.Visible = false;
+                trackBar1.Visible = false;
+            }
         }
 
         private void TrackBar1_Scroll(object sender, EventArgs e)
