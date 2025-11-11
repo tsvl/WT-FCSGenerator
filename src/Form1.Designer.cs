@@ -183,7 +183,7 @@ namespace FCS
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(241, 21);
             this.comboBox2.TabIndex = 4;
-            this.comboBox2.Text = "Language";
+            this.comboBox2.Text = "English";
             //
             // textBox3
             //
