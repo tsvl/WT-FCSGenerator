@@ -2135,7 +2135,7 @@ namespace FCS
                                                     BulletNameForBallistic = BulletNameForBallistic.Remove(0, BulletNameForBallistic.IndexOf("mm_"));
                                                     BulletNameForBallistic = BulletNameForBallistic.Replace("mm_", "");
                                                 }
-                                                if ((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice") || (Type == "he" && BallisticCaliber >= 0.12))
+                                                if ((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice" && Type != "napalm" && Type != "napalm_gel") || (Type == "he" && BallisticCaliber >= 0.12))
                                                 {
                                                     using (System.IO.StreamReader sr = new System.IO.StreamReader(textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
                                                     {
@@ -2611,8 +2611,8 @@ namespace FCS
                                                     BulletNameForBallistic2 = BulletNameForBallistic2.Remove(0, BulletNameForBallistic2.IndexOf("mm_"));
                                                     BulletNameForBallistic2 = BulletNameForBallistic2.Replace("mm_", "");
                                                 }
-                                                if (((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice") || (Type == "he" && BallisticCaliber >= 0.12)) &&
-                                                    ((Type2 != "sam" && Type2 != "atgm" && Type2 != "rocket" && Type2 != "aam" && Type2 != "smoke" && Type2 != "shrapnel" && Type2 != "he" && Type2 != "practice") || (Type2 == "he" && BallisticCaliber2 >= 0.037)))
+                                                if (((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice" && Type != "napalm" && Type != "napalm_gel") || (Type == "he" && BallisticCaliber >= 0.12)) &&
+                                                    ((Type2 != "sam" && Type2 != "atgm" && Type2 != "rocket" && Type2 != "aam" && Type2 != "smoke" && Type2 != "shrapnel" && Type2 != "he" && Type2 != "practice" && Type2 != "napalm" && Type2 != "napalm_gel") || (Type2 == "he" && BallisticCaliber2 >= 0.037)))
                                                 {
                                                     using (System.IO.StreamReader sr = new System.IO.StreamReader(textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
                                                     {
@@ -3810,7 +3810,8 @@ namespace FCS
                                     BulletNameForBallistic = BulletNameForBallistic.Remove(0, BulletNameForBallistic.IndexOf("mm_"));
                                     BulletNameForBallistic = BulletNameForBallistic.Replace("mm_", "");
                                 }
-                                if ((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice") || (Type == "he" && BallisticCaliber >= 0.1))
+                                // Exclude napalm-based rounds from sight generation (legacy crash fix for Luch_Lite)
+                                if ((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice" && Type != "napalm" && Type != "napalm_gel") || (Type == "he" && BallisticCaliber >= 0.1))
                                 {
                                     if (textBox2.Text != "Ballistic path")
                                     {
