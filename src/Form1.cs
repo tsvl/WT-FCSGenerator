@@ -2135,7 +2135,7 @@ namespace FCS
                                                     BulletNameForBallistic = BulletNameForBallistic.Remove(0, BulletNameForBallistic.IndexOf("mm_"));
                                                     BulletNameForBallistic = BulletNameForBallistic.Replace("mm_", "");
                                                 }
-                                                if ((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice") || (Type == "he" && BallisticCaliber >= 0.12))
+                                                if ((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice" && Type != "napalm" && Type != "napalm_gel") || (Type == "he" && BallisticCaliber >= 0.12))
                                                 {
                                                     using (System.IO.StreamReader sr = new System.IO.StreamReader(textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
                                                     {
@@ -2611,8 +2611,8 @@ namespace FCS
                                                     BulletNameForBallistic2 = BulletNameForBallistic2.Remove(0, BulletNameForBallistic2.IndexOf("mm_"));
                                                     BulletNameForBallistic2 = BulletNameForBallistic2.Replace("mm_", "");
                                                 }
-                                                if (((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice") || (Type == "he" && BallisticCaliber >= 0.12)) &&
-                                                    ((Type2 != "sam" && Type2 != "atgm" && Type2 != "rocket" && Type2 != "aam" && Type2 != "smoke" && Type2 != "shrapnel" && Type2 != "he" && Type2 != "practice") || (Type2 == "he" && BallisticCaliber2 >= 0.037)))
+                                                if (((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice" && Type != "napalm" && Type != "napalm_gel") || (Type == "he" && BallisticCaliber >= 0.12)) &&
+                                                    ((Type2 != "sam" && Type2 != "atgm" && Type2 != "rocket" && Type2 != "aam" && Type2 != "smoke" && Type2 != "shrapnel" && Type2 != "he" && Type2 != "practice" && Type2 != "napalm" && Type2 != "napalm_gel") || (Type2 == "he" && BallisticCaliber2 >= 0.037)))
                                                 {
                                                     using (System.IO.StreamReader sr = new System.IO.StreamReader(textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
                                                     {
@@ -3544,7 +3544,7 @@ namespace FCS
                                                     }
                                                     string LangName = null;
                                                     string LangRocketName = null;
-                                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(Dataminepath + "\\lang.vromfs.bin_u\\lang\\units_weaponry.csv"))
+                                                    using (System.IO.StreamReader sr = new System.IO.StreamReader("Localization\\units_weaponry.csv"))
                                                     {
                                                         LangData = sr.ReadToEnd();
                                                     }
@@ -3659,7 +3659,7 @@ namespace FCS
                                         }
                                         string LangName = null;
                                         string LangRocketName = null;
-                                        using (System.IO.StreamReader sr = new System.IO.StreamReader(Dataminepath + "\\lang.vromfs.bin_u\\lang\\units_weaponry.csv"))
+                                        using (System.IO.StreamReader sr = new System.IO.StreamReader("Localization\\units_weaponry.csv"))
                                         {
                                             LangData = sr.ReadToEnd();
                                         }
@@ -3810,7 +3810,8 @@ namespace FCS
                                     BulletNameForBallistic = BulletNameForBallistic.Remove(0, BulletNameForBallistic.IndexOf("mm_"));
                                     BulletNameForBallistic = BulletNameForBallistic.Replace("mm_", "");
                                 }
-                                if ((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice") || (Type == "he" && BallisticCaliber >= 0.1))
+                                // Exclude napalm-based rounds from sight generation (legacy crash fix for Luch_Lite)
+                                if ((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice" && Type != "napalm" && Type != "napalm_gel") || (Type == "he" && BallisticCaliber >= 0.1))
                                 {
                                     if (textBox2.Text != "Ballistic path")
                                     {
@@ -4829,6 +4830,45 @@ namespace FCS
                 label2.Visible = true;
                 label3.Visible = true;
                 trackBar1.Visible = true;
+            }
+            if (comboBox1.Text == "Luch" || comboBox1.Text == "Luch Lite")
+            {
+                // Ensure stale options from other sight types are cleared
+                checkedListBox1.Items.Clear();
+                checkedListBox2.Items.Clear();
+                checkedListBox3.Items.Clear();
+
+                // Only a single base variant exists for Luch/Luch Lite sights
+                checkedListBox1.Items.Add("Base Version", true);
+
+                // Nations list kept for consistency with other sight generators
+                checkedListBox2.Items.Add("Select all", true);
+                checkedListBox2.Items.Add("USA", true);
+                checkedListBox2.Items.Add("Germany", true);
+                checkedListBox2.Items.Add("USSR", true);
+                checkedListBox2.Items.Add("Britain", true);
+                checkedListBox2.Items.Add("Japan", true);
+                checkedListBox2.Items.Add("China", true);
+                checkedListBox2.Items.Add("Italy", true);
+                checkedListBox2.Items.Add("France", true);
+                checkedListBox2.Items.Add("Sweden", true);
+                checkedListBox2.Items.Add("Israel", true);
+
+                // No optional draw features specific to Luch; keep list minimal
+                checkedListBox3.Items.Add("Draw Distance Corrections", true);
+
+                // Reuse sensible defaults from Duga (could be adjusted later)
+                textBox10.Text = "120, 0.01"; // Rangefinder Pos
+                textBox9.Text = "0.05, 0.05"; // Distance Pos
+                textBox8.Text = "120, -0.01"; // Detect Ally Pos
+                trackBar1.Value = 50;
+
+                // Hide controls not used by Luch/Luch Lite
+                textBox6.Visible = false;
+                label9.Visible = false;
+                label2.Visible = false;
+                label3.Visible = false;
+                trackBar1.Visible = false;
             }
         }
 
