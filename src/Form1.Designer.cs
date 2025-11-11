@@ -140,7 +140,11 @@ namespace FCS
             this.comboBox1.Items.AddRange(new object[] {
             "Tochka-SM2",
             "Duga",
-            "Duga-2"});
+            "Duga-2",
+            "Luch",
+            "Luch Lite",
+            "Sector"
+            });
             this.comboBox1.Location = new System.Drawing.Point(9, 141);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox1.Name = "comboBox1";
