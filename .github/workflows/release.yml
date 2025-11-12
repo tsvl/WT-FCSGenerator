@@ -74,7 +74,7 @@ jobs:
           $size = (Get-Item $exe).Length
           Write-Host "✓ Build verification passed: FCS.exe ($([math]::Round($size/1KB, 2)) KB)"
 
-      - name: Package ZIP and checksums
+      - name: Package ZIP
         shell: pwsh
         run: |
           $tag = "${{ github.ref_name }}"
@@ -89,11 +89,6 @@ jobs:
 
           $zipSize = (Get-Item $zipPath).Length
           Write-Host "Created $zipName ($([math]::Round($zipSize/1MB, 2)) MB)"
-
-          # Generate SHA256 checksum
-          $hash = (Get-FileHash -Algorithm SHA256 $zipPath).Hash.ToLower()
-          "$hash  $zipName" | Out-File -FilePath (Join-Path $dist "$zipName.sha256") -Encoding ascii
-          Write-Host "SHA256: $hash"
 
       - name: Attest ZIP provenance
         uses: actions/attest-build-provenance@v3
@@ -132,4 +127,3 @@ jobs:
           generate_release_notes: true
           files: |
             dist/*.zip
-            dist/*.sha256
