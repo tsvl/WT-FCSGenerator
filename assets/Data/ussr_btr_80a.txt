@@ -1,6 +1,6 @@
 WeaponPath:gameData/Weapons/groundModels_weapons/30mm_2A72_BTR_user_cannon.blkx
 ZoomIn:18.49
-ZoomOut:19.49
+ZoomOut:37.5
 
 Name:30mm_UOF8
 Type:he_frag_i

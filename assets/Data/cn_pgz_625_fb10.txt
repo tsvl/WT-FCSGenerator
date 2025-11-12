@@ -42,7 +42,7 @@ demarreMassPow:0.71
 demarreCaliberPow:1.07
 
 Name:30mm_china_PTFP
-Type:ahead_tank
+Type:ahead
 BulletMass:0.36
 BallisticCaliber:0.03
 Speed:980.0

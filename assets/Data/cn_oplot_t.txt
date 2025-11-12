@@ -1,6 +1,6 @@
-WeaponPath:gameData/Weapons/groundModels_weapons/125mm_2A46_M5_user_cannon.blkx
+WeaponPath:gameData/Weapons/groundModels_weapons/125mm_KBA_3_user_cannon.blkx
 ZoomIn:6.14
-ZoomOut:18.5
+ZoomOut:27.54
 HasLaser
 
 Name:125mm_3bk_18m
@@ -26,26 +26,23 @@ demarreSpeedPow:1.43
 demarreMassPow:0.71
 demarreCaliberPow:1.07
 
-Name:125mm_3of_82
-Type:he_frag_dist_fuse
-BulletMass:23.0
-BallisticCaliber:0.125
-Speed:850.0
-Cx:0.431
-ExplosiveMass:3.0
-ExplosiveType:a_ix_2
-demarrePenetrationK:0.15
-demarreSpeedPow:1.43
-demarreMassPow:0.71
-demarreCaliberPow:1.07
+Name:125mm_bta4
+Type:apds_fs_long_tank
+BulletMass:4.83
+BallisticCaliber:0.023
+Speed:1740.0
+Cx:0.71
+DamageCaliber:0.023
 
-Name:125mm_3bm60
-Type:apds_fs_long_l30_tank
-BulletMass:5.12
-BallisticCaliber:0.022
-Speed:1660.0
-Cx:0.843
-DamageCaliber:0.022
+Name:125mm_GP125
+Type:atgm_tandem_tank
+BulletMass:19.0
+BallisticCaliber:0.125
+Speed:470.0
+Cx:0.38
+ExplosiveMass:3.6
+ExplosiveType:ocfol
+ArmorPower:850.0
 
 Name:125mm_3bm42
 Type:apds_fs_tungsten_caliber_fins_tank
@@ -62,13 +59,3 @@ APDS1500:419.0
 APDS2000:406.0
 APDS3000:380.0
 APDS10000:5.0
-
-Name:125mm_9m_119m1
-Type:atgm_tandem_tank
-BulletMass:17.2
-BallisticCaliber:0.125
-Speed:470.0
-Cx:0.38
-ExplosiveMass:3.6
-ExplosiveType:ocfol
-ArmorPower:850.0

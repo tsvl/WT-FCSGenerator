@@ -39,7 +39,7 @@ demarreMassPow:0.71
 demarreCaliberPow:1.07
 
 Name:30mm_pmc308
-Type:ahead_tank
+Type:ahead
 BulletMass:0.36
 BallisticCaliber:0.03
 Speed:1100.0

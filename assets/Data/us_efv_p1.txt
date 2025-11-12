@@ -1,6 +1,6 @@
 WeaponPath:gameData/Weapons/groundModels_weapons/30mm_Bushmaster_2_Mk_44_efv_p1_user_cannon.blkx
-ZoomIn:6.14
-ZoomOut:18.49
+ZoomIn:7.37
+ZoomOut:22.46
 HasLaser
 
 Name:30mm_mk320

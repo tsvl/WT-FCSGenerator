@@ -1,6 +1,6 @@
 WeaponPath:gameData/Weapons/groundModels_weapons/100mm_SA_47_CA_user_cannon.blkx
-ZoomIn:12.3
-ZoomOut:13.3
+ZoomIn:9.21
+ZoomOut:9.21
 
 Name:100mm_sa47_apcbc
 Type:apcbc_solid_medium_caliber_tank

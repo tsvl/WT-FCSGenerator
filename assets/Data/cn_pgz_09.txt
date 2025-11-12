@@ -43,7 +43,7 @@ demarreMassPow:0.71
 demarreCaliberPow:1.07
 
 Name:35mm_pmd062
-Type:ahead_tank
+Type:ahead
 BulletMass:0.75
 BallisticCaliber:0.035
 Speed:1050.0
