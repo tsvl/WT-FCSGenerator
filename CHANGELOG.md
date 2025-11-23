@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.1.2] - 2025-11-22
 
+### Added
+
 - Updated pregenerated data files for War Thunder 2.51.0.46 update (R400 added, localization changes).
 
 ## [2.1.1] - 2025-11-11
