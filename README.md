@@ -10,10 +10,17 @@ Updated version of the sight generation tool by  [Assin127](https://live.warthun
 
 ## Quick start
 
+>[!IMPORTANT]
+> The game `UserSights` folder has been relocated as of the 2.53 Line of Contact update. According to the [changelog](https://warthunder.com/en/game/changelog/current/1806), custom sights should now be placed in:
+>
+> - Windows: `Documents\My Games\War Thunder\saves\{user id}\production\UserSights`
+> - Linux: `$HOME/.config/WarThunder/Saves/{user id}/production/UserSights`
+> - macOS: `Users/{user name}/My Games/War Thunder/saves/{user id}/production/UserSights`
+
   1. Run `FCS.exe`.
   2. Select language, sight type, and any options you want. The default paths are fine—no changes required.
   3. Click the "Make Sights" button.
-  4. Copy the output files from the `UserSights` folder next to `FCS.exe` into your War Thunder install’s `UserSights` folder (e.g., `C:\Program Files (x86)\Steam\steamapps\common\War Thunder\UserSights`).
+  4. Copy the output files from the `UserSights` folder next to `FCS.exe` into the War Thunder `UserSights` folder.
      - Optional: you can set the output path in FCS settings directly to the game’s `UserSights` folder to skip the copy step.
 
 >[!NOTE]
