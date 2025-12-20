@@ -11,7 +11,7 @@ Cx:0.395
 DamageCaliber:0.042
 
 Name:115mm_3of_11
-Type:he_frag_tank
+Type:he_frag_fs_tank
 BulletMass:14.86
 BallisticCaliber:0.115
 Speed:905.0

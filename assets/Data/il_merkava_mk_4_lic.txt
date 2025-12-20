@@ -21,6 +21,10 @@ Speed:900.0
 Cx:0.431
 ExplosiveMass:2.3
 ExplosiveType:clx_663
+demarrePenetrationK:0.15
+demarreSpeedPow:1.43
+demarreMassPow:0.71
+demarreCaliberPow:1.07
 
 Name:120mm_m322_idf
 Type:apds_fs_long_l30_tank

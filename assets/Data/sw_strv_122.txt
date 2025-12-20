@@ -4,7 +4,7 @@ ZoomOut:18.5
 HasLaser
 
 Name:120mm_dm23
-Type:apds_fs_long_tank
+Type:apds_fs_tungsten_l10_l15_tank
 BulletMass:4.3
 BallisticCaliber:0.032
 Speed:1640.0
