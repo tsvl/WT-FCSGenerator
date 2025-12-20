@@ -36,3 +36,16 @@ demarrePenetrationK:0.15
 demarreSpeedPow:1.43
 demarreMassPow:0.71
 demarreCaliberPow:1.07
+
+Name:30mm_mk_310
+Type:he_tf
+BulletMass:0.424
+BallisticCaliber:0.03
+Speed:970.0
+Cx:0.375
+ExplosiveMass:0.04
+ExplosiveType:hexal
+demarrePenetrationK:0.15
+demarreSpeedPow:1.43
+demarreMassPow:0.71
+demarreCaliberPow:1.07

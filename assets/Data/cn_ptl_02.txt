@@ -12,7 +12,7 @@ Cx:0.452
 DamageCaliber:0.04
 
 Name:100mm_1_71_74
-Type:he_frag_tank
+Type:he_frag_fs_tank
 BulletMass:15.0
 BallisticCaliber:0.1
 Speed:900.0

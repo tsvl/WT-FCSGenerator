@@ -1,4 +1,4 @@
-WeaponPath:gameData/Weapons/groundModels_weapons/105mm_L7A3_Radpanzer_user_cannon.blkx
+WeaponPath:gameData/Weapons/groundModels_weapons/105mm_Rh105_30_user_cannon.blkx
 ZoomIn:9.21
 ZoomOut:9.21
 HasLaser
