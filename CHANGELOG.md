@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated pregenerated data files for War Thunder 2.53.0.19 (Line of Contact)
 
+### Changed
+
+- Updated README to reflect new `UserSights` folder locations as of War Thunder 2.53 Line of Contact update.
+
 ## [2.1.2] - 2025-11-22
 
 ### Added
@@ -101,7 +105,7 @@ Project cleanup and modernization. Builds now distributed via GitHub Releases, u
 Original release by [Assin127](https://live.warthunder.com/user/58909037/). Last version before project was taken over for maintenance and cleanup.
 
 <!-- Versions -->
-
+[2.1.3]: https://github.com/tsvl/WT-FCSGenerator/releases/tag/v2.1.3
 [2.1.2]: https://github.com/tsvl/WT-FCSGenerator/releases/tag/v2.1.2
 [2.1.1]: https://github.com/tsvl/WT-FCSGenerator/releases/tag/v2.1.1
 [2.1.0]: https://github.com/tsvl/WT-FCSGenerator/releases/tag/v2.1.0
