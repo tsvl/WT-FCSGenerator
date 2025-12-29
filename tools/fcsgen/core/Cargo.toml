@@ -1,0 +1,13 @@
+[package]
+name = "fcsgen-core"
+description = "Core library for FCS generation — datamine parsing, ballistics, and sight rendering"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]

@@ -1,0 +1,18 @@
+[package]
+name = "fcsgen"
+description = "CLI tool for War Thunder FCS generation — datamine conversion, ballistics, and sights"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "fcsgen"
+path = "src/main.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+fcsgen-core = { path = "../core" }
