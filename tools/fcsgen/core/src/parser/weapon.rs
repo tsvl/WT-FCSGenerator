@@ -22,7 +22,7 @@
 use serde_json::Value;
 
 use crate::error::Result;
-use crate::model::{DemarreParams, Projectile};
+use crate::model::{ArmorPowerSeries, DemarreParams, Projectile};
 
 /// Parse a weapon module .blkx file and extract projectile data.
 ///
@@ -143,6 +143,7 @@ struct MergedBullet {
     demarre_mass_pow: Option<f64>,
     demarre_caliber_pow: Option<f64>,
     armor_power: Option<f64>,
+    armorpower_json: Option<Value>, // Store raw armorpower section for APDS extraction
 }
 
 impl MergedBullet {
@@ -212,6 +213,11 @@ impl MergedBullet {
         if let Some(v) = extract_armor_power(bullet) {
             self.armor_power = Some(v);
         }
+
+        // Store armorpower section for APDS series extraction
+        if let Some(ap) = bullet.get("armorpower") {
+            self.armorpower_json = Some(ap.clone());
+        }
     }
 
     fn merge_demarre(&mut self, bullet: &Value) {
@@ -259,11 +265,9 @@ impl MergedBullet {
             None
         };
 
-        // Armor power series for APDS
+        // Armor power series for APDS/APFSDS
         let armor_power_series = if bullet_type.starts_with("apds") {
-            // Would need to extract from damage section - leaving None for now
-            // as we need the original bullet JSON for that
-            None
+            self.armorpower_json.as_ref().map(extract_armor_power_series)
         } else {
             None
         };
@@ -363,6 +367,35 @@ fn extract_armor_power(bullet: &Value) -> Option<f64> {
     }
 
     None
+}
+
+/// Extract armor power series from armorpower JSON object.
+/// The armorpower section has keys like "ArmorPower0m", "ArmorPower100m", etc.
+/// Values are arrays [penetration, distance], we only need the penetration (first element).
+fn extract_armor_power_series(armorpower: &Value) -> ArmorPowerSeries {
+    /// Extract penetration value from ArmorPowerXXXm array.
+    fn get_ap(obj: &Value, key: &str) -> Option<f64> {
+        obj.get(key).and_then(|v| match v {
+            Value::Array(arr) => arr.first().and_then(Value::as_f64),
+            Value::Number(n) => n.as_f64(),
+            _ => None,
+        })
+    }
+
+    ArmorPowerSeries {
+        ap_0m: get_ap(armorpower, "ArmorPower0m"),
+        ap_100m: get_ap(armorpower, "ArmorPower100m"),
+        ap_500m: get_ap(armorpower, "ArmorPower500m"),
+        ap_1000m: get_ap(armorpower, "ArmorPower1000m"),
+        ap_1500m: get_ap(armorpower, "ArmorPower1500m"),
+        ap_2000m: get_ap(armorpower, "ArmorPower2000m"),
+        ap_2500m: get_ap(armorpower, "ArmorPower2500m"),
+        ap_3000m: get_ap(armorpower, "ArmorPower3000m"),
+        ap_3500m: get_ap(armorpower, "ArmorPower3500m"),
+        ap_4000m: get_ap(armorpower, "ArmorPower4000m"),
+        ap_4500m: get_ap(armorpower, "ArmorPower4500m"),
+        ap_10000m: get_ap(armorpower, "ArmorPower10000m"),
+    }
 }
 
 #[cfg(test)]
