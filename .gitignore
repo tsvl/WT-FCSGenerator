@@ -441,6 +441,9 @@ FodyWeavers.xsd
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
+# Rust/Cargo build artifacts
+/tools/fcsgen/target/
+
 UserSights/
 !UserSights/.gitkeep
 Datamine/aces.vromfs.bin_u/gamedata/units/tankmodels/*
