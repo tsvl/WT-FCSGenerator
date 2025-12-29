@@ -325,16 +325,17 @@ fn strip_nation_prefix(name: &str) -> String {
 }
 
 /// Extract bullet name, handling both scalar and array cases.
+/// When no bulletName exists, fallback to bulletType + "/name/short" (legacy behavior).
 fn extract_bullet_name(bullet: &Value) -> Option<String> {
     match bullet.get("bulletName") {
         Some(Value::String(s)) => Some(s.clone()),
         Some(Value::Array(arr)) => arr.first().and_then(Value::as_str).map(String::from),
         _ => {
-            // Fallback: bulletType + short name (legacy behavior)
+            // Fallback: bulletType + "/name/short" (legacy behavior)
             bullet
                 .get("bulletType")
                 .and_then(Value::as_str)
-                .map(String::from)
+                .map(|s| format!("{s}/name/short"))
         }
     }
 }
