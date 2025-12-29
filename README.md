@@ -41,7 +41,7 @@ You can also downloaded the pre-extracted datamine files from [gszabi99/War-Thun
 > [!NOTE]
 > ignore.txt filters out event/non-playable vehicles to avoid increasing load times with unusable sight files. If downloaded from the above repo you may want to remove the files listed in ignore.txt from `aces.vromfs.bin_u/gamedata/units/tankmodels` yourself, or just ignore them if you don't care about the extra sight generation/load time.
 
-If something breaks (there are many things that can break at the moment), you can yell at the professional customer support team (me) in the [Discord](https://discord.gg/kAYgUj9n) and I can probably fix it.
+If something breaks (there are many things that can break at the moment), you can yell at the professional customer support team (me) in the [Discord](https://discord.gg/sJJXeD82tF) and I can probably fix it.
 
 Original README below - to be updated; instructions may be outdated (it should just werk with the default paths now) but still some useful information
 
