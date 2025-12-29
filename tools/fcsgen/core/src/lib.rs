@@ -7,7 +7,6 @@
 //!
 //! See the CLI crate (`fcsgen`) for the command-line interface.
 
-/// Placeholder for core library version.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[cfg(test)]
