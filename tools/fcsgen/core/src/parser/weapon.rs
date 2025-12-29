@@ -340,12 +340,20 @@ fn extract_bullet_name(bullet: &Value) -> Option<String> {
 }
 
 /// Extract Cx drag coefficient, handling both scalar and array cases.
+/// For arrays, legacy tool averages all values and rounds to 4 decimal places.
 fn extract_cx(obj: &Value) -> Option<f64> {
     match obj.get("Cx") {
         Some(Value::Number(n)) => n.as_f64(),
         Some(Value::Array(arr)) => {
-            // Take first value (simpler than averaging, handles the rare array case)
-            arr.first().and_then(Value::as_f64)
+            // Legacy behavior: average all array values, round to 4 decimal places
+            let values: Vec<f64> = arr.iter().filter_map(Value::as_f64).collect();
+            if values.is_empty() {
+                None
+            } else {
+                let avg = values.iter().sum::<f64>() / values.len() as f64;
+                // Math.Round(average, 4) in C#
+                Some((avg * 10000.0).round() / 10000.0)
+            }
         }
         _ => None,
     }
@@ -407,8 +415,14 @@ mod tests {
     fn test_extract_cx_array() {
         let obj = json!({ "Cx": [0.3, 0.4, 0.5] });
         let cx = extract_cx(&obj);
-        // Should take first value
-        assert!((cx.unwrap() - 0.3).abs() < 0.001);
+        // Should average all values: (0.3 + 0.4 + 0.5) / 3 = 0.4, rounded to 4 decimal places
+        assert!((cx.unwrap() - 0.4).abs() < 0.00001);
+
+        // Test rounding to 4 decimal places
+        let obj2 = json!({ "Cx": [0.276611, 0.33] });
+        let cx2 = extract_cx(&obj2);
+        // Average = 0.303305... rounds to 0.3033
+        assert!((cx2.unwrap() - 0.3033).abs() < 0.00001);
     }
 
     #[test]
