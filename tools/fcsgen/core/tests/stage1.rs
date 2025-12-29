@@ -13,6 +13,60 @@ fn examples_dir() -> PathBuf {
         .join("2.53.0.42")
 }
 
+/// Convert a single vehicle and compare to expected output.
+/// Returns Ok(()) on match, Err with diff info on mismatch.
+fn check_vehicle(vehicle_name: &str) -> Result<(), String> {
+    let examples = examples_dir();
+    let input_root = examples.join("input");
+    let vehicle_path = input_root
+        .join("aces.vromfs.bin_u")
+        .join("gamedata")
+        .join("units")
+        .join("tankmodels")
+        .join(format!("{vehicle_name}.blkx"));
+
+    let expected_path = examples.join("output").join(format!("{vehicle_name}.txt"));
+
+    // Convert
+    let data = convert_vehicle(&vehicle_path, &input_root)
+        .map_err(|e| format!("conversion error: {e}"))?;
+    let output = emit_legacy_txt(&data);
+
+    // Load expected
+    let expected = std::fs::read_to_string(&expected_path)
+        .map_err(|e| format!("cannot read expected: {e}"))?;
+
+    // Compare
+    if output == expected {
+        Ok(())
+    } else {
+        // Find first different line
+        let exp_lines: Vec<_> = expected.lines().collect();
+        let out_lines: Vec<_> = output.lines().collect();
+
+        for (i, (exp, out)) in exp_lines.iter().zip(out_lines.iter()).enumerate() {
+            if exp != out {
+                return Err(format!(
+                    "line {}: expected {:?}, got {:?}",
+                    i + 1,
+                    exp,
+                    out
+                ));
+            }
+        }
+
+        if exp_lines.len() != out_lines.len() {
+            return Err(format!(
+                "line count: expected {}, got {}",
+                exp_lines.len(),
+                out_lines.len()
+            ));
+        }
+
+        Err("outputs differ but no line diff found (whitespace?)".to_string())
+    }
+}
+
 /// Test conversion of BMP-2M against expected output.
 #[test]
 fn test_bmp_2m_conversion() {
@@ -31,50 +85,112 @@ fn test_bmp_2m_conversion() {
         return;
     }
 
-    // Convert
-    let data = convert_vehicle(&vehicle_path, &input_root).expect("conversion should succeed");
-    let output = emit_legacy_txt(&data);
+    if let Err(e) = check_vehicle("ussr_bmp_2m") {
+        panic!("ussr_bmp_2m failed: {e}");
+    }
+}
 
-    // Load expected output
-    let expected_path = examples.join("output").join("ussr_bmp_2m.txt");
-    let expected = std::fs::read_to_string(&expected_path).expect("should read expected output");
+/// Run conversion on ALL vehicles in the corpus and report statistics.
+/// This test is ignored by default - run with `cargo test corpus -- --ignored`
+#[test]
+#[ignore]
+fn test_full_corpus() {
+    let examples = examples_dir();
+    let input_dir = examples
+        .join("input")
+        .join("aces.vromfs.bin_u")
+        .join("gamedata")
+        .join("units")
+        .join("tankmodels");
+    let output_dir = examples.join("output");
 
-    // Compare
-    if output != expected {
-        // Print lengths for debugging
-        eprintln!("=== DEBUG ===");
-        eprintln!("Expected length: {} bytes, {} chars", expected.len(), expected.chars().count());
-        eprintln!("Actual length:   {} bytes, {} chars", output.len(), output.chars().count());
-        eprintln!("Expected ends with newline: {}", expected.ends_with('\n'));
-        eprintln!("Actual ends with newline: {}", output.ends_with('\n'));
-        eprintln!("Expected last 20 bytes: {:?}", expected.as_bytes().iter().rev().take(20).rev().collect::<Vec<_>>());
-        eprintln!("Actual last 20 bytes: {:?}", output.as_bytes().iter().rev().take(20).rev().collect::<Vec<_>>());
+    if !input_dir.exists() {
+        eprintln!("Skipping corpus test: examples not present");
+        return;
+    }
 
-        // Print diff for debugging
-        eprintln!("\n=== EXPECTED ===");
-        for (i, line) in expected.lines().enumerate() {
-            eprintln!("{:3}: {}", i + 1, line);
-        }
-        eprintln!("\n=== ACTUAL ===");
-        for (i, line) in output.lines().enumerate() {
-            eprintln!("{:3}: {}", i + 1, line);
-        }
+    // Collect all expected output files (these are the vehicles legacy tool produced output for)
+    let expected_files: Vec<_> = std::fs::read_dir(&output_dir)
+        .expect("read output dir")
+        .filter_map(|e| e.ok())
+        .filter(|e| e.path().extension().is_some_and(|ext| ext == "txt"))
+        .map(|e| {
+            e.path()
+                .file_stem()
+                .unwrap()
+                .to_string_lossy()
+                .to_string()
+        })
+        .collect();
 
-        // Find first difference
-        for (i, (exp, act)) in expected.lines().zip(output.lines()).enumerate() {
-            if exp != act {
-                eprintln!("\nFirst difference at line {}:", i + 1);
-                eprintln!("  Expected: {exp:?}");
-                eprintln!("  Actual:   {act:?}");
-                break;
+    let total = expected_files.len();
+    let mut passed = 0;
+    let mut failed = 0;
+    let mut errors = 0;
+    let mut failures: Vec<(String, String)> = Vec::new();
+
+    for vehicle in &expected_files {
+        match check_vehicle(vehicle) {
+            Ok(()) => {
+                passed += 1;
+            }
+            Err(e) if e.starts_with("conversion error") => {
+                errors += 1;
+                if errors <= 10 {
+                    eprintln!("ERROR {vehicle}: {e}");
+                }
+            }
+            Err(e) => {
+                failed += 1;
+                failures.push((vehicle.clone(), e));
             }
         }
-
-        // Check line counts
-        let exp_lines: Vec<_> = expected.lines().collect();
-        let act_lines: Vec<_> = output.lines().collect();
-        eprintln!("\nExpected {} lines, got {} lines", exp_lines.len(), act_lines.len());
-
-        panic!("Output does not match expected");
     }
+
+    // Print summary
+    eprintln!("\n{}", "=".repeat(60));
+    eprintln!("CORPUS TEST RESULTS");
+    eprintln!("{}", "=".repeat(60));
+    eprintln!("Total:  {total}");
+    eprintln!("Passed: {passed} ({:.1}%)", 100.0 * passed as f64 / total as f64);
+    eprintln!("Failed: {failed} ({:.1}%)", 100.0 * failed as f64 / total as f64);
+    eprintln!("Errors: {errors} ({:.1}%)", 100.0 * errors as f64 / total as f64);
+
+    // Print first N failures with details to console
+    if !failures.is_empty() {
+        eprintln!("\nFirst 20 failures:");
+        for (vehicle, err) in failures.iter().take(20) {
+            eprintln!("  {vehicle}: {err}");
+        }
+
+        // Dump full failure list to file for reference
+        let failure_log = examples.join("corpus-failures.txt");
+        let mut report = String::new();
+        report.push_str(&format!("Corpus Test Failure Report\n"));
+        report.push_str(&format!("==========================\n\n"));
+        report.push_str(&format!("Total: {total}\n"));
+        report.push_str(&format!("Passed: {passed}\n"));
+        report.push_str(&format!("Failed: {failed}\n"));
+        report.push_str(&format!("Errors: {errors}\n\n"));
+        report.push_str(&format!("Failures ({failed} vehicles):\n"));
+        report.push_str(&format!("{}\n\n", "-".repeat(40)));
+
+        for (vehicle, err) in &failures {
+            report.push_str(&format!("{vehicle}\n  {err}\n\n"));
+        }
+
+        if let Err(e) = std::fs::write(&failure_log, &report) {
+            eprintln!("Warning: could not write failure log: {e}");
+        } else {
+            eprintln!("\nFull failure list written to: {}", failure_log.display());
+        }
+    }
+
+    // Fail if pass rate is below threshold (adjust as we improve)
+    let pass_rate = passed as f64 / total as f64;
+    assert!(
+        pass_rate >= 0.0, // Set to 0 for now, raise as we improve
+        "Pass rate {:.1}% below threshold",
+        pass_rate * 100.0
+    );
 }
