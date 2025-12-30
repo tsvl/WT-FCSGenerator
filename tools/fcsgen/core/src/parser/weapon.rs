@@ -22,7 +22,7 @@
 use serde_json::Value;
 
 use crate::error::Result;
-use crate::model::{DemarreParams, Projectile};
+use crate::model::{ArmorPowerSeries, DemarreParams, Projectile};
 
 /// Parse a weapon module .blkx file and extract projectile data.
 ///
@@ -143,6 +143,7 @@ struct MergedBullet {
     demarre_mass_pow: Option<f64>,
     demarre_caliber_pow: Option<f64>,
     armor_power: Option<f64>,
+    armorpower_json: Option<Value>, // Store raw armorpower section for APDS extraction
 }
 
 impl MergedBullet {
@@ -212,6 +213,11 @@ impl MergedBullet {
         if let Some(v) = extract_armor_power(bullet) {
             self.armor_power = Some(v);
         }
+
+        // Store armorpower section for APDS series extraction
+        if let Some(ap) = bullet.get("armorpower") {
+            self.armorpower_json = Some(ap.clone());
+        }
     }
 
     fn merge_demarre(&mut self, bullet: &Value) {
@@ -259,11 +265,9 @@ impl MergedBullet {
             None
         };
 
-        // Armor power series for APDS
+        // Armor power series for APDS/APFSDS
         let armor_power_series = if bullet_type.starts_with("apds") {
-            // Would need to extract from damage section - leaving None for now
-            // as we need the original bullet JSON for that
-            None
+            self.armorpower_json.as_ref().map(extract_armor_power_series)
         } else {
             None
         };
@@ -321,27 +325,36 @@ fn strip_nation_prefix(name: &str) -> String {
 }
 
 /// Extract bullet name, handling both scalar and array cases.
+/// When no bulletName exists, fallback to bulletType + "/name/short" (legacy behavior).
 fn extract_bullet_name(bullet: &Value) -> Option<String> {
     match bullet.get("bulletName") {
         Some(Value::String(s)) => Some(s.clone()),
         Some(Value::Array(arr)) => arr.first().and_then(Value::as_str).map(String::from),
         _ => {
-            // Fallback: bulletType + short name (legacy behavior)
+            // Fallback: bulletType + "/name/short" (legacy behavior)
             bullet
                 .get("bulletType")
                 .and_then(Value::as_str)
-                .map(String::from)
+                .map(|s| format!("{s}/name/short"))
         }
     }
 }
 
 /// Extract Cx drag coefficient, handling both scalar and array cases.
+/// For arrays, legacy tool averages all values and rounds to 4 decimal places.
 fn extract_cx(obj: &Value) -> Option<f64> {
     match obj.get("Cx") {
         Some(Value::Number(n)) => n.as_f64(),
         Some(Value::Array(arr)) => {
-            // Take first value (simpler than averaging, handles the rare array case)
-            arr.first().and_then(Value::as_f64)
+            // Legacy behavior: average all array values, round to 4 decimal places
+            let values: Vec<f64> = arr.iter().filter_map(Value::as_f64).collect();
+            if values.is_empty() {
+                None
+            } else {
+                let avg = values.iter().sum::<f64>() / values.len() as f64;
+                // Math.Round(average, 4) in C#
+                Some((avg * 10000.0).round() / 10000.0)
+            }
         }
         _ => None,
     }
@@ -365,6 +378,35 @@ fn extract_armor_power(bullet: &Value) -> Option<f64> {
     None
 }
 
+/// Extract armor power series from armorpower JSON object.
+/// The armorpower section has keys like "ArmorPower0m", "ArmorPower100m", etc.
+/// Values are arrays [penetration, distance], we only need the penetration (first element).
+fn extract_armor_power_series(armorpower: &Value) -> ArmorPowerSeries {
+    /// Extract penetration value from ArmorPowerXXXm array.
+    fn get_ap(obj: &Value, key: &str) -> Option<f64> {
+        obj.get(key).and_then(|v| match v {
+            Value::Array(arr) => arr.first().and_then(Value::as_f64),
+            Value::Number(n) => n.as_f64(),
+            _ => None,
+        })
+    }
+
+    ArmorPowerSeries {
+        ap_0m: get_ap(armorpower, "ArmorPower0m"),
+        ap_100m: get_ap(armorpower, "ArmorPower100m"),
+        ap_500m: get_ap(armorpower, "ArmorPower500m"),
+        ap_1000m: get_ap(armorpower, "ArmorPower1000m"),
+        ap_1500m: get_ap(armorpower, "ArmorPower1500m"),
+        ap_2000m: get_ap(armorpower, "ArmorPower2000m"),
+        ap_2500m: get_ap(armorpower, "ArmorPower2500m"),
+        ap_3000m: get_ap(armorpower, "ArmorPower3000m"),
+        ap_3500m: get_ap(armorpower, "ArmorPower3500m"),
+        ap_4000m: get_ap(armorpower, "ArmorPower4000m"),
+        ap_4500m: get_ap(armorpower, "ArmorPower4500m"),
+        ap_10000m: get_ap(armorpower, "ArmorPower10000m"),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -374,8 +416,14 @@ mod tests {
     fn test_extract_cx_array() {
         let obj = json!({ "Cx": [0.3, 0.4, 0.5] });
         let cx = extract_cx(&obj);
-        // Should take first value
-        assert!((cx.unwrap() - 0.3).abs() < 0.001);
+        // Should average all values: (0.3 + 0.4 + 0.5) / 3 = 0.4, rounded to 4 decimal places
+        assert!((cx.unwrap() - 0.4).abs() < 0.00001);
+
+        // Test rounding to 4 decimal places
+        let obj2 = json!({ "Cx": [0.276611, 0.33] });
+        let cx2 = extract_cx(&obj2);
+        // Average = 0.303305... rounds to 0.3033
+        assert!((cx2.unwrap() - 0.3033).abs() < 0.00001);
     }
 
     #[test]
