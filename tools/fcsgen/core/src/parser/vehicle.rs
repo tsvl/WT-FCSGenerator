@@ -34,10 +34,24 @@ pub fn parse_vehicle(json: &Value, vehicle_id: &str) -> Result<VehicleData> {
     // Check for laser rangefinder (broad heuristic matching legacy behavior)
     data.has_laser = check_has_laser(json);
 
-    // Extract weapon paths from commonWeapons
+    // Extract weapon paths from top-level commonWeapons
     if let Some(common_weapons) = json.get("commonWeapons") {
         let weapons = extract_weapon_entries(common_weapons);
         classify_weapons(&weapons, &mut data);
+    }
+
+    // Also scan modifications for effects.commonWeapons blocks
+    // These contain weapons unlocked by modifications (e.g., upgraded ATGMs, different guns)
+    if let Some(Value::Object(modifications)) = json.get("modifications") {
+        for (_mod_name, mod_value) in modifications {
+            if let Some(common_weapons) = mod_value
+                .get("effects")
+                .and_then(|e| e.get("commonWeapons"))
+            {
+                let weapons = extract_weapon_entries(common_weapons);
+                classify_weapons(&weapons, &mut data);
+            }
+        }
     }
 
     Ok(data)
@@ -82,6 +96,12 @@ fn extract_fov_value(value: Option<&Value>) -> Option<f64> {
 /// Check if the vehicle has a laser rangefinder.
 /// Uses broad substring matching to match legacy behavior.
 /// Note: Legacy uses case-sensitive matching, so "LaserBeamRidingSensor" does NOT match.
+///
+/// TODO: This is a very crude heuristic that also matches laser warning systems (LWS),
+/// thermal imaging systems with "laser" in their names, etc. In practice this usually
+/// works because vehicles with LWS typically also have a laser rangefinder, but ideally
+/// we should look for specific fields like "modern_tank_laser_rangefinder" modification
+/// or the "isLaser" field in the modifications section to properly detect this.
 fn check_has_laser(json: &Value) -> bool {
     // Case-sensitive search for "laser" substring
     // Legacy C# uses String.Contains which is case-sensitive by default
