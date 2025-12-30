@@ -81,10 +81,13 @@ fn extract_fov_value(value: Option<&Value>) -> Option<f64> {
 
 /// Check if the vehicle has a laser rangefinder.
 /// Uses broad substring matching to match legacy behavior.
+/// Note: Legacy uses case-sensitive matching, so "LaserBeamRidingSensor" does NOT match.
 fn check_has_laser(json: &Value) -> bool {
-    // Convert to string and search for "laser" substring
-    // This matches the legacy behavior which was very broad
-    let json_str = json.to_string().to_lowercase();
+    // Case-sensitive search for "laser" substring
+    // Legacy C# uses String.Contains which is case-sensitive by default
+    // This means "LaserBeamRidingSensor" (missile guidance) doesn't trigger it,
+    // but "modern_tank_laser_rangefinder" or "isLaser" does.
+    let json_str = json.to_string();
     json_str.contains("laser")
 }
 
