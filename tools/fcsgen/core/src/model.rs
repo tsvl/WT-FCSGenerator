@@ -121,4 +121,13 @@ impl VehicleData {
 			projectiles: Vec::new(),
 		}
 	}
+
+	/// Whether the vehicle has any weapon data worth emitting.
+	///
+	/// Returns `false` for unarmed/non-playable vehicles (e.g. fire control trucks
+	/// in multi-part SAM systems) that only have zoom/laser data but no projectiles.
+	#[must_use]
+	pub fn is_armed(&self) -> bool {
+		!self.projectiles.is_empty()
+	}
 }

@@ -56,7 +56,12 @@ pub fn parse_weapon_module(json: &Value, vehicle_json: Option<&Value>) -> Result
 				},
 				_ => {
 					// Could be a belt section - check if it should be included
-					if value.is_object() && should_include_belt(key, vehicle_str.as_deref()) {
+					// Belts with rocket/ATGM data are always included (they're not
+					// modification-gated); regular ammo belts are filtered by vehicle data.
+					let include = belt_has_rocket(value)
+						|| (value.is_object()
+							&& should_include_belt(key, vehicle_str.as_deref()));
+					if include {
 						// Look for bullet/rocket within this belt section
 						if let Value::Object(belt) = value {
 							if let Some(bullets) = belt.get("bullet") {
@@ -161,6 +166,14 @@ impl MergedBullet {
 		if let Some(bt) = bullet.get("bulletType").and_then(Value::as_str) {
 			self.bullet_type = Some(bt.to_string());
 		}
+		// Legacy scans line-by-line with last-wins, so rocket.bulletType overwrites outer
+		if let Some(bt) = bullet
+			.get("rocket")
+			.and_then(|r| r.get("bulletType"))
+			.and_then(Value::as_str)
+		{
+			self.bullet_type = Some(bt.to_string());
+		}
 
 		// Mass - try rocket section first, then bullet level
 		if let Some(v) = data_source.get("mass").and_then(Value::as_f64) {
@@ -202,11 +215,13 @@ impl MergedBullet {
 		if let Some(v) = data_source.get("damageMass").and_then(Value::as_f64) {
 			self.damage_mass = Some(v);
 		}
-		if let Some(v) = data_source.get("damageCaliber").and_then(Value::as_f64) {
+		if let Some(v) = extract_f64_or_first(data_source, "damageCaliber") {
+			self.damage_caliber = Some(v);
+		} else if let Some(v) = extract_f64_or_first(bullet, "damageCaliber") {
 			self.damage_caliber = Some(v);
 		}
 
-		// DeMarre - check bullet level and damage.kinetic
+		// DeMarre - check bullet level, damage.kinetic, and rocket.damage.kinetic
 		self.merge_demarre(bullet);
 
 		// Armor power
@@ -221,15 +236,21 @@ impl MergedBullet {
 	}
 
 	fn merge_demarre(&mut self, bullet: &Value) {
+		let rocket_damage_kinetic = bullet
+			.get("rocket")
+			.and_then(|r| r.get("damage"))
+			.and_then(|d| d.get("kinetic"));
+		let bullet_damage_kinetic = bullet
+			.get("damage")
+			.and_then(|d| d.get("kinetic"));
+
 		let sources = [
-			bullet,
-			bullet
-				.get("damage")
-				.and_then(|d| d.get("kinetic"))
-				.unwrap_or(&Value::Null),
+			Some(bullet),
+			bullet_damage_kinetic,
+			rocket_damage_kinetic,
 		];
 
-		for source in sources {
+		for source in sources.into_iter().flatten() {
 			if let Some(v) = source.get("demarrePenetrationK").and_then(Value::as_f64) {
 				self.demarre_k = Some(v);
 			}
@@ -290,6 +311,35 @@ impl MergedBullet {
 			armor_power_series,
 		})
 	}
+}
+
+/// Check if a belt section contains rocket/ATGM data (nested `rocket` inside `bullet`).
+/// Such belts represent gun-launched ATGMs or missiles and should always be included
+/// regardless of belt filtering, since they're not modification-gated ammo belts.
+fn belt_has_rocket(value: &Value) -> bool {
+	if let Value::Object(belt) = value {
+		// Check bullet sub-objects for a nested "rocket" section
+		if let Some(bullets) = belt.get("bullet") {
+			let bullet_iter: Box<dyn Iterator<Item = &Value>> = match bullets {
+				Value::Array(arr) => Box::new(arr.iter()),
+				obj @ Value::Object(_) => Box::new(std::iter::once(obj)),
+				_ => return false,
+			};
+			for bullet in bullet_iter {
+				if bullet.get("rocket").is_some() {
+					return true;
+				}
+			}
+		}
+		// Check for direct "rocket" key in belt (standalone rocket sections)
+		if let Some(rockets) = belt.get("rocket") {
+			match rockets {
+				Value::Object(_) | Value::Array(_) => return true,
+				_ => {}
+			}
+		}
+	}
+	false
 }
 
 /// Check if a belt should be included based on vehicle data.
@@ -358,6 +408,16 @@ fn extract_cx(obj: &Value) -> Option<f64> {
 				Some((avg * 10000.0).round() / 10000.0)
 			}
 		},
+		_ => None,
+	}
+}
+
+/// Extract a float value from a key, handling both scalar and array cases.
+/// For arrays, takes the first element (matching legacy line-scan behavior).
+fn extract_f64_or_first(obj: &Value, key: &str) -> Option<f64> {
+	match obj.get(key) {
+		Some(Value::Number(n)) => n.as_f64(),
+		Some(Value::Array(arr)) => arr.first().and_then(Value::as_f64),
 		_ => None,
 	}
 }
@@ -467,5 +527,36 @@ mod tests {
 		let result = parse_weapon_module(&weapon, Some(&vehicle)).unwrap();
 		assert_eq!(result.len(), 1);
 		assert_eq!(result[0].name, "top_level");
+	}
+
+	#[test]
+	fn test_belt_with_rocket_always_included() {
+		let weapon = json!({
+			"bullet": [{
+				"bulletName": "top_level",
+				"bulletType": "ap"
+			}],
+			"125mm_china_ATGM": {
+				"bullet": {
+					"bulletType": "atgm_tandem_tank",
+					"mass": 19.0,
+					"caliber": 0.125,
+					"speed": 470.0,
+					"rocket": {
+						"mass": 19.0,
+						"caliber": 0.125,
+						"endSpeed": 470.0,
+						"explosiveMass": 3.6,
+						"explosiveType": "ocfol"
+					}
+				}
+			}
+		});
+
+		// Even with a vehicle that has NO matching belt, the ATGM belt should be included
+		let vehicle = json!({"125mm_china_HE": {}});
+		let result = parse_weapon_module(&weapon, Some(&vehicle)).unwrap();
+		assert_eq!(result.len(), 2, "ATGM belt should be included: {:?}", result);
+		assert_eq!(result[1].bullet_type, "atgm_tandem_tank");
 	}
 }

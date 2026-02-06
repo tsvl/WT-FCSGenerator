@@ -83,6 +83,7 @@ fn run_convert(input: &PathBuf, output: &PathBuf, filter: Option<&[String]>) {
 
 	let total = vehicles.len();
 	let mut converted = 0;
+	let mut skipped = 0;
 	let mut failed = 0;
 
 	eprintln!("Converting {total} vehicles from {tankmodels:?}");
@@ -94,7 +95,7 @@ fn run_convert(input: &PathBuf, output: &PathBuf, filter: Option<&[String]>) {
 		let name = path.file_stem().unwrap().to_string_lossy();
 
 		match convert_vehicle(&path, datamine_root) {
-			Ok(data) => {
+			Ok(data) if data.is_armed() => {
 				let txt = emit_legacy_txt(&data);
 				let out_path = output.join(format!("{name}.txt"));
 
@@ -105,6 +106,10 @@ fn run_convert(input: &PathBuf, output: &PathBuf, filter: Option<&[String]>) {
 					converted += 1;
 				}
 			},
+			Ok(_) => {
+				// Unarmed vehicle (no projectiles found), skip output
+				skipped += 1;
+			},
 			Err(e) => {
 				eprintln!("CONVERT ERROR {name}: {e}");
 				failed += 1;
@@ -113,5 +118,5 @@ fn run_convert(input: &PathBuf, output: &PathBuf, filter: Option<&[String]>) {
 	}
 
 	eprintln!();
-	eprintln!("Done: {converted} converted, {failed} failed");
+	eprintln!("Done: {converted} converted, {skipped} skipped (unarmed), {failed} failed");
 }
