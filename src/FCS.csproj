@@ -23,7 +23,7 @@
     <Content Include="$(MSBuildProjectDirectory)\..\assets\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-      <TargetPath>%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+      <TargetPath>assets\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
     </Content>
     <!-- Readme -->
     <Content Include="$(MSBuildProjectDirectory)\..\README.md">

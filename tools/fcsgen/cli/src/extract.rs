@@ -106,15 +106,14 @@ pub fn run_extract(
                 continue;
             }
 
-            // Rename .blk → .blkx (matching the convention expected by `fcsgen convert`)
-            let blkx_filename = format!("{filename}x");
-
-            // Check ignore list (ignore.txt uses .blkx names, case-insensitive)
-            let lower = blkx_filename.to_lowercase();
-            if ignore_set.contains(&lower)
-            {
+            // Check ignore list (compare stem, case-insensitive)
+            let stem = filename.strip_suffix(".blk").unwrap_or(&filename);
+            if ignore_set.contains(&stem.to_lowercase()) {
                 continue;
             }
+
+            // Rename .blk → .blkx (matching the convention expected by `fcsgen convert`)
+            let blkx_filename = format!("{filename}x");
 
             // Write with .blkx extension
             let dest = aces_root.join(tankmodels_prefix).join(&blkx_filename);
@@ -219,8 +218,8 @@ fn write_file(path: &Path, data: &[u8]) {
 
 /// Load a vehicle ignore list from a file.
 ///
-/// Each line is a filename (optionally quoted, with `#` comment lines).
-/// Returns a set of filenames (with quotes stripped).
+/// Each line is a vehicle ID (optionally quoted, with `#` comment lines).
+/// Returns a set of vehicle IDs (lowercased, quotes and `.blkx` extension stripped).
 fn load_ignore_list(path: &Path) -> HashSet<String> {
     let file = match std::fs::File::open(path) {
         Ok(f) => f,
@@ -237,13 +236,15 @@ fn load_ignore_list(path: &Path) -> HashSet<String> {
         .map(|line| line.trim().to_owned())
         .filter(|line| !line.is_empty() && !line.starts_with('#'))
         .map(|line| {
-            // Strip surrounding quotes
+            // Strip surrounding quotes (legacy format compat)
             if line.starts_with('"') && line.ends_with('"') && line.len() >= 2 {
                 line[1..line.len() - 1].to_owned()
             } else {
                 line
             }
         })
+        // Strip .blkx extension if present (legacy format compat)
+        .map(|s| s.strip_suffix(".blkx").unwrap_or(&s).to_owned())
         // Lowercase for case-insensitive matching (archive names are lowercase)
         .map(|s| s.to_lowercase())
         .collect()
