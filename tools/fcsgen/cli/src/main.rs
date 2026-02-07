@@ -29,6 +29,10 @@ enum Commands {
 		/// Only convert specific vehicle(s) by name (without .blkx extension)
 		#[arg(long)]
 		vehicle: Option<Vec<String>>,
+
+		/// Emit _ModOptic.txt variants for vehicles with secondary optics
+		#[arg(long, default_value_t = false)]
+		emit_modoptic: bool,
 	},
 }
 
@@ -40,13 +44,14 @@ fn main() {
 			input,
 			output,
 			vehicle,
+			emit_modoptic,
 		} => {
-			run_convert(&input, &output, vehicle.as_deref());
+			run_convert(&input, &output, vehicle.as_deref(), emit_modoptic);
 		},
 	}
 }
 
-fn run_convert(input: &PathBuf, output: &PathBuf, filter: Option<&[String]>) {
+fn run_convert(input: &PathBuf, output: &PathBuf, filter: Option<&[String]>, emit_modoptic: bool) {
 	// Input should be the aces.vromfs.bin_u directory itself
 	let tankmodels = input.join("gamedata").join("units").join("tankmodels");
 
@@ -104,6 +109,18 @@ fn run_convert(input: &PathBuf, output: &PathBuf, filter: Option<&[String]>) {
 					failed += 1;
 				} else {
 					converted += 1;
+
+					// Emit ModOptic variant with secondary optics zoom values
+					if emit_modoptic && data.zoom_in_2.is_some() {
+						let mut modoptic = data.clone();
+						modoptic.zoom_in = modoptic.zoom_in_2.take();
+						modoptic.zoom_out = modoptic.zoom_out_2.take();
+						let modoptic_txt = emit_legacy_txt(&modoptic);
+						let modoptic_path = output.join(format!("{name}_ModOptic.txt"));
+						if let Err(e) = std::fs::write(&modoptic_path, &modoptic_txt) {
+							eprintln!("WRITE ERROR {name}_ModOptic: {e}");
+						}
+					}
 				}
 			},
 			Ok(_) => {
