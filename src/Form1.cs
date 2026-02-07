@@ -518,11 +518,9 @@ namespace FCS
             }
 
             string datamineDir = Path.Combine(Application.StartupPath, "Datamine");
-            string localizationDir = Path.Combine(Application.StartupPath, "Localization");
             string ignoreFile = Path.Combine(Application.StartupPath, "assets", "ignore.txt");
 
             Directory.CreateDirectory(datamineDir);
-            Directory.CreateDirectory(localizationDir);
             Directory.CreateDirectory(outputPath);
 
             StartTime = DateTime.Now;
@@ -536,8 +534,7 @@ namespace FCS
                 label1.Refresh();
 
                 string extractArgs = "extract --game-path \"" + gamePath + "\""
-                    + " --output \"" + datamineDir + "\""
-                    + " --localization \"" + localizationDir + "\"";
+                    + " --output \"" + datamineDir + "\"";
                 if (File.Exists(ignoreFile))
                 {
                     extractArgs += " --ignore-file \"" + ignoreFile + "\"";
@@ -963,11 +960,11 @@ namespace FCS
 
                         string LangData = null;
                         string LangData2 = null;
-                        using (System.IO.StreamReader sr = new System.IO.StreamReader("Localization\\units_weaponry.csv"))
+                        using (System.IO.StreamReader sr = new System.IO.StreamReader("Datamine\\lang.vromfs.bin_u\\lang\\units_weaponry.csv"))
                         {
                             LangData = sr.ReadToEnd();
                         }
-                        using (System.IO.StreamReader sr = new System.IO.StreamReader("Localization\\FCS.csv"))
+                        using (System.IO.StreamReader sr = new System.IO.StreamReader("assets\\FCS.csv"))
                         {
                             LangData2 = sr.ReadToEnd();
                         }
@@ -2577,7 +2574,7 @@ namespace FCS
                                                     }
                                                     string LangName = null;
                                                     string LangRocketName = null;
-                                                    using (System.IO.StreamReader sr = new System.IO.StreamReader("Localization\\units_weaponry.csv"))
+                                                    using (System.IO.StreamReader sr = new System.IO.StreamReader("Datamine\\lang.vromfs.bin_u\\lang\\units_weaponry.csv"))
                                                     {
                                                         LangData = sr.ReadToEnd();
                                                     }
@@ -2692,7 +2689,7 @@ namespace FCS
                                         }
                                         string LangName = null;
                                         string LangRocketName = null;
-                                        using (System.IO.StreamReader sr = new System.IO.StreamReader("Localization\\units_weaponry.csv"))
+                                        using (System.IO.StreamReader sr = new System.IO.StreamReader("Datamine\\lang.vromfs.bin_u\\lang\\units_weaponry.csv"))
                                         {
                                             LangData = sr.ReadToEnd();
                                         }

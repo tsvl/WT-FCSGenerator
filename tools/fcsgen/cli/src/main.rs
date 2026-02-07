@@ -47,10 +47,6 @@ enum Commands {
 		#[arg(short, long)]
 		output: PathBuf,
 
-		/// Output directory for localization CSV files
-		#[arg(long)]
-		localization: PathBuf,
-
 		/// Path to ignore.txt vehicle blacklist file
 		#[arg(long)]
 		ignore_file: Option<PathBuf>,
@@ -76,14 +72,12 @@ fn main() {
 		Commands::Extract {
 			game_path,
 			output,
-			localization,
 			ignore_file,
 			force,
 		} => {
 			extract::run_extract(
 				&game_path,
 				&output,
-				&localization,
 				ignore_file.as_deref(),
 				force,
 			);

@@ -23,7 +23,6 @@ const VERSION_MARKER: &str = ".fcsgen-version";
 pub fn run_extract(
     game_path: &Path,
     output: &Path,
-    localization: &Path,
     ignore_file: Option<&Path>,
     force: bool,
 ) {
@@ -171,6 +170,7 @@ pub fn run_extract(
 
     let mut lang_count: u32 = 0;
     let lang_targets: [&str; 2] = ["lang/units.csv", "lang/units_weaponry.csv"];
+    let lang_root = output.join("lang.vromfs.bin_u");
 
     for file in &lang_files {
         let file_path = file.path();
@@ -181,10 +181,8 @@ pub fn run_extract(
 
         for target in &lang_targets {
             if normalized == *target {
-                let filename = Path::new(target)
-                    .file_name()
-                    .expect("lang target has filename");
-                let dest = localization.join(filename);
+                // Write mirroring archive structure: output/lang.vromfs.bin_u/lang/<file>
+                let dest = lang_root.join(target);
                 write_file(&dest, file.buf());
                 lang_count += 1;
             }
