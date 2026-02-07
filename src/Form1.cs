@@ -492,7 +492,7 @@ namespace FCS
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            string dataminePath = textBox1.Text;
+            string gamePath = textBox1.Text;
             string outputPath = textBox3.Text;
 
             // Locate fcsgen tool binary
@@ -506,46 +506,58 @@ namespace FCS
                 return;
             }
 
-            string inputDir = Path.Combine(dataminePath, "aces.vromfs.bin_u");
-            if (!Directory.Exists(inputDir))
+            // Validate that the selected folder looks like a WT install
+            string acesBin = Path.Combine(gamePath, "aces.vromfs.bin");
+            if (!File.Exists(acesBin))
             {
                 MessageBox.Show(
-                    "Datamine not found at:\n" + inputDir,
-                    "Datamine Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    "aces.vromfs.bin not found at:\n" + acesBin +
+                    "\n\nMake sure the path points to the War Thunder installation directory.",
+                    "Game Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
+            string datamineDir = Path.Combine(Application.StartupPath, "Datamine");
+            string localizationDir = Path.Combine(Application.StartupPath, "Localization");
+            string ignoreFile = Path.Combine(Application.StartupPath, "assets", "ignore.txt");
+
+            Directory.CreateDirectory(datamineDir);
+            Directory.CreateDirectory(localizationDir);
             Directory.CreateDirectory(outputPath);
 
             StartTime = DateTime.Now;
             IsRuning = true;
-            label1.Text = "Converting datamine...";
-            label1.Refresh();
             progressBar1.Style = ProgressBarStyle.Marquee;
 
             try
             {
-                var psi = new ProcessStartInfo
-                {
-                    FileName = toolPath,
-                    Arguments = "convert --input \"" + inputDir + "\" --output \"" + outputPath + "\" --emit-modoptic",
-                    UseShellExecute = false,
-                    RedirectStandardError = true,
-                    CreateNoWindow = true,
-                };
+                // Step 1: Extract datamine from game archives
+                label1.Text = "Extracting datamine...";
+                label1.Refresh();
 
-                using (var process = Process.Start(psi))
+                string extractArgs = "extract --game-path \"" + gamePath + "\""
+                    + " --output \"" + datamineDir + "\""
+                    + " --localization \"" + localizationDir + "\"";
+                if (File.Exists(ignoreFile))
                 {
-                    string stderr = process.StandardError.ReadToEnd();
-                    process.WaitForExit();
-
-                    if (process.ExitCode != 0)
-                    {
-                        MessageBox.Show(
-                            "fcsgen failed (exit code " + process.ExitCode + "):\n" + stderr,
-                            "Conversion Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    extractArgs += " --ignore-file \"" + ignoreFile + "\"";
                 }
+
+                if (!RunFcsgen(toolPath, extractArgs, "Extraction"))
+                {
+                    return;
+                }
+
+                // Step 2: Convert extracted datamine to Data/*.txt
+                label1.Text = "Converting datamine...";
+                label1.Refresh();
+
+                string inputDir = Path.Combine(datamineDir, "aces.vromfs.bin_u");
+                string convertArgs = "convert --input \"" + inputDir + "\""
+                    + " --output \"" + outputPath + "\""
+                    + " --emit-modoptic";
+
+                RunFcsgen(toolPath, convertArgs, "Conversion");
             }
             catch (Exception ex)
             {
@@ -560,6 +572,37 @@ namespace FCS
             progressBar1.Style = ProgressBarStyle.Blocks;
             progressBar1.Value = 0;
             SpeedNumbers = 0;
+        }
+
+        /// <summary>
+        /// Run fcsgen with the given arguments. Returns true on success.
+        /// </summary>
+        private static bool RunFcsgen(string toolPath, string arguments, string stepName)
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = toolPath,
+                Arguments = arguments,
+                UseShellExecute = false,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
+            };
+
+            using (var process = Process.Start(psi))
+            {
+                string stderr = process.StandardError.ReadToEnd();
+                process.WaitForExit();
+
+                if (process.ExitCode != 0)
+                {
+                    MessageBox.Show(
+                        stepName + " failed (exit code " + process.ExitCode + "):\n" + stderr,
+                        stepName + " Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void Button3_Click(object sender, EventArgs e)
