@@ -32,10 +32,6 @@
       <TargetPath>%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
     </Content>
   </ItemGroup>
-  <!-- Ensure empty directories exist in publish output even if they contain no files -->
-  <Target Name="EnsureEmptyAssetFolders" AfterTargets="Publish">
-    <MakeDir Directories="$(PublishDir)Datamine;$(PublishDir)UserSights" />
-  </Target>
   <!-- Build the Rust fcsgen tool before the .NET build -->
   <Target Name="BuildFcsgen" BeforeTargets="BeforeBuild">
     <Exec Command="cargo build --release" WorkingDirectory="$(MSBuildProjectDirectory)\..\tools\fcsgen" />
@@ -53,12 +49,5 @@
     <Copy SourceFiles="$(MSBuildProjectDirectory)\..\tools\fcsgen\target\release\fcsgen.exe"
           DestinationFiles="$(PublishDir)tools\fcsgen.exe"
           SkipUnchangedFiles="true" />
-  </Target>
-  <!-- Create placeholder files so CI artifacts preserve these directories even when empty -->
-  <Target Name="AddEmptyDirPlaceholders" AfterTargets="Publish">
-    <!-- Datamine -->
-    <WriteLinesToFile File="$(PublishDir)Datamine\README.txt" Lines="This folder holds War Thunder datamine extracts used by FCS. It may be empty in the distributed build." Overwrite="false" Encoding="UTF-8" />
-    <!-- UserSights -->
-    <WriteLinesToFile File="$(PublishDir)UserSights\README.txt" Lines="Generated sights will be written here by FCS at runtime. You can point this to your game's UserSights folder." Overwrite="false" Encoding="UTF-8" />
   </Target>
 </Project>
