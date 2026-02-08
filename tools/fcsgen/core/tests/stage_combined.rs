@@ -182,7 +182,7 @@ fn test_combined_pipeline_corpus() {
 	let mut errors = 0;
 	let mut failures: Vec<String> = Vec::new();
 	let mut stats = DeltaStats::default();
-	let mut cache: BallisticCache = BallisticCache::new();
+	let cache: BallisticCache = BallisticCache::new();
 	let mut cache_hits = 0_usize;
 	let mut cache_misses = 0_usize;
 
@@ -238,7 +238,7 @@ fn test_combined_pipeline_corpus() {
 
 			total_shells += 1;
 
-			let (result, hit) = compute_ballistic_cached(dp, SENSITIVITY, &mut cache);
+			let (result, hit) = compute_ballistic_cached(dp, SENSITIVITY, &cache);
 			if hit { cache_hits += 1; } else { cache_misses += 1; }
 
 			let computed = match result {

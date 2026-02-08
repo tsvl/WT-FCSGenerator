@@ -3,11 +3,12 @@
 //! Implements the Euler-method trajectory simulation and `DeMarre` penetration
 //! formula, matching the C# `Ballistic()` method in Form1.cs.
 
-use std::collections::HashMap;
 use std::f64::consts::PI;
 use std::fmt::Write;
 use std::hash::{Hash, Hasher};
 use std::sync::LazyLock;
+
+use dashmap::DashMap;
 
 use crate::parser::data::DataProjectile;
 
@@ -164,12 +165,16 @@ impl BallisticKey {
 	}
 }
 
-/// A shared cache for ballistic computation results.
+/// A concurrent cache for ballistic computation results.
 ///
 /// Keyed on [`BallisticKey`] (the physics-relevant fields of a projectile
 /// plus sensitivity).  Stores `Option<String>` so that both computed results
 /// and "skip" results (`None`) are cached.
-pub type BallisticCache = HashMap<BallisticKey, Option<String>>;
+///
+/// Uses [`DashMap`] for lock-free concurrent access from multiple rayon
+/// threads — its internal sharding means readers rarely contend with
+/// writers, which is important given the 80% cache-hit rate.
+pub type BallisticCache = DashMap<BallisticKey, Option<String>>;
 
 /// Compute the ballistic table for a projectile, using a shared cache to
 /// avoid redundant simulations.
@@ -178,12 +183,15 @@ pub type BallisticCache = HashMap<BallisticKey, Option<String>>;
 /// trajectory is computed, the result is inserted into the cache, and a
 /// clone is returned.
 ///
+/// Thread-safe: takes `&BallisticCache` (not `&mut`) because [`DashMap`]
+/// provides interior mutability with fine-grained locking.
+///
 /// Returns `(result, hit)` where `hit` is `true` when the result came
 /// from the cache.
 pub fn compute_ballistic_cached(
 	proj: &DataProjectile,
 	sensitivity: f64,
-	cache: &mut BallisticCache,
+	cache: &BallisticCache,
 ) -> (Option<String>, bool) {
 	let key = BallisticKey::new(proj, sensitivity);
 	if let Some(cached) = cache.get(&key) {
