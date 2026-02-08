@@ -529,32 +529,23 @@ namespace FCS
 
             try
             {
-                // Step 1: Extract datamine from game archives
-                label1.Text = "Extracting datamine...";
+                // Single unified command: extract → convert → ballistic
+                label1.Text = "Running pipeline...";
                 label1.Refresh();
 
-                string extractArgs = "extract --game-path \"" + gamePath + "\""
-                    + " --output \"" + datamineDir + "\"";
+                string ballisticPath = textBox2.Text;
+                double sensitivity = Convert.ToDouble(trackBar1.Value) / 100.0;
+                string baseDir = Application.StartupPath.TrimEnd('\\');
+
+                string runArgs = "run --game-path \"" + gamePath.TrimEnd('\\') + "\""
+                    + " --output \"" + baseDir + "\""
+                    + " --sensitivity " + sensitivity.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 if (File.Exists(ignoreFile))
                 {
-                    extractArgs += " --ignore-file \"" + ignoreFile + "\"";
+                    runArgs += " --ignore-file \"" + ignoreFile.TrimEnd('\\') + "\"";
                 }
 
-                if (!RunFcsgen(toolPath, extractArgs, "Extraction"))
-                {
-                    return;
-                }
-
-                // Step 2: Convert extracted datamine to Data/*.txt
-                label1.Text = "Converting datamine...";
-                label1.Refresh();
-
-                string inputDir = Path.Combine(datamineDir, "aces.vromfs.bin_u");
-                string convertArgs = "convert --input \"" + inputDir + "\""
-                    + " --output \"" + outputPath + "\""
-                    + " --emit-modoptic";
-
-                RunFcsgen(toolPath, convertArgs, "Conversion");
+                RunFcsgen(toolPath, runArgs, "Pipeline");
             }
             catch (Exception ex)
             {

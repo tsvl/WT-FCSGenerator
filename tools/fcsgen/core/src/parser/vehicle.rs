@@ -50,19 +50,6 @@ pub fn parse_vehicle(json: &Value, vehicle_id: &str) -> Result<VehicleData> {
 					classify_weapons(&weapons, &mut data);
 				}
 
-				// Check for modification-provided secondary optics (e.g., "bmp_3_upgrade_modification")
-				// Legacy code hits any "cockpit": in the file via line scanning; the second
-				// occurrence produces ZoomIn2/ZoomOut2 used for _ModOptic.txt emission.
-				if data.zoom_in_2.is_none() {
-					if let Some(cockpit @ Value::Object(_)) = effects.get("cockpit") {
-						data.zoom_in_2 = extract_fov_value(
-							cockpit.as_object().and_then(|o| o.get("zoomInFov")),
-						);
-						data.zoom_out_2 = extract_fov_value(
-							cockpit.as_object().and_then(|o| o.get("zoomOutFov")),
-						);
-					}
-				}
 			}
 		}
 	}
@@ -84,12 +71,9 @@ fn extract_zoom_values(cockpit: &Value, data: &mut VehicleData) {
 				data.zoom_in = extract_fov_value(obj.get("zoomInFov"));
 				data.zoom_out = extract_fov_value(obj.get("zoomOutFov"));
 			}
-			// Second cockpit is secondary optics
-			if let Some(Value::Object(obj)) = arr.get(1) {
-				data.zoom_in_2 = extract_fov_value(obj.get("zoomInFov"));
-				data.zoom_out_2 = extract_fov_value(obj.get("zoomOutFov"));
-			}
 		},
+		// Note: secondary cockpit optics (previously zoom_in_2/zoom_out_2 for
+		// ModOptic emission) are intentionally ignored — not a real game feature.
 		_ => {},
 	}
 }

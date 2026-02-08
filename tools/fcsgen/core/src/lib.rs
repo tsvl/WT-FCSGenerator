@@ -7,14 +7,17 @@
 //!
 //! See the CLI crate (`fcsgen`) for the command-line interface.
 
+pub mod ballistic;
 pub mod emit;
 pub mod error;
 pub mod model;
 pub mod parser;
 
+pub use ballistic::compute_ballistic;
 pub use emit::emit_legacy_txt;
 pub use error::{ParseError, Result};
 pub use model::{Projectile, VehicleData};
+pub use parser::data::{from_projectile, parse_data_file, parse_data_text};
 pub use parser::{parse_vehicle, parse_weapon_module};
 
 use std::path::Path;

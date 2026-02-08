@@ -1,5 +1,6 @@
 //! Parser for War Thunder datamine files.
 
+pub mod data;
 pub mod vehicle;
 pub mod weapon;
 
