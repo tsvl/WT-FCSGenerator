@@ -11,7 +11,7 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-use fcsgen_core::ballistic::{compute_ballistic, should_skip};
+use fcsgen_core::ballistic::{BallisticCache, compute_ballistic_cached, should_skip};
 use fcsgen_core::parser::data::parse_data_file;
 
 /// Default sensitivity used when generating the reference data.
@@ -171,6 +171,9 @@ fn test_ballistic_corpus() {
 	let mut errors = 0;
 	let mut failures: Vec<String> = Vec::new();
 	let mut stats = DeltaStats::default();
+	let mut cache: BallisticCache = BallisticCache::new();
+	let mut cache_hits = 0_usize;
+	let mut cache_misses = 0_usize;
 
 	for entry in &data_files {
 		let path = entry.path();
@@ -212,7 +215,10 @@ fn test_ballistic_corpus() {
 
 			total_shells += 1;
 
-			let computed = match compute_ballistic(proj, SENSITIVITY) {
+			let (result, hit) = compute_ballistic_cached(proj, SENSITIVITY, &mut cache);
+			if hit { cache_hits += 1; } else { cache_misses += 1; }
+
+			let computed = match result {
 				Some(c) => c,
 				None => {
 					failures.push(format!(
@@ -283,6 +289,11 @@ fn test_ballistic_corpus() {
 	);
 	eprintln!("Errors:               {errors}");
 	eprintln!("Missing expected:     {missing_expected}");
+	let total_lookups = cache_hits + cache_misses;
+	eprintln!(
+		"Cache:                {cache_misses} unique / {total_lookups} total ({cache_hits} hits, {:.0}% reuse)",
+		if total_lookups > 0 { 100.0 * cache_hits as f64 / total_lookups as f64 } else { 0.0 },
+	);
 	eprintln!();
 	eprintln!("Worst-case deltas (across all shells):");
 	eprintln!(

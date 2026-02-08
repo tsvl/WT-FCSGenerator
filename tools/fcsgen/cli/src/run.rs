@@ -9,7 +9,7 @@
 use std::collections::HashMap;
 use std::path::Path;
 
-use fcsgen_core::ballistic::{compute_ballistic, should_skip};
+use fcsgen_core::ballistic::{BallisticCache, compute_ballistic_cached, should_skip};
 use fcsgen_core::parser::data::from_projectile;
 use fcsgen_core::{convert_vehicle, emit_legacy_txt};
 
@@ -85,6 +85,12 @@ pub fn run_pipeline(cfg: &PipelineConfig<'_>) {
 	let mut convert_failed = 0;
 	let mut shells_written = 0;
 	let mut ballistic_errors = 0;
+	let mut cache_hits = 0_usize;
+	let mut cache_misses = 0_usize;
+
+	// Cross-vehicle ballistic cache: shells with identical physics share
+	// the same trajectory output regardless of which vehicle fires them.
+	let mut ballistic_cache: BallisticCache = BallisticCache::new();
 
 	eprintln!(
 		"Step 2/3: Converting {total} vehicles (+ ballistic, sensitivity={})",
@@ -153,7 +159,14 @@ pub fn run_pipeline(cfg: &PipelineConfig<'_>) {
 		for &idx in last_by_name.values() {
 			let dp = &data_projectiles[idx];
 
-			if let Some(content) = compute_ballistic(dp, cfg.sensitivity) {
+			let (result, hit) = compute_ballistic_cached(dp, cfg.sensitivity, &mut ballistic_cache);
+			if hit {
+				cache_hits += 1;
+			} else {
+				cache_misses += 1;
+			}
+
+			if let Some(content) = result {
 				if content.is_empty() {
 					continue;
 				}
@@ -184,7 +197,12 @@ pub fn run_pipeline(cfg: &PipelineConfig<'_>) {
 	eprintln!();
 	eprintln!("Done: {converted} converted, {skipped} skipped (unarmed), {convert_failed} convert errors");
 	if !cfg.skip_ballistic {
+		let total_lookups = cache_hits + cache_misses;
 		eprintln!("      {shells_written} ballistic tables written, {ballistic_errors} ballistic errors");
+		eprintln!(
+			"      Cache: {cache_misses} unique / {total_lookups} total ({cache_hits} hits, {:.0}% reuse)",
+			if total_lookups > 0 { 100.0 * cache_hits as f64 / total_lookups as f64 } else { 0.0 },
+		);
 	}
 }
 

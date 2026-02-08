@@ -13,7 +13,7 @@ pub mod error;
 pub mod model;
 pub mod parser;
 
-pub use ballistic::compute_ballistic;
+pub use ballistic::{BallisticCache, BallisticKey, compute_ballistic, compute_ballistic_cached};
 pub use emit::emit_legacy_txt;
 pub use error::{ParseError, Result};
 pub use model::{Projectile, VehicleData};

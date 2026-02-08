@@ -3,8 +3,10 @@
 //! Implements the Euler-method trajectory simulation and `DeMarre` penetration
 //! formula, matching the C# `Ballistic()` method in Form1.cs.
 
+use std::collections::HashMap;
 use std::f64::consts::PI;
 use std::fmt::Write;
+use std::hash::{Hash, Hasher};
 use std::sync::LazyLock;
 
 use crate::parser::data::DataProjectile;
@@ -86,6 +88,110 @@ struct Row {
 #[must_use]
 pub fn should_skip(normalized_type: &str) -> bool {
 	SKIP_TYPES.contains(&normalized_type)
+}
+
+// ── Ballistic cache key ────────────────────────────────────────────────────
+
+/// Bit-exact wrapper for `f64` that implements `Hash` and `Eq` via `to_bits()`.
+///
+/// Two `F64Key` values are equal iff their IEEE 754 bit patterns are identical.
+/// This is intentional: we want cache hits only when inputs are bit-identical,
+/// since even tiny differences in drag or mass can compound over thousands of
+/// Euler steps.
+#[derive(Clone, Copy, PartialEq, Eq)]
+struct F64Key(u64);
+
+impl F64Key {
+	fn new(v: f64) -> Self {
+		Self(v.to_bits())
+	}
+}
+
+impl Hash for F64Key {
+	fn hash<H: Hasher>(&self, state: &mut H) {
+		self.0.hash(state);
+	}
+}
+
+/// Cache key capturing every `DataProjectile` field that influences
+/// `compute_ballistic` output, plus the `sensitivity` parameter.
+///
+/// Fields that are purely metadata (`name`, `bullet_type`, `output_name`)
+/// are excluded — two shells with different names but identical physics
+/// produce identical trajectories and can share a cached result.
+#[derive(Clone, PartialEq, Eq, Hash)]
+pub struct BallisticKey {
+	normalized_type: String,
+	mass: F64Key,
+	ballistic_caliber: F64Key,
+	speed: F64Key,
+	cx: F64Key,
+	explosive_mass: F64Key,
+	damage_mass: F64Key,
+	damage_caliber: F64Key,
+	demarre_k: F64Key,
+	demarre_speed_pow: F64Key,
+	demarre_mass_pow: F64Key,
+	demarre_caliber_pow: F64Key,
+	armor_power_table: Vec<(F64Key, F64Key)>,
+	sensitivity: F64Key,
+}
+
+impl BallisticKey {
+	/// Build a cache key from a projectile and the sensitivity parameter.
+	#[must_use]
+	pub fn new(proj: &DataProjectile, sensitivity: f64) -> Self {
+		Self {
+			normalized_type: proj.normalized_type.clone(),
+			mass: F64Key::new(proj.mass),
+			ballistic_caliber: F64Key::new(proj.ballistic_caliber),
+			speed: F64Key::new(proj.speed),
+			cx: F64Key::new(proj.cx),
+			explosive_mass: F64Key::new(proj.explosive_mass),
+			damage_mass: F64Key::new(proj.damage_mass),
+			damage_caliber: F64Key::new(proj.damage_caliber),
+			demarre_k: F64Key::new(proj.demarre_k),
+			demarre_speed_pow: F64Key::new(proj.demarre_speed_pow),
+			demarre_mass_pow: F64Key::new(proj.demarre_mass_pow),
+			demarre_caliber_pow: F64Key::new(proj.demarre_caliber_pow),
+			armor_power_table: proj
+				.armor_power_table
+				.iter()
+				.map(|&(d, p)| (F64Key::new(d), F64Key::new(p)))
+				.collect(),
+			sensitivity: F64Key::new(sensitivity),
+		}
+	}
+}
+
+/// A shared cache for ballistic computation results.
+///
+/// Keyed on [`BallisticKey`] (the physics-relevant fields of a projectile
+/// plus sensitivity).  Stores `Option<String>` so that both computed results
+/// and "skip" results (`None`) are cached.
+pub type BallisticCache = HashMap<BallisticKey, Option<String>>;
+
+/// Compute the ballistic table for a projectile, using a shared cache to
+/// avoid redundant simulations.
+///
+/// On a cache hit the stored result is cloned.  On a miss the full
+/// trajectory is computed, the result is inserted into the cache, and a
+/// clone is returned.
+///
+/// Returns `(result, hit)` where `hit` is `true` when the result came
+/// from the cache.
+pub fn compute_ballistic_cached(
+	proj: &DataProjectile,
+	sensitivity: f64,
+	cache: &mut BallisticCache,
+) -> (Option<String>, bool) {
+	let key = BallisticKey::new(proj, sensitivity);
+	if let Some(cached) = cache.get(&key) {
+		return (cached.clone(), true);
+	}
+	let result = compute_ballistic(proj, sensitivity);
+	cache.insert(key, result.clone());
+	(result, false)
 }
 
 /// Compute the ballistic table for a single projectile.
