@@ -5,6 +5,7 @@
 
 use std::f64::consts::PI;
 use std::fmt::Write;
+use std::sync::LazyLock;
 
 use crate::parser::data::DataProjectile;
 
@@ -19,6 +20,29 @@ const LAPSE_RATE: f64 = 0.0065;
 const T_STD: f64 = 288.15;
 const DEMARRE_REF_V: f64 = 1900.0;
 const MAX_RANGE: f64 = 4500.0;
+
+// ── Atmospheric density lookup table ───────────────────────────────────────
+/// Resolution of the pre-baked density table (metres per entry).
+const DENSITY_STEP: f64 = 0.1;
+/// Number of entries: covers 0..500 m altitude at `DENSITY_STEP` resolution.
+const DENSITY_TABLE_LEN: usize = 5001;
+
+/// Precomputed atmospheric density as a function of altitude.
+///
+/// `DENSITY_TABLE[i]` = air density (kg/m³) at altitude `i * DENSITY_STEP` m.
+/// Computed once via the full barometric formula (`powf`), then reused in every
+/// inner-loop step via linear interpolation — eliminating the expensive `powf`
+/// call entirely.
+static DENSITY_TABLE: LazyLock<Vec<f64>> = LazyLock::new(|| {
+	let rho_base = P_ATM * M_AIR / R_GAS / (T_GROUND + 273.15);
+	let baro_exp = G * M_AIR / R_GAS / LAPSE_RATE - 1.0;
+	(0..DENSITY_TABLE_LEN)
+		.map(|i| {
+			let alt = i as f64 * DENSITY_STEP;
+			rho_base * (1.0 - LAPSE_RATE * alt / T_STD).powf(baro_exp)
+		})
+		.collect()
+});
 
 // ── DeMarre defaults (applied when the parsed value is zero) ───────────────
 const DEFAULT_K: f64 = 0.9;
@@ -84,9 +108,19 @@ pub fn compute_ballistic(proj: &DataProjectile, sensitivity: f64) -> Option<Stri
 	let scroll_step = 2.8 * sensitivity * sensitivity;
 	let max_entries = (PI / 180.0 * 60.0 * 1000.0 / scroll_step).floor() as usize;
 
-	// Pre-computed barometric exponent (constant for a given atmosphere).
+	// ── Precomputed constants (hoisted out of inner loop) ──────────────
+	//
+	// Sea-level air density: ρ₀ = P · M / (R · T)   (used only in fallback)
+	let rho_base = P_ATM * M_AIR / R_GAS / (T_GROUND + 273.15);
 	let baro_exp = G * M_AIR / R_GAS / LAPSE_RATE - 1.0;
-	let temp_kelvin = T_GROUND + 273.15;
+
+	// Reference the pre-baked density table (initialized once on first use).
+	let density = &*DENSITY_TABLE;
+
+	// Drag geometry factor: Cx · π · d² / 8  (cross-section area × Cx)
+	// divided by mass to get acceleration per unit (ρ · v²).
+	let drag_k = proj.cx * PI * proj.ballistic_caliber * proj.ballistic_caliber
+		/ 8.0 / proj.mass;
 
 	let ntype = proj.normalized_type.as_str();
 	let is_ap = AP_TYPES.contains(&ntype);
@@ -109,21 +143,38 @@ pub fn compute_ballistic(proj: &DataProjectile, sensitivity: f64) -> Option<Stri
 		let (mut x0, mut y0) = (0.0_f64, 0.0_f64);
 
 		while y >= 0.0 {
-			let ro = P_ATM * M_AIR / R_GAS / temp_kelvin
-				* (1.0 - LAPSE_RATE * y / T_STD).powf(baro_exp);
+			// Atmospheric density via precomputed lookup table with
+			// linear interpolation.  Falls back to powf for extreme
+			// altitudes beyond the table range (> 500 m).
+			let ro = {
+				let idx_f = y / DENSITY_STEP;
+				let idx = idx_f as usize;
+				if idx + 1 < density.len() {
+					let frac = idx_f - idx as f64;
+					density[idx] + frac * (density[idx + 1] - density[idx])
+				} else {
+					rho_base * (1.0 - LAPSE_RATE * y / T_STD).powf(baro_exp)
+				}
+			};
 
 			let v_sq = vx * vx + vy * vy;
-			let drag =
-				proj.cx * ro * v_sq / 2.0 * proj.ballistic_caliber.powi(2) / 4.0 * PI;
-			let accel = drag / proj.mass;
+			let accel = drag_k * ro * v_sq;
 
-			// NOTE: vx is updated *first*; the vy update sees the new vx when
-			// evaluating atan(vy/vx).  This matches the C# evaluation order.
-			let a1 = (vy / vx).atan();
-			vx += (-accel * a1.cos()) * DT;
+			// Decompose drag into x/y components using algebraic
+			// identities instead of transcendental functions:
+			//   cos(atan(vy/vx)) = vx / √(vx²+vy²)
+			//   sin(atan(vy/vx)) = vy / √(vx²+vy²)
+			//
+			// NOTE: vx is updated *first*; the vy update sees the new
+			// vx, matching the C# evaluation order.
+			let v_mag = v_sq.sqrt();
+			let accel_per_v = accel / v_mag;
+			vx -= accel_per_v * vx * DT;
 
-			let a2 = (vy / vx).atan(); // uses updated vx, original vy
-			vy += (-G - accel * a2.sin()) * DT;
+			// Recompute |v| with updated vx (preserves the C#
+			// sequential-update semantics where a2 = atan(vy/new_vx)).
+			let v_mag2 = (vx * vx + vy * vy).sqrt();
+			vy += (-G - accel / v_mag2 * vy) * DT;
 
 			t += DT;
 			x0 = x;
