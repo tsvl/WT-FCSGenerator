@@ -15,6 +15,7 @@ use std::collections::HashMap;
 use std::path::Path;
 
 use rayon::prelude::*;
+use wt_blk::vromf::{File as VromfFile, VromfUnpacker};
 
 use fcsgen_core::ballistic::{BallisticCache, compute_ballistic_cached, should_skip};
 use fcsgen_core::parser::data::from_projectile;
@@ -63,6 +64,81 @@ impl VehicleStats {
 	}
 }
 
+/// Check whether the pipeline output is already up-to-date.
+///
+/// Reads the version marker from `datamine_dir` (two-line format:
+/// `version\nsensitivity`) and compares against the current archive version
+/// and requested sensitivity.  Also verifies that `data_dir` contains at
+/// least one `.txt` file and `ballistic_dir` exists.
+///
+/// Returns the cached version string if up-to-date, `None` otherwise.
+fn check_up_to_date(
+	game_path: &Path,
+	datamine_dir: &Path,
+	data_dir: &Path,
+	ballistic_dir: &Path,
+	sensitivity: f64,
+	skip_ballistic: bool,
+) -> Option<String> {
+	// Read marker file (two-line format: "version\nsensitivity")
+	let marker_path = datamine_dir.join(extract::VERSION_MARKER);
+	let marker_content = std::fs::read_to_string(&marker_path).ok()?;
+	let mut lines = marker_content.lines();
+	let cached_version = lines.next()?.trim();
+	let cached_sensitivity: f64 = lines.next()?.trim().parse().ok()?;
+
+	// Compare sensitivity
+	if (cached_sensitivity - sensitivity).abs() > f64::EPSILON {
+		return None;
+	}
+
+	// Verify Data/ has at least one .txt file
+	let has_data_files = std::fs::read_dir(data_dir)
+		.ok()?
+		.filter_map(Result::ok)
+		.any(|e| {
+			e.path()
+				.extension()
+				.is_some_and(|ext| ext == "txt")
+		});
+	if !has_data_files {
+		return None;
+	}
+
+	// Verify Ballistic/ exists (unless ballistic is skipped)
+	if !skip_ballistic && !ballistic_dir.is_dir() {
+		return None;
+	}
+
+	// Read archive version without unpacking
+	let aces_bin = game_path.join("aces.vromfs.bin");
+	let aces_file = VromfFile::new(&aces_bin).ok()?;
+	let aces_unpacker = VromfUnpacker::from_file(&aces_file, true).ok()?;
+	let version = aces_unpacker.latest_version().ok()??;
+	let version_str = version.to_string();
+
+	if cached_version == version_str {
+		Some(version_str)
+	} else {
+		None
+	}
+}
+
+/// Write the version+sensitivity marker after a successful pipeline run.
+fn write_marker(datamine_dir: &Path, version: &str, sensitivity: f64) {
+	if let Err(e) = std::fs::create_dir_all(datamine_dir) {
+		eprintln!("Warning: cannot create Datamine dir for marker: {e}");
+		return;
+	}
+	let marker_path = datamine_dir.join(extract::VERSION_MARKER);
+	let content = format!(
+		"{version}\n{sensitivity}",
+	);
+	if let Err(e) = std::fs::write(&marker_path, content) {
+		eprintln!("Warning: failed to write version marker: {e}");
+	}
+}
+
 /// Run the full pipeline: extract → convert → ballistic.
 #[allow(clippy::too_many_lines)]
 pub fn run_pipeline(cfg: &PipelineConfig<'_>) {
@@ -75,6 +151,24 @@ pub fn run_pipeline(cfg: &PipelineConfig<'_>) {
 		if let Err(e) = std::fs::create_dir_all(dir) {
 			eprintln!("Error: cannot create directory {}: {e}", dir.display());
 			std::process::exit(1);
+		}
+	}
+
+	// ── Freshness check: skip if version+sensitivity unchanged ─────────
+	if !cfg.skip_extract {
+		if let Some(ver) = check_up_to_date(
+			cfg.game_path,
+			&datamine_dir,
+			&data_dir,
+			&ballistic_dir,
+			cfg.sensitivity,
+			cfg.skip_ballistic,
+		) {
+			eprintln!(
+				"Already up-to-date (version {ver}, sensitivity {})",
+				cfg.sensitivity,
+			);
+			return;
 		}
 	}
 
@@ -133,6 +227,9 @@ pub fn run_pipeline(cfg: &PipelineConfig<'_>) {
 			skip_ballistic,
 			thread_count,
 		);
+
+		// Write version+sensitivity marker on success
+		write_marker(&datamine_dir, &extraction.version, sensitivity);
 	}
 }
 

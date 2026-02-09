@@ -16,9 +16,9 @@ use fcsgen_core::Datamine;
 use wt_blk::vromf::{BlkOutputFormat, File as VromfFile, VromfUnpacker};
 
 /// Marker filename written to the extraction output directory after a
-/// successful extraction.  Contains the WT version string so we can skip
-/// re-extraction when the archive hasn't changed.
-const VERSION_MARKER: &str = ".fcsgen-version";
+/// successful pipeline run.  Contains the WT version string and sensitivity
+/// so we can skip re-processing when nothing has changed.
+pub const VERSION_MARKER: &str = ".fcsgen-version";
 
 /// Result of an in-memory extraction.
 pub struct ExtractionResult {
@@ -29,6 +29,9 @@ pub struct ExtractionResult {
 
 	/// Sorted list of vehicle stems (without .blkx extension).
 	pub vehicle_names: Vec<String>,
+
+	/// War Thunder version string extracted from the archive metadata.
+	pub version: String,
 }
 
 /// Extract datamine into memory, only writing lang CSVs to disk.
@@ -193,16 +196,6 @@ pub fn run_extract_in_memory(
 	// --- Extract lang archive ---
 	extract_lang(game_path, output);
 
-	// --- Write version marker ---
-	if let Err(e) = std::fs::create_dir_all(output) {
-		eprintln!("Error: cannot create output directory {output:?}: {e}");
-		std::process::exit(1);
-	}
-	let marker_path = output.join(VERSION_MARKER);
-	if let Err(e) = std::fs::write(&marker_path, &version_str) {
-		eprintln!("Warning: failed to write version marker: {e}");
-	}
-
 	eprintln!(
 		"Extracted {tankmodel_count} tankmodels, {weapon_count} weapons (version {version_str})"
 	);
@@ -210,6 +203,7 @@ pub fn run_extract_in_memory(
 	ExtractionResult {
 		datamine,
 		vehicle_names,
+		version: version_str,
 	}
 }
 

@@ -478,77 +478,6 @@ namespace FCS
             }
         }
 
-
-
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            string gamePath = textBox1.Text;
-
-            // Locate fcsgen tool binary
-            string toolPath = Path.Combine(Application.StartupPath, "tools", "fcsgen.exe");
-            if (!File.Exists(toolPath))
-            {
-                MessageBox.Show(
-                    "fcsgen.exe not found at:\n" + toolPath +
-                    "\n\nPlace the fcsgen binary in the tools/ subfolder next to FCS.exe.",
-                    "Tool Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            // Validate that the selected folder looks like a WT install
-            string acesBin = Path.Combine(gamePath, "aces.vromfs.bin");
-            if (!File.Exists(acesBin))
-            {
-                MessageBox.Show(
-                    "aces.vromfs.bin not found at:\n" + acesBin +
-                    "\n\nMake sure the path points to the War Thunder installation directory.",
-                    "Game Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            string datamineDir = Path.Combine(Application.StartupPath, "Datamine");
-            string ignoreFile = Path.Combine(Application.StartupPath, "assets", "ignore.txt");
-
-            Directory.CreateDirectory(datamineDir);
-
-            StartTime = DateTime.Now;
-            IsRuning = true;
-            progressBar1.Style = ProgressBarStyle.Marquee;
-
-            try
-            {
-                // Single unified command: extract → convert → ballistic
-                label1.Text = "Running pipeline...";
-                label1.Refresh();
-
-                double sensitivity = Convert.ToDouble(trackBar1.Value) / 100.0;
-                string baseDir = Application.StartupPath.TrimEnd('\\');
-
-                string runArgs = "run --game-path \"" + gamePath.TrimEnd('\\') + "\""
-                    + " --output \"" + baseDir + "\""
-                    + " --sensitivity " + sensitivity.ToString(System.Globalization.CultureInfo.InvariantCulture);
-                if (File.Exists(ignoreFile))
-                {
-                    runArgs += " --ignore-file \"" + ignoreFile.TrimEnd('\\') + "\"";
-                }
-
-                RunFcsgen(toolPath, runArgs, "Pipeline");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "Failed to run fcsgen:\n" + ex.Message,
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            IsRuning = false;
-            label1.Text = "File: ";
-            label1.Refresh();
-            progressBar1.Style = ProgressBarStyle.Blocks;
-            progressBar1.Value = 0;
-            SpeedNumbers = 0;
-        }
-
         /// <summary>
         /// Run fcsgen with the given arguments. Returns true on success.
         /// </summary>
@@ -582,13 +511,97 @@ namespace FCS
 
         private void Button2_Click(object sender, EventArgs e)
         {
+            // --- Input validation ---
+            string sightType = comboBox1.Text;
+            if (sightType == "Sight type" || comboBox1.SelectedIndex < 0)
+            {
+                MessageBox.Show(
+                    "Please select a sight type before generating sights.",
+                    "No Sight Type", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string gamePath = textBox1.Text;
+
+            // Locate fcsgen tool binary
+            string toolPath = Path.Combine(Application.StartupPath, "tools", "fcsgen.exe");
+            if (!File.Exists(toolPath))
+            {
+                MessageBox.Show(
+                    "fcsgen.exe not found at:\n" + toolPath +
+                    "\n\nPlace the fcsgen binary in the tools/ subfolder next to FCS.exe.",
+                    "Tool Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Validate that the selected folder looks like a WT install
+            string acesBin = Path.Combine(gamePath, "aces.vromfs.bin");
+            if (!File.Exists(acesBin))
+            {
+                MessageBox.Show(
+                    "aces.vromfs.bin not found at:\n" + acesBin +
+                    "\n\nMake sure the path points to the War Thunder installation directory.",
+                    "Game Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // --- Run fcsgen pipeline (skips automatically if up-to-date) ---
+            string ignoreFile = Path.Combine(Application.StartupPath, "assets", "ignore.txt");
+            Directory.CreateDirectory(Path.Combine(Application.StartupPath, "Datamine"));
+
             StartTime = DateTime.Now;
             IsRuning = true;
+            progressBar1.Style = ProgressBarStyle.Marquee;
+            label1.Text = "Running pipeline...";
+            label1.Refresh();
+
+            try
+            {
+                double sensitivity = Convert.ToDouble(trackBar1.Value) / 100.0;
+                string baseDir = Application.StartupPath.TrimEnd('\\');
+
+                string runArgs = "run --game-path \"" + gamePath.TrimEnd('\\') + "\""
+                    + " --output \"" + baseDir + "\""
+                    + " --sensitivity " + sensitivity.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                if (File.Exists(ignoreFile))
+                {
+                    runArgs += " --ignore-file \"" + ignoreFile.TrimEnd('\\') + "\"";
+                }
+
+                if (!RunFcsgen(toolPath, runArgs, "Pipeline"))
+                {
+                    IsRuning = false;
+                    label1.Text = "File: ";
+                    label1.Refresh();
+                    progressBar1.Style = ProgressBarStyle.Blocks;
+                    progressBar1.Value = 0;
+                    SpeedNumbers = 0;
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Failed to run fcsgen:\n" + ex.Message,
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                IsRuning = false;
+                label1.Text = "File: ";
+                label1.Refresh();
+                progressBar1.Style = ProgressBarStyle.Blocks;
+                progressBar1.Value = 0;
+                SpeedNumbers = 0;
+                return;
+            }
+
+            progressBar1.Style = ProgressBarStyle.Blocks;
+            label1.Text = "Generating sights...";
+            label1.Refresh();
+
+            // --- Sight generation ---
             double Sensivity = Convert.ToDouble(trackBar1.Value) / 100;
             string sightOutputBase = Path.Combine(textBox4.Text, comboBox1.Text);
             if (comboBox1.Text == "Tochka-SM2")
             {
-                string Dataminepath = textBox1.Text;
                 string[] file_list = Directory.GetFiles(DataPath, "*.txt");
                 progressBar1.Value = 0;
                 progressBar1.Minimum = 0;
@@ -2255,7 +2268,6 @@ namespace FCS
             }
             if (comboBox1.Text == "Luch")
             {
-                string Dataminepath = textBox1.Text;
                 string[] file_list = Directory.GetFiles(DataPath, "*.txt");
                 progressBar1.Value = 0;
                 progressBar1.Minimum = 0;
