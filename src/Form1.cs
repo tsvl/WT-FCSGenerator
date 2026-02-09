@@ -15,6 +15,10 @@ namespace FCS
         bool IsRuning = false;
         int SpeedNumbers = 0;
         double[] ProgressSpeed = new double[20];
+
+        // Hardcoded paths (previously editable via textboxes)
+        private static string DataPath => Path.Combine(Application.StartupPath, "Data");
+        private static string BallisticPath => Path.Combine(Application.StartupPath, "Ballistic");
         public Form1()
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -463,14 +467,7 @@ namespace FCS
             }
         }
 
-        private void TextBox3_Click(object sender, EventArgs e)
-        {
-            folderBrowserDialog1 = new FolderBrowserDialog();
-            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
-            {
-                textBox3.Text = folderBrowserDialog1.SelectedPath;
-            }
-        }
+
 
         private void TextBox4_Click(object sender, EventArgs e)
         {
@@ -481,19 +478,11 @@ namespace FCS
             }
         }
 
-        private void TextBox2_Click(object sender, EventArgs e)
-        {
-            folderBrowserDialog1 = new FolderBrowserDialog();
-            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
-            {
-                textBox2.Text = folderBrowserDialog1.SelectedPath;
-            }
-        }
+
 
         private void Button1_Click(object sender, EventArgs e)
         {
             string gamePath = textBox1.Text;
-            string outputPath = textBox3.Text;
 
             // Locate fcsgen tool binary
             string toolPath = Path.Combine(Application.StartupPath, "tools", "fcsgen.exe");
@@ -521,7 +510,6 @@ namespace FCS
             string ignoreFile = Path.Combine(Application.StartupPath, "assets", "ignore.txt");
 
             Directory.CreateDirectory(datamineDir);
-            Directory.CreateDirectory(outputPath);
 
             StartTime = DateTime.Now;
             IsRuning = true;
@@ -533,7 +521,6 @@ namespace FCS
                 label1.Text = "Running pipeline...";
                 label1.Refresh();
 
-                string ballisticPath = textBox2.Text;
                 double sensitivity = Convert.ToDouble(trackBar1.Value) / 100.0;
                 string baseDir = Application.StartupPath.TrimEnd('\\');
 
@@ -593,155 +580,6 @@ namespace FCS
             return true;
         }
 
-        private void Button3_Click(object sender, EventArgs e)
-        {
-            string[] file_list = Directory.GetFiles(textBox3.Text, "*.txt");
-            progressBar1.Value = 0;
-            progressBar1.Minimum = 0;
-            progressBar1.Maximum = file_list.Length;
-            progressBar1.Step = 1;
-            StartTime = DateTime.Now;
-            IsRuning = true;
-            foreach (string file in file_list)
-            {
-                label1.Text = "File: " + Path.GetFileNameWithoutExtension(file);
-                label1.Refresh();
-                string TankPath = textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file);
-                string BulletName = null;
-                string Type = null;
-                double BulletMass = 0;
-                double BallisticCaliber = 0;
-                double DamageMass = 0;
-                double DamageCaliber = 0;
-                double Speed = 0;
-                double Cx = 0;
-                double ExplosiveMass = 0;
-                double demarrePenetrationK = 0;
-                double demarreSpeedPow = 0;
-                double demarreMassPow = 0;
-                double demarreCaliberPow = 0;
-                progressBar1.PerformStep();
-                string TankData = null;
-                using (System.IO.StreamReader sr = new System.IO.StreamReader(file))
-                {
-                    TankData = sr.ReadToEnd();
-                }
-                StringReader reader = new StringReader(TankData);
-                string line = String.Empty;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    if (line.Contains("Name:"))
-                    {
-                        BulletName = line.Split(':')[1];
-                        Type = null;
-                        BulletMass = 0;
-                        BallisticCaliber = 0;
-                        DamageMass = 0;
-                        DamageCaliber = 0;
-                        Speed = 0;
-                        Cx = 0;
-                        ExplosiveMass = 0;
-                        demarrePenetrationK = 0;
-                        demarreSpeedPow = 0;
-                        demarreMassPow = 0;
-                        demarreCaliberPow = 0;
-                        int b = 0;
-                        double[,] ArmorPowerArray = new double[2, 12];
-                        while (((line = reader.ReadLine()) != "") && (line != null))
-                        {
-                            if (line.StartsWith("Type:"))
-                            {
-                                Type = line.Split(':')[1];
-                                if (Type.Contains("apds_fs"))
-                                {
-                                    Type = "apds_fs";
-                                }
-                                else
-                                {
-                                    Type = Type.Split('_')[0];
-                                }
-                            }
-                            if (line.Contains("BulletMass:"))
-                            {
-                                BulletMass = Convert.ToDouble(line.Split(':')[1]);
-                            }
-                            if (line.Contains("BallisticCaliber:"))
-                            {
-                                BallisticCaliber = Convert.ToDouble(line.Split(':')[1]);
-                            }
-                            if (line.Contains("DamageMass:"))
-                            {
-                                DamageMass = Convert.ToDouble(line.Split(':')[1]);
-                            }
-                            if (line.Contains("DamageCaliber:"))
-                            {
-                                DamageCaliber = Convert.ToDouble(line.Split(':')[1]);
-                            }
-                            if (line.Contains("Speed:"))
-                            {
-                                Speed = Convert.ToDouble(line.Split(':')[1]);
-                            }
-                            if (line.Contains("Cx:"))
-                            {
-                                Cx = Convert.ToDouble(line.Split(':')[1]);
-                            }
-                            if (line.Contains("ExplosiveMass:"))
-                            {
-                                ExplosiveMass = Convert.ToDouble(line.Split(':')[1]);
-                            }
-                            if (line.Contains("APDS"))
-                            {
-                                ArmorPowerArray[1, b] = Convert.ToDouble(line.Split(':')[1]);
-                                line = line.Split(':')[0];
-                                line = line.Substring(4);
-                                ArmorPowerArray[0, b] = Convert.ToDouble(line);
-                                b++;
-                            }
-                            if (line.Contains("demarrePenetrationK"))
-                            {
-                                demarrePenetrationK = Convert.ToDouble(line.Split(':')[1]);
-                            }
-                            if (line.Contains("demarreSpeedPow"))
-                            {
-                                demarreSpeedPow = Convert.ToDouble(line.Split(':')[1]);
-                            }
-                            if (line.Contains("demarreMassPow"))
-                            {
-                                demarreMassPow = Convert.ToDouble(line.Split(':')[1]);
-                            }
-                            if (line.Contains("demarreCaliberPow"))
-                            {
-                                demarreCaliberPow = Convert.ToDouble(line.Split(':')[1]);
-                            }
-                        }
-                        if (Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam")
-                        {
-                            double Sensivity = Convert.ToDouble(trackBar1.Value) / 100;
-                            string BallisticStrings = Ballistic(Sensivity, Type, BulletMass, Speed, BallisticCaliber, Cx, ExplosiveMass, DamageMass, DamageCaliber, demarrePenetrationK, demarreSpeedPow, demarreMassPow, demarreCaliberPow, ArmorPowerArray);
-                            BulletName = BulletName.Split('/')[0];
-                            if (BulletName.Contains("mm_"))
-                            {
-                                BulletName = BulletName.Remove(0, BulletName.IndexOf("mm_"));
-                                BulletName = BulletName.Replace("mm_", "");
-                            }
-                            string BallisticPath = textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file);
-                            if (Directory.Exists(BallisticPath) == false)
-                            {
-                                Directory.CreateDirectory(BallisticPath);
-                            }
-                            string FileName = BallisticPath + "//" + BulletName + ".txt";
-                            File.WriteAllText(FileName, BallisticStrings);
-                        }
-                    }
-                }
-            }
-            IsRuning = false;
-            label1.Text = "File: ";
-            label1.Refresh();
-            progressBar1.Value = 0;
-            SpeedNumbers = 0;
-        }
-
         private void Button2_Click(object sender, EventArgs e)
         {
             StartTime = DateTime.Now;
@@ -750,7 +588,7 @@ namespace FCS
             if (comboBox1.Text == "Tochka-SM2")
             {
                 string Dataminepath = textBox1.Text;
-                string[] file_list = Directory.GetFiles(textBox3.Text, "*.txt");
+                string[] file_list = Directory.GetFiles(DataPath, "*.txt");
                 progressBar1.Value = 0;
                 progressBar1.Minimum = 0;
                 progressBar1.Maximum = file_list.Length;
@@ -1158,7 +996,7 @@ namespace FCS
                                                 }
                                                 if ((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice" && Type != "napalm" && Type != "napalm_gel") || (Type == "he" && BallisticCaliber >= 0.12))
                                                 {
-                                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
+                                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(BallisticPath + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
                                                     {
                                                         BallisticData = sr.ReadToEnd();
                                                     }
@@ -1317,7 +1155,7 @@ namespace FCS
                                     }
                                     if ((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice") || (Type == "he" && BallisticCaliber >= 0.12))
                                     {
-                                        using (System.IO.StreamReader sr = new System.IO.StreamReader(textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
+                                        using (System.IO.StreamReader sr = new System.IO.StreamReader(BallisticPath + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
                                         {
                                             BallisticData = sr.ReadToEnd();
                                         }
@@ -1635,11 +1473,11 @@ namespace FCS
                                                 if (((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice" && Type != "napalm" && Type != "napalm_gel") || (Type == "he" && BallisticCaliber >= 0.12)) &&
                                                     ((Type2 != "sam" && Type2 != "atgm" && Type2 != "rocket" && Type2 != "aam" && Type2 != "smoke" && Type2 != "shrapnel" && Type2 != "he" && Type2 != "practice" && Type2 != "napalm" && Type2 != "napalm_gel") || (Type2 == "he" && BallisticCaliber2 >= 0.037)))
                                                 {
-                                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
+                                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(BallisticPath + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
                                                     {
                                                         BallisticData = sr.ReadToEnd();
                                                     }
-                                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic2 + ".txt"))
+                                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(BallisticPath + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic2 + ".txt"))
                                                     {
                                                         BallisticData2 = sr.ReadToEnd();
                                                     }
@@ -1818,7 +1656,7 @@ namespace FCS
                                                 }
                                                 if ((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice") || (Type == "he" && BallisticCaliber >= 0.12))
                                                 {
-                                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
+                                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(BallisticPath + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
                                                     {
                                                         BallisticData = sr.ReadToEnd();
                                                     }
@@ -1977,7 +1815,7 @@ namespace FCS
                                     }
                                     if ((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice") || (Type == "he" && BallisticCaliber >= 0.12))
                                     {
-                                        using (System.IO.StreamReader sr = new System.IO.StreamReader(textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
+                                        using (System.IO.StreamReader sr = new System.IO.StreamReader(BallisticPath + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
                                         {
                                             BallisticData = sr.ReadToEnd();
                                         }
@@ -2417,7 +2255,7 @@ namespace FCS
             if (comboBox1.Text == "Luch")
             {
                 string Dataminepath = textBox1.Text;
-                string[] file_list = Directory.GetFiles(textBox3.Text, "*.txt");
+                string[] file_list = Directory.GetFiles(DataPath, "*.txt");
                 progressBar1.Value = 0;
                 progressBar1.Minimum = 0;
                 progressBar1.Maximum = file_list.Length;
@@ -2556,12 +2394,9 @@ namespace FCS
                                                 }
                                                 if ((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice") || (Type == "he" && BallisticCaliber >= 0.1))
                                                 {
-                                                    if (textBox2.Text != "Ballistic path")
+                                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(BallisticPath + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
                                                     {
-                                                        using (System.IO.StreamReader sr = new System.IO.StreamReader(textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
-                                                        {
-                                                            BallisticData = sr.ReadToEnd();
-                                                        }
+                                                        BallisticData = sr.ReadToEnd();
                                                     }
                                                     string LangName = null;
                                                     string LangRocketName = null;
@@ -2671,12 +2506,9 @@ namespace FCS
                                     }
                                     if ((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice") || (Type == "he" && BallisticCaliber >= 0.1))
                                     {
-                                        if (textBox2.Text != "Ballistic path")
+                                        using (System.IO.StreamReader sr = new System.IO.StreamReader(BallisticPath + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
                                         {
-                                            using (System.IO.StreamReader sr = new System.IO.StreamReader(textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
-                                            {
-                                                BallisticData = sr.ReadToEnd();
-                                            }
+                                            BallisticData = sr.ReadToEnd();
                                         }
                                         string LangName = null;
                                         string LangRocketName = null;
@@ -2752,7 +2584,7 @@ namespace FCS
             }
             if (comboBox1.Text == "Luch Lite")
             {
-                string[] file_list = Directory.GetFiles(textBox3.Text, "*.txt");
+                string[] file_list = Directory.GetFiles(DataPath, "*.txt");
                 progressBar1.Value = 0;
                 progressBar1.Minimum = 0;
                 progressBar1.Maximum = file_list.Length;
@@ -2834,12 +2666,9 @@ namespace FCS
                                 // Exclude napalm-based rounds from sight generation (legacy crash fix for Luch_Lite)
                                 if ((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice" && Type != "napalm" && Type != "napalm_gel") || (Type == "he" && BallisticCaliber >= 0.1))
                                 {
-                                    if (textBox2.Text != "Ballistic path")
+                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(BallisticPath + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
                                     {
-                                        using (System.IO.StreamReader sr = new System.IO.StreamReader(textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
-                                        {
-                                            BallisticData = sr.ReadToEnd();
-                                        }
+                                        BallisticData = sr.ReadToEnd();
                                     }
                                     FileName = "Luch_Lite_";
                                     data = Luch_Lite.Create(Speed, ZoomIn, ZoomOut, Sensivity, true, 3, 1.5, true, "0, 255, 0, 64", "255, 255, 255, 64", "255, 0, 0, 255", 1.5, 6.5, 2.4, 5, "real", 10, BallisticData);
@@ -2881,7 +2710,7 @@ namespace FCS
             }
             if (comboBox1.Text == "Duga")
             {
-                string[] file_list = Directory.GetFiles(textBox3.Text, "*.txt");
+                string[] file_list = Directory.GetFiles(DataPath, "*.txt");
                 progressBar1.Value = 0;
                 progressBar1.Minimum = 0;
                 progressBar1.Maximum = file_list.Length;
@@ -3044,7 +2873,7 @@ namespace FCS
                                 }
                                 if (((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice") || (Type == "he" && BallisticCaliber >= 0.12)) && BaseVersion == true && OnlyRocket == false)
                                 {
-                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
+                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(BallisticPath + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
                                     {
                                         BallisticData = sr.ReadToEnd();
                                     }
@@ -3151,7 +2980,7 @@ namespace FCS
             }
             if (comboBox1.Text == "Duga-2")
             {
-                string[] file_list = Directory.GetFiles(textBox3.Text, "*.txt");
+                string[] file_list = Directory.GetFiles(DataPath, "*.txt");
                 progressBar1.Value = 0;
                 progressBar1.Minimum = 0;
                 progressBar1.Maximum = file_list.Length;
@@ -3319,7 +3148,7 @@ namespace FCS
                                 }
                                 if (((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice") || (Type == "he" && BallisticCaliber >= 0.12)) && BaseVersion == true && OnlyRocket == false)
                                 {
-                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
+                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(BallisticPath + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
                                     {
                                         BallisticData = sr.ReadToEnd();
                                     }
@@ -3428,7 +3257,7 @@ namespace FCS
             }
             if (comboBox1.Text == "Sector")
             {
-                string[] file_list = Directory.GetFiles(textBox3.Text, "*.txt");
+                string[] file_list = Directory.GetFiles(DataPath, "*.txt");
                 progressBar1.Value = 0;
                 progressBar1.Minimum = 0;
                 progressBar1.Maximum = file_list.Length;
@@ -3596,7 +3425,7 @@ namespace FCS
                                 }
                                 if (((Type != "sam" && Type != "atgm" && Type != "rocket" && Type != "aam" && Type != "smoke" && Type != "shrapnel" && Type != "he" && Type != "practice") || (Type == "he" && BallisticCaliber >= 0.12)) && BaseVersion == true && OnlyRocket == false && ForAA == true)
                                 {
-                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(textBox2.Text + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
+                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(BallisticPath + "//" + Path.GetFileNameWithoutExtension(file) + "//" + BulletNameForBallistic + ".txt"))
                                     {
                                         BallisticData = sr.ReadToEnd();
                                     }

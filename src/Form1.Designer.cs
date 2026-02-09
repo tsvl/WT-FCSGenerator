@@ -35,11 +35,8 @@ namespace FCS
             this.button2 = new System.Windows.Forms.Button();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.button3 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
@@ -185,17 +182,6 @@ namespace FCS
             this.comboBox2.TabIndex = 4;
             this.comboBox2.Text = "English";
             //
-            // textBox3
-            //
-            this.textBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
-            this.textBox3.Location = new System.Drawing.Point(9, 46);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(241, 20);
-            this.textBox3.TabIndex = 1;
-            this.textBox3.Text = "Data";
-            this.textBox3.Click += new System.EventHandler(this.TextBox3_Click);
-            //
             // textBox4
             //
             this.textBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
@@ -214,29 +200,6 @@ namespace FCS
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(485, 19);
             this.progressBar1.TabIndex = 8;
-            //
-            // textBox2
-            //
-            this.textBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
-            this.textBox2.Location = new System.Drawing.Point(9, 69);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(241, 20);
-            this.textBox2.TabIndex = 2;
-            this.textBox2.Text = "Ballistic";
-            this.textBox2.Click += new System.EventHandler(this.TextBox2_Click);
-            //
-            // button3
-            //
-            this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
-            this.button3.Location = new System.Drawing.Point(113, 369);
-            this.button3.Margin = new System.Windows.Forms.Padding(2);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(194, 20);
-            this.button3.TabIndex = 19;
-            this.button3.Text = "Make Ballistic";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.Button3_Click);
             //
             // label1
             //
@@ -881,11 +844,8 @@ namespace FCS
             this.Controls.Add(this.label18);
             this.Controls.Add(this.checkedListBox1);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.textBox2);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.textBox4);
-            this.Controls.Add(this.textBox3);
             this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.button2);
@@ -922,11 +882,8 @@ namespace FCS
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.CheckedListBox checkedListBox1;
