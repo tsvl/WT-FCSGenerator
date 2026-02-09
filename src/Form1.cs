@@ -585,6 +585,7 @@ namespace FCS
             StartTime = DateTime.Now;
             IsRuning = true;
             double Sensivity = Convert.ToDouble(trackBar1.Value) / 100;
+            string sightOutputBase = Path.Combine(textBox4.Text, comboBox1.Text);
             if (comboBox1.Text == "Tochka-SM2")
             {
                 string Dataminepath = textBox1.Text;
@@ -750,7 +751,7 @@ namespace FCS
                     {
                         label1.Text = "File: " + Path.GetFileNameWithoutExtension(file);
                         label1.Refresh();
-                        string TankPath2 = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                        string TankPath2 = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                         double ZoomIn = 0;
                         double ZoomOut = 0;
                         string BulletName = null;
@@ -1117,12 +1118,12 @@ namespace FCS
                                                     string TankPath = null;
                                                     if (file.Contains("_ModOptic"))
                                                     {
-                                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
+                                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
                                                         FileName += "ModOptic_";
                                                     }
                                                     else
                                                     {
-                                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                                                     }
                                                     FileName += BulletNameForBallistic;
                                                     if (HasRocket == true)
@@ -1250,12 +1251,12 @@ namespace FCS
                                         string TankPath = null;
                                         if (file.Contains("_ModOptic"))
                                         {
-                                            TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
+                                            TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
                                             FileName += "ModOptic_";
                                         }
                                         else
                                         {
-                                            TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                                            TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                                         }
                                         FileName += BulletNameForBallistic;
                                         if (Directory.Exists(TankPath) == false)
@@ -1370,12 +1371,12 @@ namespace FCS
                                     string TankPath = null;
                                     if (file.Contains("_ModOptic"))
                                     {
-                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
+                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
                                         FileName += "ModOptic_";
                                     }
                                     else
                                     {
-                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                                     }
                                     FileName += BulletNameForBallistic;
                                     if (Directory.Exists(TankPath) == false)
@@ -1584,12 +1585,12 @@ namespace FCS
                                                     string TankPath = null;
                                                     if (file.Contains("_ModOptic"))
                                                     {
-                                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
+                                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
                                                         FileName += "ModOptic_";
                                                     }
                                                     else
                                                     {
-                                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                                                     }
                                                     FileName += BulletNameForBallistic;
                                                     FileName += "_" + BulletNameForBallistic2;
@@ -1777,12 +1778,12 @@ namespace FCS
                                                     string TankPath = null;
                                                     if (file.Contains("_ModOptic"))
                                                     {
-                                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
+                                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
                                                         FileName += "ModOptic_";
                                                     }
                                                     else
                                                     {
-                                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                                                     }
                                                     FileName += BulletNameForBallistic;
                                                     if (HasRocket == true)
@@ -1910,12 +1911,12 @@ namespace FCS
                                         string TankPath = null;
                                         if (file.Contains("_ModOptic"))
                                         {
-                                            TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
+                                            TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
                                             FileName += "ModOptic_";
                                         }
                                         else
                                         {
-                                            TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                                            TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                                         }
                                         FileName += BulletNameForBallistic;
                                         if (Directory.Exists(TankPath) == false)
@@ -2096,12 +2097,12 @@ namespace FCS
                                                     string TankPath = null;
                                                     if (file.Contains("_ModOptic"))
                                                     {
-                                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
+                                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
                                                         FileName += "ModOptic_";
                                                     }
                                                     else
                                                     {
-                                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                                                     }
                                                     FileName += BulletNameForBallistic;
                                                     if (HasRocket == true)
@@ -2226,12 +2227,12 @@ namespace FCS
                                         string TankPath = null;
                                         if (file.Contains("_ModOptic"))
                                         {
-                                            TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
+                                            TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
                                             FileName += "ModOptic_";
                                         }
                                         else
                                         {
-                                            TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                                            TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                                         }
                                         FileName += BulletNameForBallistic;
                                         if (Directory.Exists(TankPath) == false)
@@ -2269,7 +2270,7 @@ namespace FCS
                 {
                     label1.Text = Path.GetFileNameWithoutExtension(file);
                     label1.Refresh();
-                    string TankPath2 = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                    string TankPath2 = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                     //if (Directory.Exists(TankPath2) == false)
                     {
                         double ZoomIn = 0;
@@ -2474,12 +2475,12 @@ namespace FCS
                                                     string TankPath = null;
                                                     if (file.Contains("_ModOptic"))
                                                     {
-                                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
+                                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
                                                         FileName += "ModOptic_";
                                                     }
                                                     else
                                                     {
-                                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                                                     }
                                                     FileName += BulletName + "_" + RocketName;
                                                     if (Directory.Exists(TankPath) == false)
@@ -2554,12 +2555,12 @@ namespace FCS
                                         string TankPath = null;
                                         if (file.Contains("_ModOptic"))
                                         {
-                                            TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
+                                            TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
                                             FileName += "ModOptic_";
                                         }
                                         else
                                         {
-                                            TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                                            TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                                         }
                                         FileName += BulletName;
                                         if (Directory.Exists(TankPath) == false)
@@ -2591,7 +2592,7 @@ namespace FCS
                 progressBar1.Step = 1;
                 foreach (string file in file_list)
                 {
-                    string TankPath2 = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                    string TankPath2 = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                     //if (Directory.Exists(TankPath2) == false)
                     {
                         label1.Text = Path.GetFileNameWithoutExtension(file);
@@ -2681,12 +2682,12 @@ namespace FCS
                                     string TankPath = null;
                                     if (file.Contains("_ModOptic"))
                                     {
-                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
+                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
                                         FileName += "ModOptic_";
                                     }
                                     else
                                     {
-                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                                     }
                                     FileName += BulletName;
                                     if (Directory.Exists(TankPath) == false)
@@ -2801,7 +2802,7 @@ namespace FCS
                     {
                         label1.Text = "File: " + Path.GetFileNameWithoutExtension(file);
                         label1.Refresh();
-                        string TankPath2 = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                        string TankPath2 = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                         double ZoomIn = 0;
                         double ZoomOut = 0;
                         string BulletName = null;
@@ -2906,12 +2907,12 @@ namespace FCS
                                     string TankPath = null;
                                     if (file.Contains("_ModOptic"))
                                     {
-                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
+                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
                                         FileName += "ModOptic_";
                                     }
                                     else
                                     {
-                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                                     }
                                     FileName += BulletNameForBallistic;
                                     if (Directory.Exists(TankPath) == false)
@@ -2953,12 +2954,12 @@ namespace FCS
                                     string TankPath = null;
                                     if (file.Contains("_ModOptic"))
                                     {
-                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
+                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
                                         FileName += "ModOptic_";
                                     }
                                     else
                                     {
-                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                                     }
                                     FileName += BulletNameForBallistic;
                                     if (Directory.Exists(TankPath) == false)
@@ -3076,7 +3077,7 @@ namespace FCS
                     {
                         label1.Text = "File: " + Path.GetFileNameWithoutExtension(file);
                         label1.Refresh();
-                        string TankPath2 = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                        string TankPath2 = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                         double ZoomIn = 0;
                         double ZoomOut = 0;
                         string BulletName = null;
@@ -3182,12 +3183,12 @@ namespace FCS
                                     string TankPath = null;
                                     if (file.Contains("_ModOptic"))
                                     {
-                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
+                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
                                         FileName += "ModOptic_";
                                     }
                                     else
                                     {
-                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                                     }
                                     FileName += BulletNameForBallistic;
                                     if (Directory.Exists(TankPath) == false)
@@ -3230,12 +3231,12 @@ namespace FCS
                                     string TankPath = null;
                                     if (file.Contains("_ModOptic"))
                                     {
-                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
+                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
                                         FileName += "ModOptic_";
                                     }
                                     else
                                     {
-                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                                     }
                                     FileName += BulletNameForBallistic;
                                     if (Directory.Exists(TankPath) == false)
@@ -3348,7 +3349,7 @@ namespace FCS
                     {
                         label1.Text = "File: " + Path.GetFileNameWithoutExtension(file);
                         label1.Refresh();
-                        string TankPath2 = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                        string TankPath2 = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                         double ZoomIn = 0;
                         double ZoomOut = 0;
                         string BulletName = null;
@@ -3458,12 +3459,12 @@ namespace FCS
                                     string TankPath = null;
                                     if (file.Contains("_ModOptic"))
                                     {
-                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
+                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
                                         FileName += "ModOptic_";
                                     }
                                     else
                                     {
-                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                                     }
                                     FileName += BulletNameForBallistic;
                                     if (Directory.Exists(TankPath) == false)
@@ -3505,12 +3506,12 @@ namespace FCS
                                     string TankPath = null;
                                     if (file.Contains("_ModOptic"))
                                     {
-                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
+                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file).Replace("_ModOptic", "");
                                         FileName += "ModOptic_";
                                     }
                                     else
                                     {
-                                        TankPath = textBox4.Text + "//" + Path.GetFileNameWithoutExtension(file);
+                                        TankPath = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                                     }
                                     FileName += BulletNameForBallistic;
                                     if (Directory.Exists(TankPath) == false)
