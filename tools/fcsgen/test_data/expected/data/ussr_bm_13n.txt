@@ -1,0 +1,12 @@
+WeaponPath:gameData/Weapons/groundModels_weapons/132mm_M13_rocket_launcher.blkx
+ZoomIn:21.0
+ZoomOut:40.0
+
+Name:132mm_m_13
+Type:rocket_tank
+BulletMass:42.36
+BallisticCaliber:0.132
+Speed:355.0
+Cx:0.38
+ExplosiveMass:4.9
+ExplosiveType:tnt

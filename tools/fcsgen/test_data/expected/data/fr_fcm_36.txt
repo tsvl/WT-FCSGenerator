@@ -1,0 +1,17 @@
+WeaponPath:gameData/Weapons/groundModels_weapons/37mm_SA_18_user_cannon.blkx
+ZoomIn:21.0
+ZoomOut:40.0
+
+Name:37mm_mle1937
+Type:apcr_tank
+BulletMass:0.5
+BallisticCaliber:0.037
+Speed:600.0
+Cx:0.38
+
+Name:37mm_mle1937
+Type:apcr_tank
+BulletMass:0.5
+BallisticCaliber:0.037
+Speed:600.0
+Cx:0.38

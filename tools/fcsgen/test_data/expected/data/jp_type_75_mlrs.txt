@@ -1,0 +1,12 @@
+WeaponPath:gameData/Weapons/groundModels_weapons/130mm_Type_75_rocket_launcher.blkx
+ZoomIn:21.0
+ZoomOut:40.0
+
+Name:130mm_type75
+Type:rocket_tank
+BulletMass:43.0
+BallisticCaliber:0.13
+Speed:700.0
+Cx:0.38
+ExplosiveMass:4.8
+ExplosiveType:rdx_tnt

@@ -1,0 +1,12 @@
+WeaponPath:gameData/Weapons/groundModels_weapons/300mm_M31_rocket_launcher.blkx
+ZoomIn:21.0
+ZoomOut:40.0
+
+Name:300mm_m_31_uk
+Type:rocket_tank
+BulletMass:91.5
+BallisticCaliber:0.3
+Speed:245.0
+Cx:0.38
+ExplosiveMass:28.9
+ExplosiveType:tnt
