@@ -87,9 +87,9 @@ Sight rendering uses localized labels loaded from CSV files in Localization/:
 
 These CSVs have a first column key and one column per language (English, French, German, Russian, etc.). The Create(...) methods select language-specific strings based on the app’s UI setting.
 
-## UserSights/{vehicle}/{sight}.blk (stage 3 output)
+## UserSights/{sight_type}/{vehicle}/{sight}.blk (stage 3 output)
 
-Generated War Thunder sight scripts. Their contents depend on sight family, language, and options. At a high level, they include drawing sections like:
+Generated War Thunder sight scripts, organized into subdirectories by sight type (e.g., `Tochka-SM2/`, `Luch/`, `Duga/`). Their contents depend on sight family, language, and options. At a high level, they include drawing sections like:
 
 - `drawCircles` — reticle rings, central dot, frames
 - `drawLines` — axis lines, preemptive lead lines, distance correction ticks
