@@ -1,0 +1,12 @@
+hard_tabs = true # Not up to negotiation.
+brace_style = "PreferSameLine"
+enum_discrim_align_threshold = 20
+hex_literal_case = "Upper"
+imports_layout = "HorizontalVertical"
+match_block_trailing_comma = true
+imports_granularity = "Crate"
+newline_style = "Unix"
+normalize_comments = true
+reorder_impl_items = true
+group_imports = "StdExternalCrate"
+struct_field_align_threshold = 20

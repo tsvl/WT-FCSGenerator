@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Introduced the Rust-based `fcsgen` Stage 1 pipeline (`tools/fcsgen`) with vehicle and weapon parsers, legacy emitters, and integration tests plus a `convert` CLI subcommand for datamine-to-`Data/*.txt` conversion (#34).
+
+### Fixed
+
+- Improved projectile parsing fidelity: APDS armor power series extraction, Cx array averaging, `/name/short` fallbacks, case-sensitive laser checks, and handling of modification `commonWeapons`, ATGM belts, rocket DeMarre values, and unarmed vehicles (stage 1 follow-ups for issue #19).
+
+### Changed
+
+- Added Rust formatting configuration so the new workspace adheres to repository style.
+
 ## [2.1.3] - 2025-12-20
 
 ### Added
