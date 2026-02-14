@@ -3,14 +3,6 @@
 # top-most EditorConfig file
 root = true
 
-# Default settings for all files
-[*]
-indent_style = space
-indent_size = 2
-end_of_line = lf
-charset = utf-8
-trim_trailing_whitespace = true
-insert_final_newline = true
 
 # C# files
 [*.cs]
@@ -45,7 +37,3 @@ dotnet_naming_symbols.private_fields.applicable_accessibilities = private
 
 dotnet_naming_style.underscore_prefix_style.capitalization = camel_case
 dotnet_naming_style.underscore_prefix_style.required_prefix = _
-
-# PowerShell files
-[*.{ps1,psm1,psd1}]
-charset = utf-8-bom

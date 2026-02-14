@@ -16,3 +16,5 @@ workspace = true
 
 [dependencies]
 fcsgen-core = { path = "../core" }
+clap = { version = "4", features = ["derive"] }
+wt_blk = "0.3.1"
