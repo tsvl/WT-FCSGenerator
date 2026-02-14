@@ -44,12 +44,25 @@ pub fn parse_vehicle(json: &Value, vehicle_id: &str) -> Result<VehicleData> {
 	// These contain weapons unlocked by modifications (e.g., upgraded ATGMs, different guns)
 	if let Some(Value::Object(modifications)) = json.get("modifications") {
 		for (_mod_name, mod_value) in modifications {
-			if let Some(common_weapons) = mod_value
-				.get("effects")
-				.and_then(|e| e.get("commonWeapons"))
-			{
-				let weapons = extract_weapon_entries(common_weapons);
-				classify_weapons(&weapons, &mut data);
+			if let Some(effects) = mod_value.get("effects") {
+				if let Some(common_weapons) = effects.get("commonWeapons") {
+					let weapons = extract_weapon_entries(common_weapons);
+					classify_weapons(&weapons, &mut data);
+				}
+
+				// Check for modification-provided secondary optics (e.g., "bmp_3_upgrade_modification")
+				// Legacy code hits any "cockpit": in the file via line scanning; the second
+				// occurrence produces ZoomIn2/ZoomOut2 used for _ModOptic.txt emission.
+				if data.zoom_in_2.is_none() {
+					if let Some(cockpit @ Value::Object(_)) = effects.get("cockpit") {
+						data.zoom_in_2 = extract_fov_value(
+							cockpit.as_object().and_then(|o| o.get("zoomInFov")),
+						);
+						data.zoom_out_2 = extract_fov_value(
+							cockpit.as_object().and_then(|o| o.get("zoomOutFov")),
+						);
+					}
+				}
 			}
 		}
 	}
