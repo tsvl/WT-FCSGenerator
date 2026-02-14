@@ -47,6 +47,10 @@ enum Commands {
 		#[arg(long)]
 		vehicle: Option<Vec<String>>,
 
+		/// Number of parallel jobs (0 = auto-detect based on CPU count)
+		#[arg(short, long, default_value_t = 0)]
+		jobs: usize,
+
 		/// Skip extraction (use existing datamine in Datamine/)
 		#[arg(long, default_value_t = false)]
 		skip_extract: bool,
@@ -120,6 +124,7 @@ fn main() {
 			sensitivity,
 			ignore_file,
 			vehicle,
+			jobs,
 			skip_extract,
 			skip_ballistic,
 		} => {
@@ -129,6 +134,7 @@ fn main() {
 				sensitivity,
 				ignore_file: ignore_file.as_deref(),
 				filter: vehicle.as_deref(),
+				jobs,
 				skip_extract,
 				skip_ballistic,
 			});

@@ -13,7 +13,7 @@ pub mod error;
 pub mod model;
 pub mod parser;
 
-pub use ballistic::compute_ballistic;
+pub use ballistic::{BallisticCache, BallisticKey, compute_ballistic, compute_ballistic_cached};
 pub use emit::emit_legacy_txt;
 pub use error::{ParseError, Result};
 pub use model::{Projectile, VehicleData};
@@ -21,14 +21,8 @@ pub use parser::data::{from_projectile, parse_data_file, parse_data_text};
 pub use parser::{parse_vehicle, parse_weapon_module};
 
 use std::path::Path;
-use std::collections::HashMap;
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
-
-/// In-memory datamine: maps normalized paths (relative to aces.vromfs.bin_u/)
-/// to file contents. Keys are lowercase with forward slashes, e.g.
-/// `"gamedata/units/tankmodels/us_m1_abrams.blkx"`.
-pub type Datamine = HashMap<String, String>;
 
 /// Convert a vehicle from datamine to legacy Data format.
 ///
@@ -48,66 +42,24 @@ pub fn convert_vehicle(vehicle_path: &Path, datamine_root: &Path) -> Result<Vehi
 		.and_then(|s| s.to_str())
 		.unwrap_or("unknown");
 
-	convert_vehicle_impl(vehicle_id, &vehicle_json, &|weapon_path| {
+	let mut data = parse_vehicle(&vehicle_json, vehicle_id)?;
+
+	// Parse weapon module and collect projectiles (pass vehicle JSON for belt filtering)
+	if let Some(ref weapon_path) = data.weapon_path {
 		let full_path = resolve_weapon_path(datamine_root, weapon_path);
 		if full_path.exists() {
-			std::fs::read_to_string(&full_path).ok()
-		} else {
-			None
+			let weapon_json = read_json_file(&full_path)?;
+			let projectiles = parse_weapon_module(&weapon_json, Some(&vehicle_json))?;
+			data.projectiles.extend(projectiles);
 		}
-	})
-}
-
-/// Convert a vehicle from in-memory datamine data.
-///
-/// Same as [`convert_vehicle`] but reads all related files from an in-memory
-/// [`Datamine`] map instead of the filesystem.
-///
-/// # Arguments
-/// * `vehicle_id` - Vehicle identifier (stem name, e.g. "us_m1_abrams")
-/// * `vehicle_content` - JSON string of the vehicle .blkx file
-/// * `datamine` - In-memory map of all extracted datamine files
-pub fn convert_vehicle_in_memory(
-	vehicle_id: &str,
-	vehicle_content: &str,
-	datamine: &Datamine,
-) -> Result<VehicleData> {
-	let vehicle_json: serde_json::Value = serde_json::from_str(vehicle_content)
-		.map_err(|e| ParseError::json(format!("<memory>/{vehicle_id}.blkx"), e))?;
-
-	convert_vehicle_impl(vehicle_id, &vehicle_json, &|weapon_path| {
-		let key = weapon_path.replace('\\', "/").to_lowercase();
-		datamine.get(&key).cloned()
-	})
-}
-
-/// Shared implementation for vehicle conversion.
-///
-/// `resolve_related` looks up a weapon/rocket .blkx path and returns its JSON
-/// content string, or `None` if the file is not found.
-fn convert_vehicle_impl(
-	vehicle_id: &str,
-	vehicle_json: &serde_json::Value,
-	resolve_related: &dyn Fn(&str) -> Option<String>,
-) -> Result<VehicleData> {
-	let mut data = parse_vehicle(vehicle_json, vehicle_id)?;
-
-	// Parse weapon module and collect projectiles
-	if let Some(ref weapon_path) = data.weapon_path
-		&& let Some(content) = resolve_related(weapon_path)
-	{
-		let weapon_json: serde_json::Value = serde_json::from_str(&content)
-			.map_err(|e| ParseError::json(weapon_path.as_str(), e))?;
-		let projectiles = parse_weapon_module(&weapon_json, Some(vehicle_json))?;
-		data.projectiles.extend(projectiles);
 	}
 
-	// Parse rocket modules and collect projectiles
+	// Parse rocket modules and collect projectiles (pass vehicle JSON for belt filtering)
 	for rocket_path in data.rocket_paths.clone() {
-		if let Some(content) = resolve_related(&rocket_path) {
-			let rocket_json: serde_json::Value = serde_json::from_str(&content)
-				.map_err(|e| ParseError::json(rocket_path.as_str(), e))?;
-			let projectiles = parse_weapon_module(&rocket_json, Some(vehicle_json))?;
+		let full_path = resolve_weapon_path(datamine_root, &rocket_path);
+		if full_path.exists() {
+			let rocket_json = read_json_file(&full_path)?;
+			let projectiles = parse_weapon_module(&rocket_json, Some(&vehicle_json))?;
 			data.projectiles.extend(projectiles);
 		}
 	}
