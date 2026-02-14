@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduced the Rust-based `fcsgen` Stage 1 pipeline (`tools/fcsgen`) with vehicle and weapon parsers, legacy emitters, and integration tests plus a `convert` CLI subcommand for datamine-to-`Data/*.txt` conversion (#34).
 - Added a Stage 0 War Thunder datamine extraction step driven by the `wt_blk` crate, exposed via the `fcsgen extract` CLI subcommand and wired into the WinForms UI so users only need to point at their game install (#2).
 - Checked-in `tools/fcsgen/test_data/` corpus fixtures (datamine inputs + expected legacy outputs) so remote CI and contributors can run the Stage 1 integration suite without local War Thunder files.
+- Added the Stage 2 ballistic engine rewrite with corpus-level tests plus the new `fcsgen run` CLI that chains extract → convert → ballistic in one go (replacing the legacy C# computation).
+
 ### Fixed
 
 - Improved projectile parsing fidelity: APDS armor power series extraction, Cx array averaging, `/name/short` fallbacks, case-sensitive laser checks, and handling of modification `commonWeapons`, ATGM belts, rocket DeMarre values, and unarmed vehicles (stage 1 follow-ups for issue #19).
@@ -21,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added Rust formatting configuration so the new workspace adheres to repository style.
 - WinForms UI now shells out to `fcsgen run`, replacing the legacy inline datamine parser so Stage 1 lives entirely in Rust (closes the multi-button workflow gap).
+- Datamine processing now stays in-memory by default (with `--write-datamine` for debugging), eliminating ~150 MB of intermediates and simplifying the WinForms output layout.
 
 ### Removed
 

@@ -23,12 +23,6 @@ pub struct VehicleData {
 	/// Primary optics zoom (wide FOV, lower magnification).
 	pub zoom_out: Option<f64>,
 
-	/// Secondary optics zoom (narrow FOV), if present.
-	pub zoom_in_2: Option<f64>,
-
-	/// Secondary optics zoom (wide FOV), if present.
-	pub zoom_out_2: Option<f64>,
-
 	/// Whether the vehicle has a laser rangefinder.
 	pub has_laser: bool,
 
@@ -115,8 +109,6 @@ impl VehicleData {
 			rocket_paths: Vec::new(),
 			zoom_in: None,
 			zoom_out: None,
-			zoom_in_2: None,
-			zoom_out_2: None,
 			has_laser: false,
 			projectiles: Vec::new(),
 		}
