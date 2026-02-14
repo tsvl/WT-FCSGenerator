@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Added Rust formatting configuration so the new workspace adheres to repository style.
+- WinForms UI now shells out to `fcsgen run`, replacing the legacy inline datamine parser so Stage 1 lives entirely in Rust (closes the multi-button workflow gap).
 
 ## [2.1.3] - 2025-12-20
 
