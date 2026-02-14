@@ -1,13 +1,16 @@
 [package]
-name = "fcsgen-core"
-description = "Core library for FCS generation — datamine parsing, ballistics, and sight rendering"
-version.workspace = true
-edition.workspace = true
+description            = "Core library for FCS generation — datamine parsing, ballistics, and sight rendering"
+edition.workspace      = true
+license.workspace      = true
+name                   = "fcsgen-core"
+repository.workspace   = true
 rust-version.workspace = true
-license.workspace = true
-repository.workspace = true
+version.workspace      = true
 
 [lints]
 workspace = true
 
 [dependencies]
+serde      = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+thiserror  = "2"

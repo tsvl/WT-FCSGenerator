@@ -444,6 +444,7 @@ FodyWeavers.xsd
 # Rust/Cargo build artifacts
 /tools/fcsgen/target/
 
+
 UserSights/
 !UserSights/.gitkeep
 Datamine/aces.vromfs.bin_u/gamedata/units/tankmodels/*
@@ -452,3 +453,5 @@ Datamine/aces.vromfs.bin_u/gamedata/weapons/groundmodels_weapons/*
 !Datamine/aces.vromfs.bin_u/gamedata/weapons/groundmodels_weapons/.gitkeep
 Datamine/lang.vromfs.bin_u/lang/*
 !Datamine/lang.vromfs.bin_u/lang/.gitkeep
+
+tools/fcsgen/test_data/*
