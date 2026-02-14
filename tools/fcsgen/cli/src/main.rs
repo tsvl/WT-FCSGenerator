@@ -1,8 +1,15 @@
 //! fcsgen CLI — War Thunder FCS generation tool.
 //!
-//! See `docs/cli-stage1.md` for the full CLI specification.
+//! Primary command is `fcsgen run`, which performs extraction, conversion,
+//! and ballistic computation in a single invocation with an in-memory
+//! pipeline (no text roundtrip between conversion and ballistic stages).
+//!
+//! Legacy subcommands (`convert`, `extract`, `ballistic`) are retained
+//! for debugging and development workflows.
 
+mod ballistic;
 mod extract;
+mod run;
 
 use std::path::PathBuf;
 
@@ -18,7 +25,38 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-	/// Convert datamine to Data/*.txt format
+	/// Run the full pipeline: extract → convert → ballistic
+	Run {
+		/// Path to the War Thunder installation directory
+		#[arg(long)]
+		game_path: PathBuf,
+
+		/// Base output directory (creates Datamine/, Data/, Ballistic/ subdirs)
+		#[arg(short, long)]
+		output: PathBuf,
+
+		/// Mouse sensitivity (0 < s ≤ 1)
+		#[arg(short, long, default_value_t = 0.50)]
+		sensitivity: f64,
+
+		/// Path to ignore.txt vehicle blacklist file
+		#[arg(long)]
+		ignore_file: Option<PathBuf>,
+
+		/// Only process specific vehicle(s) by name (without .blkx extension)
+		#[arg(long)]
+		vehicle: Option<Vec<String>>,
+
+		/// Skip extraction (use existing datamine in Datamine/)
+		#[arg(long, default_value_t = false)]
+		skip_extract: bool,
+
+		/// Skip ballistic computation (only extract + convert)
+		#[arg(long, default_value_t = false)]
+		skip_ballistic: bool,
+	},
+
+	/// Convert datamine to Data/*.txt format (legacy, prefer `run`)
 	Convert {
 		/// Input directory containing extracted datamine (aces.vromfs.bin_u)
 		#[arg(short, long)]
@@ -31,13 +69,9 @@ enum Commands {
 		/// Only convert specific vehicle(s) by name (without .blkx extension)
 		#[arg(long)]
 		vehicle: Option<Vec<String>>,
-
-		/// Emit _ModOptic.txt variants for vehicles with secondary optics
-		#[arg(long, default_value_t = false)]
-		emit_modoptic: bool,
 	},
 
-	/// Extract datamine from War Thunder VROMFS archives
+	/// Extract datamine from War Thunder VROMFS archives (standalone)
 	Extract {
 		/// Path to the War Thunder installation directory
 		#[arg(long)]
@@ -55,19 +89,56 @@ enum Commands {
 		#[arg(long, default_value_t = false)]
 		force: bool,
 	},
+
+	/// Compute ballistic tables from Data/*.txt (legacy, prefer `run`)
+	Ballistic {
+		/// Input directory containing Data/*.txt files (Stage 1 output)
+		#[arg(short, long)]
+		input: PathBuf,
+
+		/// Output directory for Ballistic/{vehicle}/{shell}.txt files
+		#[arg(short, long)]
+		output: PathBuf,
+
+		/// Mouse sensitivity (0 < s ≤ 1)
+		#[arg(short, long, default_value_t = 0.50)]
+		sensitivity: f64,
+
+		/// Only process specific vehicle(s) by name (without .txt extension)
+		#[arg(long)]
+		vehicle: Option<Vec<String>>,
+	},
 }
 
 fn main() {
 	let cli = Cli::parse();
 
 	match cli.command {
+		Commands::Run {
+			game_path,
+			output,
+			sensitivity,
+			ignore_file,
+			vehicle,
+			skip_extract,
+			skip_ballistic,
+		} => {
+			run::run_pipeline(&run::PipelineConfig {
+				game_path: &game_path,
+				output: &output,
+				sensitivity,
+				ignore_file: ignore_file.as_deref(),
+				filter: vehicle.as_deref(),
+				skip_extract,
+				skip_ballistic,
+			});
+		},
 		Commands::Convert {
 			input,
 			output,
 			vehicle,
-			emit_modoptic,
 		} => {
-			run_convert(&input, &output, vehicle.as_deref(), emit_modoptic);
+			run_convert(&input, &output, vehicle.as_deref());
 		},
 		Commands::Extract {
 			game_path,
@@ -82,10 +153,23 @@ fn main() {
 				force,
 			);
 		},
+		Commands::Ballistic {
+			input,
+			output,
+			sensitivity,
+			vehicle,
+		} => {
+			ballistic::run_ballistic(
+				&input,
+				&output,
+				sensitivity,
+				vehicle.as_deref(),
+			);
+		},
 	}
 }
 
-fn run_convert(input: &PathBuf, output: &PathBuf, filter: Option<&[String]>, emit_modoptic: bool) {
+fn run_convert(input: &PathBuf, output: &PathBuf, filter: Option<&[String]>) {
 	// Input should be the aces.vromfs.bin_u directory itself
 	let tankmodels = input.join("gamedata").join("units").join("tankmodels");
 
@@ -143,18 +227,6 @@ fn run_convert(input: &PathBuf, output: &PathBuf, filter: Option<&[String]>, emi
 					failed += 1;
 				} else {
 					converted += 1;
-
-					// Emit ModOptic variant with secondary optics zoom values
-					if emit_modoptic && data.zoom_in_2.is_some() {
-						let mut modoptic = data.clone();
-						modoptic.zoom_in = modoptic.zoom_in_2.take();
-						modoptic.zoom_out = modoptic.zoom_out_2.take();
-						let modoptic_txt = emit_legacy_txt(&modoptic);
-						let modoptic_path = output.join(format!("{name}_ModOptic.txt"));
-						if let Err(e) = std::fs::write(&modoptic_path, &modoptic_txt) {
-							eprintln!("WRITE ERROR {name}_ModOptic: {e}");
-						}
-					}
 				}
 			},
 			Ok(_) => {

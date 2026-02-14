@@ -160,8 +160,6 @@ mod tests {
 			rocket_paths: vec![],
 			zoom_in: Some(6.0),
 			zoom_out: Some(30.0),
-			zoom_in_2: None,
-			zoom_out_2: None,
 			has_laser: true,
 			projectiles: vec![Projectile {
 				name: "test_shell".to_string(),
