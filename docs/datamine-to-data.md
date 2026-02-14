@@ -1,14 +1,13 @@
 # Stage 1 — Datamine → Data/{vehicle}.txt (authoritative mapping)
 
-This document exhaustively describes how the Stage 1 "Convert Datamine" step parses War Thunder datamine JSON (.blkx extracted as JSON) and writes the intermediate `Data/{vehicle}.txt` file. It covers:
+> **Implementation status:** This document was originally written as a reference for the C# implementation in `Form1.Button1_Click`. Stage 1 has since been **rewritten in Rust** — the current implementation lives in `tools/fcsgen/core/src/stage1.rs` (conversion logic) and `tools/fcsgen/cli/src/extract.rs` (VROMFS extraction). The extraction rules documented here remain the authoritative reference for *what* the code does and *why*, even though the *how* has changed significantly.
+
+This document exhaustively describes how the Stage 1 "Convert Datamine" step parses War Thunder datamine (.blkx files, deserialized as JSON) and writes the intermediate `Data/{vehicle}.txt` file. It covers:
 
 - Every field written to the Data file
 - Exactly where each field comes from in the datamine JSON and the expected type
-- All fallbacks, defaults, and edge cases the current code handles (or doesn’t)
+- All fallbacks, defaults, and edge cases
 - Known hardcoded constants used later that should be sourced from datamine
-- Suggestions for a future JSON-based intermediate to make this step robust
-
-The implementation lives in `Form1.Button1_Click` in `src/Form1.cs` (around lines 480–1580).
 
 ## Output shape at a glance
 
@@ -173,9 +172,11 @@ Recommendation: Surface these as data from the datamine where available, or at l
 - `HasLaser` is set by any `"laser"` substring, not a specific capability flag.
 - Module presence relies on substring matching of names rather than structured relationships.
 
-## Suggested JSON intermediate (forward-looking)
+## JSON intermediate (historical note)
 
-To improve robustness while maintaining compatibility, introduce a JSON intermediate (we can still emit the legacy .txt for the current pipeline):
+> **Status:** The pipeline now runs fully in-memory — extracted datamine data is piped directly from stage 1 to stage 2 via Rust structs without any intermediate files. The JSON intermediate described below was considered during planning but was superseded by the in-memory approach. This section is preserved for reference.
+
+The original proposal was to introduce a JSON intermediate while maintaining compatibility:
 
 - vehicle
   - id: `{vehicle_basename}`
@@ -214,9 +215,9 @@ From this JSON, emit the current .txt format deterministically (for interop) unt
 
 With these tweaks, Stage 2/3 could operate purely on the intermediate without re-reading game CSVs, and you can swap in a robust JSON reader instead of ad-hoc string scans.
 
-## Robust extraction (no more punctuation counting)
+## Robust extraction strategy (implemented in Rust)
 
-Below are sane, order-independent strategies to read each value using structured parsing. Paths are expressed as conceptual JSONPaths; adapt to your JSON library (Newtonsoft.Json SelectToken/SelectTokens recommended).
+> **Status:** These strategies are now implemented in the Rust codebase (`tools/fcsgen/core/src/stage1.rs` and `tools/fcsgen/cli/src/extract.rs`) using `serde_json` for structured parsing. The JSONPaths below serve as a reference for understanding the extraction logic.
 
 ### Vehicle header fields
 
@@ -302,13 +303,9 @@ Instead of substring checks, determine presence structurally:
 - For a given module, mark `presentInVehicle = true` if its `.blk` equals one of these weapon entries’ `.blk` (or if any of its projectiles appear in the weapon’s ammo listing by name).
 - If the schema doesn’t expose ammo arrays, assume `presentInVehicle = true` for modules referenced by the vehicle’s `commonWeapons` entries.
 
-### JSON library and helpers (C#)
+### JSON library and helpers
 
-- Prefer Newtonsoft.Json for flexible querying. Provide helpers:
-  - `T? Get<T>(JToken obj, string path)` → scalar retrieval with type coercion.
-  - `IReadOnlyList<T> GetArray<T>(JToken obj, string path)` → handles singletons and arrays uniformly.
-  - `double? Avg(params IEnumerable<double?> values)` → null-safe averaging.
-  - `IEnumerable<(int distance, double value)> GetArmorPowerSeries(JObject module)` → regex over property names.
+The Rust implementation uses `serde_json::Value` for flexible querying with pattern matching, replacing the C#/Newtonsoft approach originally described here.
 
 ### Selection heuristics (codified)
 
@@ -316,7 +313,6 @@ Instead of substring checks, determine presence structurally:
 - SelectPrimaryWeapon(weapons): filter by trigger, exclude rocket-like modules, prefer largest ballisticCaliber, break ties by non-zero mass; fallback to first plausible.
 - SelectRocketPaths(weapons): pick `.triggerGroup == "special"` first; then any weapon whose module is rocket-like; dedupe to 2.
 
-### Validation plan
+### Validation
 
-- For a sample set of vehicles (one per family), generate a JSON intermediate and legacy .txt, then diff with `examples/Data/{vehicle}.txt` to surface deltas.
-- Investigate deltas; adjust rules (e.g., dummy gunner0 handling, second optics discovery) and iterate.
+Golden-diff test suites validate stage 1 output against a committed corpus of expected `Data/{vehicle}.txt` files. Tests are in `tools/fcsgen/tests/stage1.rs` and cover 1168 vehicles.

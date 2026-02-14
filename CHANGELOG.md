@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-02-13
+
+### Added
+
+- **Rust datamine extraction and ballistic engine** — Stages 1 (datamine → Data/*.txt) and 2 (ballistic calculation) are now implemented in Rust (`tools/fcsgen/`), replacing ~1100 lines of C# with a faster, more robust implementation.
+- **Automatic game data extraction** — The app now extracts data directly from War Thunder's VROMFS archives. No more manual datamine exports or pre-generated data files.
+- **In-memory pipeline** — Extracted datamine data is piped directly from stage 1 to stage 2 without writing intermediate files to disk.
+- **Version + sensitivity freshness check** — A `.fcsgen-version` marker caches the game version and sensitivity value. Subsequent runs skip the pipeline entirely if nothing changed.
+- **Parallel processing** — Vehicle processing is parallelized with rayon, reducing pipeline runtime from ~79s to ~14s on a typical desktop.
+- **Ballistic memoization cache** — Cross-vehicle DashMap cache avoids recomputing identical shells shared between vehicles (~45% hit rate).
+- **Golden-diff test suites** — Stage 1 (1168 vehicles), stage 2 (3807 shells), and combined pipeline integration tests.
+- **Sight-type subdirectories** — Generated sights are now organized into `UserSights/{sight_type}/{vehicle}/` instead of a flat structure.
+- **Stage 3 reverse-engineering documentation** — Detailed notes on how the legacy sight generation code works, for future rewrite reference.
+
+### Changed
+
+- **Single "Generate Sights" button** — The three-button workflow (Convert Datamine, Make Ballistic, Make Sights) is unified into a single button with input validation.
+- **Input validation** — The app now validates that a sight type is selected, the game path contains `aces.vromfs.bin`, and `fcsgen.exe` is present before proceeding.
+- Pre-generated Data/ and Ballistic/ assets removed from the repository (now generated on-demand from game files).
+- Documentation overhauled: updated overview, removed obsolete planning docs, updated extraction rules reference to point to Rust implementation.
+
+### Removed
+
+- Button1 (Convert Datamine) and Button3 (Make Ballistic) — replaced by the integrated pipeline.
+- ModOptic feature — secondary optics (`_ModOptic.txt`) are no longer generated.
+- Pre-generated asset data files from the repository.
+- Obsolete documentation: `cli-stage1.md`, `known-issues.md`, `refactor-plan.md`.
+
 ## [2.1.3] - 2025-12-20
 
 ### Added
@@ -105,6 +133,7 @@ Project cleanup and modernization. Builds now distributed via GitHub Releases, u
 Original release by [Assin127](https://live.warthunder.com/user/58909037/). Last version before project was taken over for maintenance and cleanup.
 
 <!-- Versions -->
+[2.2.0]: https://github.com/tsvl/WT-FCSGenerator/releases/tag/v2.2.0
 [2.1.3]: https://github.com/tsvl/WT-FCSGenerator/releases/tag/v2.1.3
 [2.1.2]: https://github.com/tsvl/WT-FCSGenerator/releases/tag/v2.1.2
 [2.1.1]: https://github.com/tsvl/WT-FCSGenerator/releases/tag/v2.1.1
