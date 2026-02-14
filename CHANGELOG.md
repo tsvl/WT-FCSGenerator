@@ -10,10 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Introduced the Rust-based `fcsgen` Stage 1 pipeline (`tools/fcsgen`) with vehicle and weapon parsers, legacy emitters, and integration tests plus a `convert` CLI subcommand for datamine-to-`Data/*.txt` conversion (#34).
+- Added a Stage 0 War Thunder datamine extraction step driven by the `wt_blk` crate, exposed via the `fcsgen extract` CLI subcommand and wired into the WinForms UI so users only need to point at their game install (#2).
 
 ### Fixed
 
 - Improved projectile parsing fidelity: APDS armor power series extraction, Cx array averaging, `/name/short` fallbacks, case-sensitive laser checks, and handling of modification `commonWeapons`, ATGM belts, rocket DeMarre values, and unarmed vehicles (stage 1 follow-ups for issue #19).
+- Corrected asset packaging paths and made the datamine ignore list matching case-insensitive so the extraction pipeline actually honors `assets/ignore.txt`.
 
 ### Changed
 

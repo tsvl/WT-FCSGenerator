@@ -2,6 +2,8 @@
 //!
 //! See `docs/cli-stage1.md` for the full CLI specification.
 
+mod extract;
+
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
@@ -34,6 +36,25 @@ enum Commands {
 		#[arg(long, default_value_t = false)]
 		emit_modoptic: bool,
 	},
+
+	/// Extract datamine from War Thunder VROMFS archives
+	Extract {
+		/// Path to the War Thunder installation directory
+		#[arg(long)]
+		game_path: PathBuf,
+
+		/// Output directory for extracted datamine files
+		#[arg(short, long)]
+		output: PathBuf,
+
+		/// Path to ignore.txt vehicle blacklist file
+		#[arg(long)]
+		ignore_file: Option<PathBuf>,
+
+		/// Force re-extraction even if version matches cached marker
+		#[arg(long, default_value_t = false)]
+		force: bool,
+	},
 }
 
 fn main() {
@@ -47,6 +68,19 @@ fn main() {
 			emit_modoptic,
 		} => {
 			run_convert(&input, &output, vehicle.as_deref(), emit_modoptic);
+		},
+		Commands::Extract {
+			game_path,
+			output,
+			ignore_file,
+			force,
+		} => {
+			extract::run_extract(
+				&game_path,
+				&output,
+				ignore_file.as_deref(),
+				force,
+			);
 		},
 	}
 }
