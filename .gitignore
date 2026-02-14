@@ -454,4 +454,11 @@ Datamine/aces.vromfs.bin_u/gamedata/weapons/groundmodels_weapons/*
 Datamine/lang.vromfs.bin_u/lang/*
 !Datamine/lang.vromfs.bin_u/lang/.gitkeep
 
+# Extracted datamine under assets/ (fcsgen extract output)
+assets/Datamine/aces.vromfs.bin_u/gamedata/units/tankmodels/*
+!assets/Datamine/aces.vromfs.bin_u/gamedata/units/tankmodels/.gitkeep
+assets/Datamine/aces.vromfs.bin_u/gamedata/weapons/groundmodels_weapons/*
+!assets/Datamine/aces.vromfs.bin_u/gamedata/weapons/groundmodels_weapons/.gitkeep
+assets/Datamine/.fcsgen-version
+
 tools/fcsgen/test_data/*

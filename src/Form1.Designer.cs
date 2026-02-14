@@ -106,7 +106,7 @@ namespace FCS
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(241, 20);
             this.textBox1.TabIndex = 0;
-            this.textBox1.Text = "Datamine";
+            this.textBox1.Text = "Game Path";
             this.textBox1.Click += new System.EventHandler(this.TextBox1_Click);
             //
             // button1
@@ -117,7 +117,7 @@ namespace FCS
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(100, 20);
             this.button1.TabIndex = 22;
-            this.button1.Text = "Convert Datamine";
+            this.button1.Text = "Extract && Convert";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.Button1_Click);
             //
