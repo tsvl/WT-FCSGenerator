@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added Rust formatting configuration so the new workspace adheres to repository style.
 - WinForms UI now shells out to `fcsgen run`, replacing the legacy inline datamine parser so Stage 1 lives entirely in Rust (closes the multi-button workflow gap).
 - Datamine processing now stays in-memory by default (with `--write-datamine` for debugging), eliminating ~150 MB of intermediates and simplifying the WinForms output layout.
+- Ballistic pipeline now uses a density lookup table, shell-level memoization cache, and rayon-based parallelism, cutting corpus time from ~2 minutes to ~25 seconds while staying bit-for-bit identical to the C# reference.
 
 ### Removed
 
