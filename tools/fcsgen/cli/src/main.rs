@@ -58,6 +58,10 @@ enum Commands {
 		/// Skip ballistic computation (only extract + convert)
 		#[arg(long, default_value_t = false)]
 		skip_ballistic: bool,
+
+		/// Write full datamine .blkx files to disk (for debugging/testing)
+		#[arg(long, default_value_t = false)]
+		write_datamine: bool,
 	},
 
 	/// Convert datamine to Data/*.txt format (legacy, prefer `run`)
@@ -127,6 +131,7 @@ fn main() {
 			jobs,
 			skip_extract,
 			skip_ballistic,
+			write_datamine,
 		} => {
 			run::run_pipeline(&run::PipelineConfig {
 				game_path: &game_path,
@@ -137,6 +142,7 @@ fn main() {
 				jobs,
 				skip_extract,
 				skip_ballistic,
+				write_datamine,
 			});
 		},
 		Commands::Convert {
