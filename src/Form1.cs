@@ -23,6 +23,7 @@ namespace FCS
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
             InitializeComponent();
+            Text = $"WT-FCSGenerator v{Application.ProductVersion}";
             checkedListBox2.ItemCheck += ItemCheck;
         }
 

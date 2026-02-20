@@ -23,7 +23,7 @@ pub use parser::{parse_vehicle, parse_weapon_module};
 use std::collections::HashMap;
 use std::path::Path;
 
-pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+pub const VERSION: &str = env!("PROJECT_VERSION");
 
 /// In-memory datamine: maps normalized paths (relative to aces.vromfs.bin_u/)
 /// to file contents. Keys are lowercase with forward slashes, e.g.
