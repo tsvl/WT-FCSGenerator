@@ -10,7 +10,7 @@ All families consume:
 
 All families output:
 
-- `UserSights/{vehicle}/{sight}.blk` files
+- `Output/{vehicle}/{sight}.blk` files
 
 Below are the currently implemented families.
 

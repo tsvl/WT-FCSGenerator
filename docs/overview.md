@@ -95,7 +95,7 @@ After the Rust pipeline completes, the WinForms app generates sight `.blk` files
 2. For each vehicle, load ballistic tables from `Ballistic/{vehicle}/`
 3. Apply shell eligibility rules (skip smoke, practice, etc.) and pairing logic (`CanUseDoubleShell`)
 4. Dispatch to the selected sight family's `Create(...)` method
-5. Write `.blk` files to `UserSights/{sight_type}/{vehicle}/`
+5. Write `.blk` files to `Output/{sight_type}/{vehicle}/`
 
 **Sight families:** Tochka-SM2, Luch, Luch Lite, Duga, Duga-2, Sector. See [sights.md](sights.md) for details.
 
