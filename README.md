@@ -8,7 +8,7 @@ Originally created by [Assin127](https://live.warthunder.com/user/58909037/), no
 
 1. Get the latest build from the [Releases](https://github.com/tsvl/WT-FCSGenerator/releases) page (look for the `.zip` under the newest release).
 2. Extract the ZIP anywhere.
-3. Run `FCS.exe`. If prompted, install the [.NET 10 runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0).
+3. Run `FCS.exe` — no additional runtime or installer needed.
 
 ## Quick start
 
