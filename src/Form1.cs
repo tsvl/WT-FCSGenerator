@@ -3626,9 +3626,9 @@ namespace FCS
 
                 textBox6.Visible = false;
                 label9.Visible = false;
-                label2.Visible = false;
-                label3.Visible = false;
-                trackBar1.Visible = false;
+                label2.Visible = true;
+                label3.Visible = true;
+                trackBar1.Visible = true;
 
                 labelSightInfo.Text = "\u2713 No special controls setup needed.";
                 labelSightInfo.ForeColor = System.Drawing.Color.FromArgb(0, 128, 0);
@@ -3743,12 +3743,11 @@ namespace FCS
                 textBox8.Text = "120, -0.01"; // Detect Ally Pos
                 trackBar1.Value = 50;
 
-                // Hide controls not used by Luch/Luch Lite
                 textBox6.Visible = false;
                 label9.Visible = false;
-                label2.Visible = false;
-                label3.Visible = false;
-                trackBar1.Visible = false;
+                label2.Visible = true;
+                label3.Visible = true;
+                trackBar1.Visible = true;
 
                 if (comboBox1.Text == "Luch")
                 {
