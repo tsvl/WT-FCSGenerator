@@ -10,12 +10,13 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # ── Job 1: Build, package, and attest ──────────────────────────────
   build:
-    name: Build and package (Windows)
+    name: Build and package
     runs-on: windows-2022
     if: startsWith(github.ref, 'refs/tags/v')
     permissions:
-      contents: write
+      contents: read
       id-token: write
       attestations: write
     steps:
@@ -68,7 +69,7 @@ jobs:
       - name: Publish (win-x64, Release)
         shell: pwsh
         run: |
-          $pub = Join-Path $env:RUNNER_TEMP "publish\"
+          $pub = Join-Path $env:RUNNER_TEMP "publish"
           dotnet publish ./src/FCS.csproj -c Release -r win-x64 --no-restore -p:PublishDir="$pub"
 
           if (!(Test-Path $pub)) { Write-Error "Publish output not found at $pub"; exit 1 }
@@ -96,7 +97,6 @@ jobs:
           $zipName = "WT-FCSGenerator-$tag-win-x64.zip"
           $zipPath = Join-Path $dist $zipName
 
-          # Compress publish output directly
           Compress-Archive -Path (Join-Path $env:PUBLISH_DIR "*") -DestinationPath $zipPath -Force
 
           $zipSize = (Get-Item $zipPath).Length
@@ -107,21 +107,33 @@ jobs:
         with:
           subject-path: 'dist/*.zip'
 
-      - name: Upload release artifacts
+      - name: Upload release assets
         uses: actions/upload-artifact@v4
         with:
           name: release-assets
-          path: |
-            dist/*.zip
-            dist/*.sha256
+          path: dist/*.zip
           if-no-files-found: error
           retention-days: 7
+
+  # ── Job 2: Create GitHub Release (only after build succeeds) ───────
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download release assets
+        uses: actions/download-artifact@v4
+        with:
+          name: release-assets
+          path: dist
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: WT-FCSGenerator ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
           draft: false
           prerelease: false
           generate_release_notes: true
