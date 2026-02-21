@@ -15,7 +15,7 @@ jobs:
     runs-on: windows-2022
     if: startsWith(github.ref, 'refs/tags/v')
     permissions:
-      contents: read
+      contents: write
       id-token: write
       attestations: write
     steps:
@@ -58,7 +58,7 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.x'
-          dotnet-quality: 'ga'
+          dotnet-quality: 'preview'
 
       - name: Restore
         shell: pwsh
@@ -84,7 +84,7 @@ jobs:
             exit 1
           }
           $size = (Get-Item $exe).Length
-          Write-Host "✓ Build verification passed: FCS.exe ($([math]::Round($size/1KB, 2)) KB)"
+          Write-Host "✓ Build verification passed: FCS.exe ($([math]::Round($size/1MB, 2)) MB)"
 
       - name: Package ZIP
         shell: pwsh
@@ -116,3 +116,13 @@ jobs:
             dist/*.sha256
           if-no-files-found: error
           retention-days: 7
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: WT-FCSGenerator ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: dist/*.zip
