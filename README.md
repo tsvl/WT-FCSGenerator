@@ -1,94 +1,98 @@
-# FCS Generator
+# WT-FCSGenerator
 
-Updated version of the sight generation tool by  [Assin127](https://live.warthunder.com/user/58909037/). Cleanup in progress, but should be mostly functional. Currently depends on the (manually updated) included data files or a provided datamine source, but extraction from local install will be integrated later.
+Custom sight generator for War Thunder ground vehicles. Generates ballistic sights with real shell trajectories, penetration values, and rangefinder markings for every vehicle in the game.
+
+Originally created by [Assin127](https://live.warthunder.com/user/58909037/), now maintained and rewritten by [tsvl](https://github.com/tsvl).
 
 ## Download
 
-- Requires .NET 10 runtime: [Download here](https://dotnet.microsoft.com/en-us/download/dotnet/10.0).
-- Get the latest Windows build from [Releases](https://github.com/tsvl/WT-FCSGenerator/releases).
-- Download the newest ZIP, extract it anywhere, and run `FCS.exe`.
+1. Get the latest build from the [Releases](https://github.com/tsvl/WT-FCSGenerator/releases) page (look for the `.zip` under the newest release).
+2. Extract the ZIP anywhere.
+3. Run `FCS.exe`. If prompted, install the [.NET 10 runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0).
 
 ## Quick start
 
->[!IMPORTANT]
-> The game `UserSights` folder has been relocated as of the 2.53 Line of Contact update. According to the [changelog](https://warthunder.com/en/game/changelog/current/1806), custom sights should now be placed in:
->
-> - Windows: `Documents\My Games\War Thunder\saves\{user id}\production\UserSights`
-> - Linux: `$HOME/.config/WarThunder/Saves/{user id}/production/UserSights`
-> - macOS: `Users/{user name}/My Games/War Thunder/saves/{user id}/production/UserSights`
+1. Open `FCS.exe`.
+2. Set **Game Path** to your War Thunder install folder (e.g. `C:\Program Files\Steam\steamapps\common\WarThunder`).
+3. Pick a **Sight type** from the dropdown.
+4. Click **Generate Sights**.
 
-  1. Run `FCS.exe`.
-  2. Select language, sight type, and any options you want. The default paths are fine—no changes required.
-  3. Click the "Make Sights" button.
-  4. Copy the output files from the `UserSights` folder next to `FCS.exe` into the War Thunder `UserSights` folder.
-     - Optional: you can set the output path in FCS settings directly to the game’s `UserSights` folder to skip the copy step.
+The tool will extract the latest vehicle data from your install, compute ballistic tables, and write sight files to the `Output` folder next to `FCS.exe`.
 
->[!NOTE]
-> Make sure you select sight type and language before pressing "Make Sights" or it will sit on NaN% forever (lol).
-> The other two buttons ("Convert Datamine" and "Make Ballistic") are only needed if you want to update the data files from your local War Thunder install or another datamine source (see below). If you just want to generate sights using the included data files, you can ignore them.
+> [!TIP]
+> You can change the output path to point directly at the game's `UserSights` folder (see below) to skip the copy step.
 
-## Advanced: update data files from your local install
+## Installing sights into the game
 
-The included data files are manually updated and may be out of date. Data extraction will be moved into the actual tool soon, but in the meantime you can use the provided PowerShell script `Update-Datamine.ps1` along with the `wt_ext_cli` tool to extract the latest data files from your install.
+### Where to put the files
 
-  1. Download the wt_ext_cli binary from [Warthunder-Open-Source-Foundation/wt_ext_cli/releases](https://github.com/Warthunder-Open-Source-Foundation/wt_ext_cli/releases) (needed to extract the `.vromfs.bin` files) and place it on your PATH or next to Update-Datamine.ps1
-  2. Run the Update-Datamine.ps1 script - it will attempt to auto-detect your War Thunder install path, but will ask if it fails. You can also specify the install path manually by running it with `-InstallPath "C:\Path\To\WarThunder"`
-  3. Launch FCS.exe and click "Convert Datamine" → "Make Ballistic"
-  4. Proceed as normal with "Make Sights"
+Copy the generated sight folders from `Output/{sight type}/` into the game's `UserSights` folder:
 
-You can also downloaded the pre-extracted datamine files from [gszabi99/War-Thunder-Datamine](https://github.com/gszabi99/War-Thunder-Datamine) (which also uses wt_ext_cli for extraction) and point the Datamine path to that folder in FCS.exe
+- **Windows:** `Documents\My Games\WarThunder\Saves\{user id}\production\UserSights\`
+- **Linux:** `$HOME/.config/WarThunder/Saves/{user id}/production/UserSights/`
+- **macOS:** `Users/{user name}/My Games/WarThunder/Saves/{user id}/production/UserSights/`
+
+Your user ID can be found on your profile page at [store.gaijin.net](https://store.gaijin.net). If the `UserSights` folder doesn't exist, create it.
+
+### Loading sights in-game
+
+1. In the hangar, open **sight customization** for a ground vehicle.
+2. You'll see a **Choose preset** dropdown at the top (default: `User sight`) — this controls the overall combination of sight file + in-game overrides. Leave it on `User sight`.
+3. Below that is the **Reticle** dropdown (default: `Default grid sight`) — this is where custom sights appear. Select one of the generated sights from this menu.
+
+## Sight types
+
+| Sight | Rangefinder | Sensitivity setup required | Notes |
+| --- | --- | --- | --- |
+| **Tochka-SM2** | Box | Yes | Full-featured; supports two-shell overlay, laser, rocket, and howitzer variants |
+| **Luch** | Box | Yes | Lightweight, simplified geometry |
+| **Sector** | Box | Yes | Sector-based scale; SPAA-oriented |
+| **Duga** | Standard | No | Alternative layout, no special setup needed |
+| **Duga-2** | Standard | No | Updated Duga geometry |
+| **Luch Lite** | Standard | No | Minimal reticle, no special setup needed |
+
+## Sensitivity and scroll wheel setup
+
+> [!IMPORTANT]
+> This section only applies to **box rangefinder** sights (Tochka-SM2, Luch, Sector). The other sights (Duga, Duga-2, Luch Lite) work without any special control configuration.
+
+The box rangefinder sights use the scroll wheel to control sight distance, and the distance tick spacing is calculated based on a specific mouse wheel sensitivity value. For the rangefinder markings to line up correctly, your in-game sensitivity must match what the generator used.
+
+### In-game controls setup
+
+1. Go to **Controls** → **Ground Vehicles**.
+2. Set the **Mouse Wheel (ground vehicles)** dropdown to `Sight distance control`.
+3. Set **Mouse Wheel Multiplier (ground vehicles)** to match the sensitivity value in the generator (default: **50%**).
+4. Open the **Sight distance control** axis binding page and make sure:
+   - `Increase value` and `Decrease value` are **unbound** (clear any keybinds here).
+   - All sensitivity/multiplier sliders on this page are at their **default** values.
 
 > [!NOTE]
-> ignore.txt filters out event/non-playable vehicles to avoid increasing load times with unusable sight files. If downloaded from the above repo you may want to remove the files listed in ignore.txt from `aces.vromfs.bin_u/gamedata/units/tankmodels` yourself, or just ignore them if you don't care about the extra sight generation/load time.
+> War Thunder treats binding a physical axis (mouse wheel) directly to a control very differently from binding hotkeys to increase/decrease that control. The box rangefinder mechanism requires the direct axis binding — binding `Increase`/`Decrease` keys instead will not work correctly.
 
-If something breaks (there are many things that can break at the moment), you can yell at the professional customer support team (me) in the [Discord](https://discord.gg/sJJXeD82tF) and I can probably fix it.
+### If sights feel "off"
 
-Original README below - to be updated; instructions may be outdated (it should just werk with the default paths now) but still some useful information
+If the rangefinder box doesn't line up with the distance markings, the most likely cause is a mismatch between the generator sensitivity and the in-game `Mouse Wheel Multiplier`. Make sure both values match, then regenerate sights.
 
-```txt
-**************************************
-*** FCS MANAGER VERSION 1.6.231215 ***
-**************************************
+## Important caveats
 
-***************** EN *****************
+1. **Shell switching is manual.** The sights are pre-computed with real ballistic data rather than using the game's built-in rangefinder, so the sight for a given shell type won't automatically update when you switch ammo in-game. You'll need to select the correct sight for the shell you're using via the Reticle dropdown.
 
-* How to change the language, color or other settings?
-  1) Run the program
-  2) If the program is in the same directory as the folders "Localisation", "Ballistic", "Data",
-  then go to the next step. Otherwise, specify the path to each directory.
-  1) In the "UserSights" specify the folder UserSights from the directory of the game, in this case, all the sights will be loaded there.
-  2) In the "Language" list select language.
-  3) In the "Sight type" list, select sight.
-  4) In the window below, select the sight subtypes.
-  5) In the list below, select the playing countries.
-  6) If necessary, you can change some settings in "Advanced Settings".
-  7) Click the "Make sight" button.
+2. **Nation selection affects load times.** Generating sights for all nations produces a large number of files. Only select the nations you actually play to keep game load times reasonable.
 
- * Additional settings:
-  - "Sensitivity" is determined by the "Mouse Wheel Multiplier" of the game. By default 50%.
-  If you change this setting, you must recalculate the ballistics! To do this, press the "Make ballistic" button.
-  The ballistics of all projectiles are counted up to 4 km (in some cases less).
+## Options
 
-  Made by: assin127 (Discord)
+- **Language** — localization for sight labels (English, Russian, Chinese, etc.)
+- **Sensitivity** — must match your in-game `Mouse Wheel Multiplier` (only affects box rangefinder sights)
+- **Nation checkboxes** — which nations to generate sights for
+- **Sight subtypes** — toggle individual sight variants (double shell overlay, time of flight, armor penetration display, etc.)
+- **Advanced Settings** — colors, sizes, and positioning for sight elements
 
-***************** RU *****************
+## Support
 
- * Как сменить язык, цвет и другие настройки?
-  1) Запустить программу
-  2) Если программа находится в той же директории, что и папки Localisation, Ballistic, Data,
-  то переходим к следующему пункту. В противном случае указываем путь до каждой директории.
-  3) В графе UserSights указываем папку UserSights из директории игры, в этом случае все прицелы сразу загрузятся туда.
-  4) В списке Language выбираем язык.
-  5) В списке Sight type указываем прицел.
-  6) В окне ниже выбираем подтипы прицела.
-  7) В списке ниже указываем игровые страны.
-  8) При необходимости можно изменить некоторые настройки в Advanced Settings.
-  9) Нажать кнопку "Make sight".
+Something broken? Have questions? Join the [Discord](https://discord.gg/sJJXeD82tF).
 
- * Дополнительные настройки:
-  - Sensitivity определяется "Множителем колеса мыши" игры. По умолчанию 50%.
-  При изменении этого параметра необходимо пересчитать баллистику! Для этого требуется нажать кнопку Make ballistic.
-  Баллистика всех снарядов считается до 4 км (в некоторых случаях меньше).
+## Credits
 
-  Разработчик: assin127 (Discord)
-```
+- **[Assin127](https://live.warthunder.com/user/58909037/)** — original author of FCS Manager and all sight families
+- **[tsvl](https://github.com/tsvl)** — current maintainer
