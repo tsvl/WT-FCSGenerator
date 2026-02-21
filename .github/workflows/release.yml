@@ -35,6 +35,18 @@ jobs:
           }
           Write-Host "✓ Tag format valid: $tag"
 
+      - name: Validate VERSION matches tag
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $expected = $tag.TrimStart('v')
+          $actual = (Get-Content -Path VERSION -Raw).Trim()
+          if ($actual -ne $expected) {
+            Write-Error "VERSION file contains '$actual' but tag is '$tag' (expected '$expected')"
+            exit 1
+          }
+          Write-Host "✓ VERSION file matches tag: $actual"
+
       - name: Ensure tag commit is on main
         shell: pwsh
         run: |
