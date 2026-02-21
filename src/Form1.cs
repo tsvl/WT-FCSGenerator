@@ -3591,6 +3591,10 @@ namespace FCS
                 label2.Visible = true;
                 label3.Visible = true;
                 trackBar1.Visible = true;
+
+                labelSightInfo.Text = "\u26a0 Box rangefinder - requires scroll wheel bound to Sight distance control.\nMatch Sensitivity to in-game Mouse Wheel Multiplier.";
+                labelSightInfo.ForeColor = System.Drawing.Color.FromArgb(180, 120, 0);
+                labelSightInfo.Visible = true;
             }
             if (comboBox1.Text == "Duga")
             {
@@ -3625,6 +3629,10 @@ namespace FCS
                 label2.Visible = false;
                 label3.Visible = false;
                 trackBar1.Visible = false;
+
+                labelSightInfo.Text = "\u2713 No special controls setup needed.";
+                labelSightInfo.ForeColor = System.Drawing.Color.FromArgb(0, 128, 0);
+                labelSightInfo.Visible = true;
             }
             if (comboBox1.Text == "Duga-2")
             {
@@ -3660,6 +3668,10 @@ namespace FCS
                 label2.Visible = true;
                 label3.Visible = true;
                 trackBar1.Visible = true;
+
+                labelSightInfo.Text = "\u2713 No special controls setup needed.";
+                labelSightInfo.ForeColor = System.Drawing.Color.FromArgb(0, 128, 0);
+                labelSightInfo.Visible = true;
             }
             if (comboBox1.Text == "Sector")
             {
@@ -3694,6 +3706,10 @@ namespace FCS
                 label2.Visible = true;
                 label3.Visible = true;
                 trackBar1.Visible = true;
+
+                labelSightInfo.Text = "\u26a0 Box rangefinder - requires scroll wheel bound to Sight distance control.\nMatch Sensitivity to in-game Mouse Wheel Multiplier.";
+                labelSightInfo.ForeColor = System.Drawing.Color.FromArgb(180, 120, 0);
+                labelSightInfo.Visible = true;
             }
             if (comboBox1.Text == "Luch" || comboBox1.Text == "Luch Lite")
             {
@@ -3733,6 +3749,18 @@ namespace FCS
                 label2.Visible = false;
                 label3.Visible = false;
                 trackBar1.Visible = false;
+
+                if (comboBox1.Text == "Luch")
+                {
+                    labelSightInfo.Text = "\u26a0 Box rangefinder - requires scroll wheel bound to Sight distance control.\nMatch Sensitivity to in-game Mouse Wheel Multiplier.";
+                    labelSightInfo.ForeColor = System.Drawing.Color.FromArgb(180, 120, 0);
+                }
+                else
+                {
+                    labelSightInfo.Text = "\u2713 No special controls setup needed.";
+                    labelSightInfo.ForeColor = System.Drawing.Color.FromArgb(0, 128, 0);
+                }
+                labelSightInfo.Visible = true;
             }
         }
 
