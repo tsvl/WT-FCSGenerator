@@ -177,7 +177,7 @@ namespace FCS
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(241, 20);
             this.textBox4.TabIndex = 3;
-            this.textBox4.Text = "UserSights";
+            this.textBox4.Text = "Output";
             this.textBox4.Click += new System.EventHandler(this.TextBox4_Click);
             //
             // progressBar1
