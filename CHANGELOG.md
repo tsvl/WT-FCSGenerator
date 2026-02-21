@@ -5,31 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.2.0] - 2026-02-20
 
 ### Added
 
-- Introduced the Rust-based `fcsgen` Stage 1 pipeline (`tools/fcsgen`) with vehicle and weapon parsers, legacy emitters, and integration tests plus a `convert` CLI subcommand for datamine-to-`Data/*.txt` conversion (#34).
-- Added a Stage 0 War Thunder datamine extraction step driven by the `wt_blk` crate, exposed via the `fcsgen extract` CLI subcommand and wired into the WinForms UI so users only need to point at their game install (#2).
-- Checked-in `tools/fcsgen/test_data/` corpus fixtures (datamine inputs + expected legacy outputs) so remote CI and contributors can run the Stage 1 integration suite without local War Thunder files.
-- Added the Stage 2 ballistic engine rewrite with corpus-level tests plus the new `fcsgen run` CLI that chains extract → convert → ballistic in one go (replacing the legacy C# computation).
-
-### Fixed
-
-- Improved projectile parsing fidelity: APDS armor power series extraction, Cx array averaging, `/name/short` fallbacks, case-sensitive laser checks, and handling of modification `commonWeapons`, ATGM belts, rocket DeMarre values, and unarmed vehicles (stage 1 follow-ups for issue #19).
-- Corrected asset packaging paths and made the datamine ignore list matching case-insensitive so the extraction pipeline actually honors `assets/ignore.txt`.
+- **Rust `fcsgen` pipeline**: Vehicle/weapon parsing, datamine extraction, and ballistic computation now run via the Rust-based `fcsgen` tool, replacing the legacy C# pipeline (#33, #34, #46, #48, #50).
+- **One-click generation**: A single "Generate Sights" button runs the full extract → convert → ballistic pipeline. No more multi-step workflow (#47, #52).
+- **War Thunder datamine extraction**: The app extracts data directly from your game install using the `wt_blk` crate — no external tools or pre-generated files needed (#2, #48).
+- **Sensitivity and scroll wheel indicator**: A label now shows whether each sight type requires scroll wheel binding and sensitivity slider setup (#43, #66).
+- **Version number in title bar**: The window title now shows the current version (#44, #63).
+- **Build provenance attestation**: Release ZIPs include SLSA provenance so you can verify they were built from this repo (`gh attestation verify`) (#15).
 
 ### Changed
 
-- Added Rust formatting configuration so the new workspace adheres to repository style.
-- WinForms UI now shells out to `fcsgen run`, replacing the legacy inline datamine parser so Stage 1 lives entirely in Rust (closes the multi-button workflow gap).
-- Datamine processing now stays in-memory by default (with `--write-datamine` for debugging), eliminating ~150 MB of intermediates and simplifying the WinForms output layout.
-- WinForms generator now uses a single “Generate Sights” button that runs extract → convert → ballistic and writes per-sight-type subdirectories (`UserSights/{Sight}/Vehicle/`) for easier file management.
-- Ballistic pipeline now uses a density lookup table, shell-level memoization cache, and rayon-based parallelism, cutting corpus time from ~2 minutes to ~25 seconds while staying bit-for-bit identical to the C# reference.
+- **Self-contained build**: The app ships as a single compressed executable (~49 MB) with the .NET runtime bundled — no separate .NET install required (#39, #67).
+- **Output folder renamed**: Default output folder changed from `UserSights` to `Output` to avoid confusion with the game's UserSights directory (#64).
+- **In-memory datamine processing**: Extracted data stays in memory by default (use `--write-datamine` for debugging), eliminating ~150 MB of intermediate files (#59).
+- **Ballistic engine rewrite**: Uses a density lookup table, shell-level memoization, and rayon parallelism — corpus time dropped from ~2 minutes to ~25 seconds, bit-for-bit identical to C# reference (#51).
+- **Per-sight-type output**: Generated sights are written to subdirectories by sight type (`Output/{Sight}/Vehicle/`) for easier file management (#52).
+- **CI/CD overhaul**: Release workflow split into build + publish jobs, safe with immutable releases. Auto-generates release notes from merged PRs (#15).
+- **Documentation rewrite**: New README covering download, setup, sight types, sensitivity configuration, and caveats (#42).
 
 ### Removed
 
-- Dropped all pre-generated `assets/` payloads (Datamine, Data, Ballistic, Localization CSV dumps, and placeholder UserSights) now that the extractor + converter regenerate them on demand.
+- Dropped all pre-generated `assets/` payloads (Datamine, Data, Ballistic, Localization CSV dumps, and placeholder UserSights) now that the extractor + converter regenerate them on demand (#49).
+
+### Fixed
+
+- Improved projectile parsing fidelity: APDS armor power series, Cx array averaging, `/name/short` fallbacks, case-sensitive laser checks, modification `commonWeapons`, ATGM belts, rocket DeMarre values, and unarmed vehicles (#19 follow-ups).
+- Asset packaging paths and case-insensitive ignore list matching for the extraction pipeline.
 
 ## [2.1.3] - 2025-12-20
 
@@ -131,6 +135,7 @@ Project cleanup and modernization. Builds now distributed via GitHub Releases, u
 Original release by [Assin127](https://live.warthunder.com/user/58909037/). Last version before project was taken over for maintenance and cleanup.
 
 <!-- Versions -->
+[2.2.0]: https://github.com/tsvl/WT-FCSGenerator/releases/tag/v2.2.0
 [2.1.3]: https://github.com/tsvl/WT-FCSGenerator/releases/tag/v2.1.3
 [2.1.2]: https://github.com/tsvl/WT-FCSGenerator/releases/tag/v2.1.2
 [2.1.1]: https://github.com/tsvl/WT-FCSGenerator/releases/tag/v2.1.1
