@@ -29,22 +29,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Rust `fcsgen` pipeline**: Vehicle/weapon parsing, datamine extraction, and ballistic computation now run via the Rust-based `fcsgen` tool, replacing the legacy C# pipeline (#33, #34, #46, #48, #50).
-- **One-click generation**: A single "Generate Sights" button runs the full extract → convert → ballistic pipeline. No more multi-step workflow (#47, #52).
-- **War Thunder datamine extraction**: The app extracts data directly from your game install using the `wt_blk` crate — no external tools or pre-generated files needed (#2, #48).
-- **Sensitivity and scroll wheel indicator**: A label now shows whether each sight type requires scroll wheel binding and sensitivity slider setup (#43, #66).
-- **Version number in title bar**: The window title now shows the current version (#44, #63).
-- **Build provenance attestation**: Release ZIPs include SLSA provenance so you can verify they were built from this repo (`gh attestation verify`) (#15).
+- Vehicle/weapon parsing, datamine extraction, and ballistic computation now run via the Rust-based `fcsgen` tool, replacing the legacy C# pipeline (#33, #34, #46, #48, #50).
+- A single "Generate Sights" button runs the full extract → convert → ballistic pipeline. No more multi-step workflow (#47, #52).
+- The app extracts data directly from your game install using the `wt_blk` crate — no external tools or pre-generated files needed (#2, #48).
+- A label now shows whether each sight type requires scroll wheel binding and sensitivity slider setup (#43, #66).
+- The window title now shows the current version (#44, #63).
+- Release ZIPs include SLSA provenance so you can verify they were built from this repo (`gh attestation verify`) (#15).
 
 ### Changed
 
-- **Self-contained build**: The app ships as a single compressed executable (~49 MB) with the .NET runtime bundled — no separate .NET install required (#39, #67).
-- **Output folder renamed**: Default output folder changed from `UserSights` to `Output` to avoid confusion with the game's UserSights directory (#64).
-- **In-memory datamine processing**: Extracted data stays in memory by default (use `--write-datamine` for debugging), eliminating ~150 MB of intermediate files (#59).
-- **Ballistic engine rewrite**: Uses a density lookup table, shell-level memoization, and rayon parallelism — corpus time dropped from ~2 minutes to ~25 seconds, bit-for-bit identical to C# reference (#51).
-- **Per-sight-type output**: Generated sights are written to subdirectories by sight type (`Output/{Sight}/Vehicle/`) for easier file management (#52).
-- **CI/CD overhaul**: Release workflow split into build + publish jobs, safe with immutable releases. Auto-generates release notes from merged PRs (#15).
-- **Documentation rewrite**: New README covering download, setup, sight types, sensitivity configuration, and caveats (#42).
+- The app ships as a single compressed executable (~49 MB) with the .NET runtime bundled — no separate .NET install required (#39, #67).
+- Default output folder changed from `UserSights` to `Output` to avoid confusion with the game's UserSights directory (#64).
+- Extracted data stays in memory by default (use `--write-datamine` for debugging), eliminating ~150 MB of intermediate files (#59).
+- Uses a density lookup table, shell-level memoization, and rayon parallelism — corpus time dropped from ~2 minutes to ~25 seconds, bit-for-bit identical to C# reference (#51).
+- Generated sights are written to subdirectories by sight type (`Output/{Sight}/Vehicle/`) for easier file management (#52).
+- Release workflow split into build + publish jobs, safe with immutable releases. Auto-generates release notes from merged PRs (#15).
+- New README covering download, setup, sight types, sensitivity configuration, and caveats (#42).
 
 ### Removed
 
