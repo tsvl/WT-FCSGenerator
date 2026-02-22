@@ -152,7 +152,7 @@ namespace FCS
             textBox4.Name = "textBox4";
             textBox4.Size = new System.Drawing.Size(281, 20);
             textBox4.TabIndex = 3;
-            textBox4.Text = "Output";
+            textBox4.Text = "Output Path";
             textBox4.Click += TextBox4_Click;
             //
             // progressBar1

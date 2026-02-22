@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Sight type and language dropdowns now reject free-text input (dropdown-list only).
+- Intermediate pipeline output (`Data`, `Ballistic`, `Datamine`) is now generated inside the `assets/` folder instead of at the top level.
+- Default sight output folder renamed from `Output` to `output` (lowercase) for consistent casing with other shipped folders.
+- Output path textbox now shows `Output Path` as placeholder (matching `Game Path` style); defaults to `output/` next to `FCS.exe` if not changed.
 
 ## [2.2.0] - 2026-02-20
 

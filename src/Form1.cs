@@ -17,8 +17,8 @@ namespace FCS
         double[] ProgressSpeed = new double[20];
 
         // Hardcoded paths (previously editable via textboxes)
-        private static string DataPath => Path.Combine(Application.StartupPath, "Data");
-        private static string BallisticPath => Path.Combine(Application.StartupPath, "Ballistic");
+        private static string DataPath => Path.Combine(Application.StartupPath, "assets", "Data");
+        private static string BallisticPath => Path.Combine(Application.StartupPath, "assets", "Ballistic");
         public Form1()
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -553,7 +553,7 @@ namespace FCS
 
             // --- Run fcsgen pipeline (skips automatically if up-to-date) ---
             string ignoreFile = Path.Combine(Application.StartupPath, "assets", "ignore.txt");
-            Directory.CreateDirectory(Path.Combine(Application.StartupPath, "Datamine"));
+            Directory.CreateDirectory(Path.Combine(Application.StartupPath, "assets", "Datamine"));
 
             StartTime = DateTime.Now;
             IsRuning = true;
@@ -566,8 +566,9 @@ namespace FCS
                 double sensitivity = Convert.ToDouble(trackBar1.Value) / 100.0;
                 string baseDir = Application.StartupPath.TrimEnd('\\');
 
+                string assetsDir = Path.Combine(baseDir, "assets");
                 string runArgs = "run --game-path \"" + gamePath.TrimEnd('\\') + "\""
-                    + " --output \"" + baseDir + "\""
+                    + " --output \"" + assetsDir + "\""
                     + " --sensitivity " + sensitivity.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 if (File.Exists(ignoreFile))
                 {
@@ -607,7 +608,12 @@ namespace FCS
 
             // --- Sight generation ---
             double Sensivity = Convert.ToDouble(trackBar1.Value) / 100;
-            string sightOutputBase = Path.Combine(textBox4.Text, comboBox1.Text);
+            string outputDir = textBox4.Text;
+            if (outputDir == "Output Path" || string.IsNullOrWhiteSpace(outputDir))
+            {
+                outputDir = Path.Combine(Application.StartupPath, "output");
+            }
+            string sightOutputBase = Path.Combine(outputDir, comboBox1.Text);
             if (comboBox1.Text == "Tochka-SM2")
             {
                 string[] file_list = Directory.GetFiles(DataPath, "*.txt");
@@ -811,7 +817,7 @@ namespace FCS
 
                         string LangData = null;
                         string LangData2 = null;
-                        using (System.IO.StreamReader sr = new System.IO.StreamReader("Datamine\\lang.vromfs.bin_u\\lang\\units_weaponry.csv"))
+                        using (System.IO.StreamReader sr = new System.IO.StreamReader(Path.Combine(Application.StartupPath, "assets", "Datamine", "lang.vromfs.bin_u", "lang", "units_weaponry.csv")))
                         {
                             LangData = sr.ReadToEnd();
                         }
@@ -2435,7 +2441,7 @@ namespace FCS
                                                     }
                                                     string LangName = null;
                                                     string LangRocketName = null;
-                                                    using (System.IO.StreamReader sr = new System.IO.StreamReader("Datamine\\lang.vromfs.bin_u\\lang\\units_weaponry.csv"))
+                                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(Path.Combine(Application.StartupPath, "assets", "Datamine", "lang.vromfs.bin_u", "lang", "units_weaponry.csv")))
                                                     {
                                                         LangData = sr.ReadToEnd();
                                                     }
@@ -2547,7 +2553,7 @@ namespace FCS
                                         }
                                         string LangName = null;
                                         string LangRocketName = null;
-                                        using (System.IO.StreamReader sr = new System.IO.StreamReader("Datamine\\lang.vromfs.bin_u\\lang\\units_weaponry.csv"))
+                                        using (System.IO.StreamReader sr = new System.IO.StreamReader(Path.Combine(Application.StartupPath, "assets", "Datamine", "lang.vromfs.bin_u", "lang", "units_weaponry.csv")))
                                         {
                                             LangData = sr.ReadToEnd();
                                         }
