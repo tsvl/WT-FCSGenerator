@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Luch and Luch Lite sights now respect nation selection instead of generating for all nations.
+- Generate button no longer stays disabled after early validation failures (missing `fcsgen` tool or game path).
+- Generate button is disabled during generation to prevent overlapping jobs.
+- Timer no longer shows `infinity:NaN` for Luch and Luch Lite sights (`IsRuning` flag was not being reset).
+- Removed dead commented-out code in Luch and Luch Lite generation blocks.
+
+### Changed
+
+- Sight type and language dropdowns now reject free-text input (dropdown-list only).
+
 ## [2.2.0] - 2026-02-20
 
 ### Added
