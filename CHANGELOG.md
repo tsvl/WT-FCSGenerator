@@ -7,13 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Luch and Luch Lite sights now respect nation selection instead of generating for all nations.
+- Generate button no longer stays disabled after early validation failures (missing `fcsgen` tool or game path).
+- Generate button is disabled during generation to prevent overlapping jobs.
+- Timer no longer shows `infinity:NaN` for Luch and Luch Lite sights (`IsRuning` flag was not being reset).
+- Removed dead commented-out code in Luch and Luch Lite generation blocks.
+
 ### Changed
 
+- Sight type and language dropdowns now reject free-text input (dropdown-list only).
 - Intermediate pipeline output (`Data`, `Ballistic`, `Datamine`) is now generated inside the `assets/` folder instead of at the top level.
 - Default sight output folder renamed from `Output` to `output` (lowercase) for consistent casing with other shipped folders.
 - Output path textbox now shows `Output Path` as placeholder (matching `Game Path` style); defaults to `output/` next to `FCS.exe` if not changed.
 
 ## [2.2.0] - 2026-02-20
+
 ### Added
 
 - **Rust `fcsgen` pipeline**: Vehicle/weapon parsing, datamine extraction, and ballistic computation now run via the Rust-based `fcsgen` tool, replacing the legacy C# pipeline (#33, #34, #46, #48, #50).

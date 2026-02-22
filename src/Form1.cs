@@ -512,13 +512,16 @@ namespace FCS
 
         private void Button2_Click(object sender, EventArgs e)
         {
+            button2.Enabled = false;
+
             // --- Input validation ---
             string sightType = comboBox1.Text;
-            if (sightType == "Sight type" || comboBox1.SelectedIndex < 0)
+            if (comboBox1.SelectedIndex < 0)
             {
                 MessageBox.Show(
                     "Please select a sight type before generating sights.",
                     "No Sight Type", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                button2.Enabled = true;
                 return;
             }
 
@@ -532,6 +535,7 @@ namespace FCS
                     "fcsgen.exe not found at:\n" + toolPath +
                     "\n\nPlace the fcsgen binary in the tools/ subfolder next to FCS.exe.",
                     "Tool Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                button2.Enabled = true;
                 return;
             }
 
@@ -543,6 +547,7 @@ namespace FCS
                     "aces.vromfs.bin not found at:\n" + acesBin +
                     "\n\nMake sure the path points to the War Thunder installation directory.",
                     "Game Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                button2.Enabled = true;
                 return;
             }
 
@@ -578,6 +583,7 @@ namespace FCS
                     progressBar1.Style = ProgressBarStyle.Blocks;
                     progressBar1.Value = 0;
                     SpeedNumbers = 0;
+                    button2.Enabled = true;
                     return;
                 }
             }
@@ -592,6 +598,7 @@ namespace FCS
                 progressBar1.Style = ProgressBarStyle.Blocks;
                 progressBar1.Value = 0;
                 SpeedNumbers = 0;
+                button2.Enabled = true;
                 return;
             }
 
@@ -2287,11 +2294,26 @@ namespace FCS
                 }
                 foreach (string file in file_list)
                 {
-                    label1.Text = Path.GetFileNameWithoutExtension(file);
-                    label1.Refresh();
-                    string TankPath2 = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
-                    //if (Directory.Exists(TankPath2) == false)
+                    progressBar1.PerformStep();
+                    string Country = Path.GetFileNameWithoutExtension(file).Split('_')[0];
+                    bool MakeSight = false;
+                    foreach (object itemChecked in checkedListBox2.CheckedItems)
                     {
+                        if (itemChecked.ToString().Contains("USA").Equals(true) && Country == "us") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Germany").Equals(true) && Country == "germ") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("USSR").Equals(true) && Country == "ussr") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Britain").Equals(true) && Country == "uk") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Japan").Equals(true) && Country == "jp") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("China").Equals(true) && Country == "cn") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Italy").Equals(true) && Country == "it") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("France").Equals(true) && Country == "fr") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Sweden").Equals(true) && Country == "sw") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Israel").Equals(true) && Country == "il") { MakeSight = true; }
+                    }
+                    if (MakeSight == true)
+                    {
+                        label1.Text = Path.GetFileNameWithoutExtension(file);
+                        label1.Refresh();
                         double ZoomIn = 0;
                         double ZoomOut = 0;
                         string BulletName = null;
@@ -2306,7 +2328,6 @@ namespace FCS
                         double RocketArmorPower = 0;
                         string ExplosiveType = null;
                         double ArmorPower = 0;
-                        progressBar1.PerformStep();
                         string TankData = null;
                         using (System.IO.StreamReader sr = new System.IO.StreamReader(file))
                         {
@@ -2593,14 +2614,11 @@ namespace FCS
                             }
                         }
                     }
-                    /*else
-                    {
-                        progressBar1.PerformStep();
-                    }*/
                 }
-                label1.Text = "";
+                label1.Text = "File: ";
                 label1.Refresh();
                 progressBar1.Value = 0;
+                IsRuning = false;
             }
             if (comboBox1.Text == "Luch Lite")
             {
@@ -2611,8 +2629,23 @@ namespace FCS
                 progressBar1.Step = 1;
                 foreach (string file in file_list)
                 {
-                    string TankPath2 = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
-                    //if (Directory.Exists(TankPath2) == false)
+                    progressBar1.PerformStep();
+                    string Country = Path.GetFileNameWithoutExtension(file).Split('_')[0];
+                    bool MakeSight = false;
+                    foreach (object itemChecked in checkedListBox2.CheckedItems)
+                    {
+                        if (itemChecked.ToString().Contains("USA").Equals(true) && Country == "us") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Germany").Equals(true) && Country == "germ") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("USSR").Equals(true) && Country == "ussr") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Britain").Equals(true) && Country == "uk") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Japan").Equals(true) && Country == "jp") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("China").Equals(true) && Country == "cn") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Italy").Equals(true) && Country == "it") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("France").Equals(true) && Country == "fr") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Sweden").Equals(true) && Country == "sw") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Israel").Equals(true) && Country == "il") { MakeSight = true; }
+                    }
+                    if (MakeSight == true)
                     {
                         label1.Text = Path.GetFileNameWithoutExtension(file);
                         label1.Refresh();
@@ -2624,7 +2657,6 @@ namespace FCS
                         double BallisticCaliber = 0;
                         double Speed = 0;
                         double Cx = 0;
-                        progressBar1.PerformStep();
                         string TankData = null;
                         using (System.IO.StreamReader sr = new System.IO.StreamReader(file))
                         {
@@ -2719,14 +2751,11 @@ namespace FCS
                             }
                         }
                     }
-                    /*else
-                    {
-                        progressBar1.PerformStep();
-                    }*/
                 }
-                label1.Text = "";
+                label1.Text = "File: ";
                 label1.Refresh();
                 progressBar1.Value = 0;
+                IsRuning = false;
             }
             if (comboBox1.Text == "Duga")
             {
@@ -3550,6 +3579,9 @@ namespace FCS
                 progressBar1.Value = 0;
                 IsRuning = false;
             }
+
+            IsRuning = false;
+            button2.Enabled = true;
         }
 
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)

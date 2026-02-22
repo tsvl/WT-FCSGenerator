@@ -121,6 +121,7 @@ namespace FCS
             // comboBox1
             //
             comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
+            comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             comboBox1.FormattingEnabled = true;
             comboBox1.Items.AddRange(new object[] { "Tochka-SM2", "Duga", "Duga-2", "Luch", "Luch Lite", "Sector" });
             comboBox1.Location = new System.Drawing.Point(4, 93);
@@ -128,12 +129,12 @@ namespace FCS
             comboBox1.Name = "comboBox1";
             comboBox1.Size = new System.Drawing.Size(281, 21);
             comboBox1.TabIndex = 5;
-            comboBox1.Text = "Sight type";
             comboBox1.SelectedIndexChanged += ComboBox1_SelectedIndexChanged;
             //
             // comboBox2
             //
             comboBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
+            comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             comboBox2.FormattingEnabled = true;
             comboBox2.Items.AddRange(new object[] { "English", "French", "Italian", "German", "Spanish", "Russian", "Polish", "Czech", "Turkish", "Chinese", "Japanese", "Portuguese", "Ukrainian", "Serbian", "Hungarian", "Korean", "Belarusian", "Romanian", "TChinese", "HChinese" });
             comboBox2.Location = new System.Drawing.Point(4, 68);
