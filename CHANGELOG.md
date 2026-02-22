@@ -5,8 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]\n\n### Changed\n\n- Intermediate pipeline output (`Data`, `Ballistic`, `Datamine`) is now generated inside the `assets/` folder instead of at the top level.\n- Default sight output folder renamed from `Output` to `output` (lowercase) for consistent casing with other shipped folders.\n- Output path textbox now shows `Output Path` as placeholder (matching `Game Path` style); defaults to `output/` next to `FCS.exe` if not changed.\n\n## [2.2.0] - 2026-02-20
+## [Unreleased]
 
+### Changed
+
+- Intermediate pipeline output (`Data`, `Ballistic`, `Datamine`) is now generated inside the `assets/` folder instead of at the top level.
+- Default sight output folder renamed from `Output` to `output` (lowercase) for consistent casing with other shipped folders.
+- Output path textbox now shows `Output Path` as placeholder (matching `Game Path` style); defaults to `output/` next to `FCS.exe` if not changed.
+
+## [2.2.0] - 2026-02-20
 ### Added
 
 - **Rust `fcsgen` pipeline**: Vehicle/weapon parsing, datamine extraction, and ballistic computation now run via the Rust-based `fcsgen` tool, replacing the legacy C# pipeline (#33, #34, #46, #48, #50).
