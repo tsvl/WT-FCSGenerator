@@ -101,7 +101,7 @@ namespace FCS
             string Meters = "м";
             string Seconds = "с";
             string Millimetrs = "мм";
-            if (Language == "English")
+            if (Language != "Russian")
             {
                 Zoom = "Zoom: ";
                 Capture = "Target capture: ON";

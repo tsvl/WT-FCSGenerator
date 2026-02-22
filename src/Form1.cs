@@ -2282,10 +2282,25 @@ namespace FCS
                 progressBar1.Maximum = file_list.Length;
                 progressBar1.Step = 1;
                 string Language = "English";
-                if (comboBox2.Text == "Русский")
-                {
-                    Language = "Русский";
-                }
+                if (comboBox2.Text == "French") { Language = "French"; }
+                if (comboBox2.Text == "Italian") { Language = "Italian"; }
+                if (comboBox2.Text == "German") { Language = "German"; }
+                if (comboBox2.Text == "Spanish") { Language = "Spanish"; }
+                if (comboBox2.Text == "Russian") { Language = "Russian"; }
+                if (comboBox2.Text == "Polish") { Language = "Polish"; }
+                if (comboBox2.Text == "Czech") { Language = "Czech"; }
+                if (comboBox2.Text == "Turkish") { Language = "Turkish"; }
+                if (comboBox2.Text == "Chinese") { Language = "Chinese"; }
+                if (comboBox2.Text == "Japanese") { Language = "Japanese"; }
+                if (comboBox2.Text == "Portuguese") { Language = "Portuguese"; }
+                if (comboBox2.Text == "Ukrainian") { Language = "Ukrainian"; }
+                if (comboBox2.Text == "Serbian") { Language = "Serbian"; }
+                if (comboBox2.Text == "Hungarian") { Language = "Hungarian"; }
+                if (comboBox2.Text == "Korean") { Language = "Korean"; }
+                if (comboBox2.Text == "Belarusian") { Language = "Belarusian"; }
+                if (comboBox2.Text == "Romanian") { Language = "Romanian"; }
+                if (comboBox2.Text == "TChinese") { Language = "TChinese"; }
+                if (comboBox2.Text == "HChinese") { Language = "HChinese"; }
                 foreach (string file in file_list)
                 {
                     progressBar1.PerformStep();
@@ -2439,56 +2454,53 @@ namespace FCS
                                                     {
                                                         LangData = sr.ReadToEnd();
                                                     }
-                                                    if (Language == "Русский")
+                                                    FileName = "Luch_";
+                                                    int Pos = 1;
+                                                    if (Language == "English") { Pos = 1; }
+                                                    if (Language == "French") { Pos = 2; }
+                                                    if (Language == "Italian") { Pos = 3; }
+                                                    if (Language == "German") { Pos = 4; }
+                                                    if (Language == "Spanish") { Pos = 5; }
+                                                    if (Language == "Russian") { Pos = 6; }
+                                                    if (Language == "Polish") { Pos = 7; }
+                                                    if (Language == "Czech") { Pos = 8; }
+                                                    if (Language == "Turkish") { Pos = 9; }
+                                                    if (Language == "Chinese") { Pos = 10; }
+                                                    if (Language == "Japanese") { Pos = 11; }
+                                                    if (Language == "Portuguese") { Pos = 12; }
+                                                    if (Language == "Ukrainian") { Pos = 13; }
+                                                    if (Language == "Serbian") { Pos = 14; }
+                                                    if (Language == "Hungarian") { Pos = 15; }
+                                                    if (Language == "Korean") { Pos = 16; }
+                                                    if (Language == "Belarusian") { Pos = 17; }
+                                                    if (Language == "Romanian") { Pos = 18; }
+                                                    if (Language == "TChinese") { Pos = 19; }
+                                                    if (Language == "HChinese") { Pos = 20; }
+                                                    StringReader reader1 = new StringReader(LangData);
+                                                    string line1 = String.Empty;
+                                                    while ((line1 = reader1.ReadLine()) != null)
                                                     {
-                                                        FileName = "Luch_";
-                                                        StringReader reader1 = new StringReader(LangData);
-                                                        string line1 = String.Empty;
-                                                        while ((line1 = reader1.ReadLine()) != null)
+                                                        if (line1.Contains("\"" + BulletName + "\""))
                                                         {
-                                                            if (line1.Contains("\"" + BulletName + "\""))
+                                                            var parts = line1.Split(';');
+                                                            if (Pos < parts.Length)
                                                             {
-                                                                LangName = line1.Split(';')[6];
-                                                                LangName = LangName.Replace("\"", "");
-                                                            }
-                                                        }
-                                                        if (HasRocket == true)
-                                                        {
-                                                            StringReader reader3 = new StringReader(LangData);
-                                                            line1 = String.Empty;
-                                                            while ((line1 = reader3.ReadLine()) != null)
-                                                            {
-                                                                if (line1.Contains("\"" + RocketName + "\""))
-                                                                {
-                                                                    LangRocketName = line1.Split(';')[6];
-                                                                    LangRocketName = LangRocketName.Replace("\"", "");
-                                                                }
+                                                                LangName = parts[Pos].Replace("\"", "");
                                                             }
                                                         }
                                                     }
-                                                    if (Language == "English")
+                                                    if (HasRocket == true)
                                                     {
-                                                        FileName = "Luch_";
-                                                        StringReader reader1 = new StringReader(LangData);
-                                                        string line1 = String.Empty;
-                                                        while ((line1 = reader1.ReadLine()) != null)
+                                                        StringReader reader3 = new StringReader(LangData);
+                                                        line1 = String.Empty;
+                                                        while ((line1 = reader3.ReadLine()) != null)
                                                         {
-                                                            if (line1.Contains("\"" + BulletName + "\""))
+                                                            if (line1.Contains("\"" + RocketName + "\""))
                                                             {
-                                                                LangName = line1.Split(';')[1];
-                                                                LangName = LangName.Replace("\"", "");
-                                                            }
-                                                        }
-                                                        if (HasRocket == true)
-                                                        {
-                                                            StringReader reader3 = new StringReader(LangData);
-                                                            line1 = String.Empty;
-                                                            while ((line1 = reader3.ReadLine()) != null)
-                                                            {
-                                                                if (line1.Contains("\"" + RocketName + "\""))
+                                                                var parts = line1.Split(';');
+                                                                if (Pos < parts.Length)
                                                                 {
-                                                                    LangRocketName = line1.Split(';')[6];
-                                                                    LangRocketName = LangRocketName.Replace("\"", "");
+                                                                    LangRocketName = parts[Pos].Replace("\"", "");
                                                                 }
                                                             }
                                                         }
@@ -2551,31 +2563,38 @@ namespace FCS
                                         {
                                             LangData = sr.ReadToEnd();
                                         }
-                                        if (Language == "Русский")
+                                        FileName = "Luch_";
+                                        int Pos = 1;
+                                        if (Language == "English") { Pos = 1; }
+                                        if (Language == "French") { Pos = 2; }
+                                        if (Language == "Italian") { Pos = 3; }
+                                        if (Language == "German") { Pos = 4; }
+                                        if (Language == "Spanish") { Pos = 5; }
+                                        if (Language == "Russian") { Pos = 6; }
+                                        if (Language == "Polish") { Pos = 7; }
+                                        if (Language == "Czech") { Pos = 8; }
+                                        if (Language == "Turkish") { Pos = 9; }
+                                        if (Language == "Chinese") { Pos = 10; }
+                                        if (Language == "Japanese") { Pos = 11; }
+                                        if (Language == "Portuguese") { Pos = 12; }
+                                        if (Language == "Ukrainian") { Pos = 13; }
+                                        if (Language == "Serbian") { Pos = 14; }
+                                        if (Language == "Hungarian") { Pos = 15; }
+                                        if (Language == "Korean") { Pos = 16; }
+                                        if (Language == "Belarusian") { Pos = 17; }
+                                        if (Language == "Romanian") { Pos = 18; }
+                                        if (Language == "TChinese") { Pos = 19; }
+                                        if (Language == "HChinese") { Pos = 20; }
+                                        StringReader reader1 = new StringReader(LangData);
+                                        string line1 = String.Empty;
+                                        while ((line1 = reader1.ReadLine()) != null)
                                         {
-                                            FileName = "Luch_";
-                                            StringReader reader1 = new StringReader(LangData);
-                                            string line1 = String.Empty;
-                                            while ((line1 = reader1.ReadLine()) != null)
+                                            if (line1.Contains("\"" + BulletName + "\""))
                                             {
-                                                if (line1.Contains("\"" + BulletName + "\""))
+                                                var parts = line1.Split(';');
+                                                if (Pos < parts.Length)
                                                 {
-                                                    LangName = line1.Split(';')[6];
-                                                    LangName = LangName.Replace("\"", "");
-                                                }
-                                            }
-                                        }
-                                        if (Language == "English")
-                                        {
-                                            FileName = "Luch_";
-                                            StringReader reader1 = new StringReader(LangData);
-                                            string line1 = String.Empty;
-                                            while ((line1 = reader1.ReadLine()) != null)
-                                            {
-                                                if (line1.Contains("\"" + BulletName + "\""))
-                                                {
-                                                    LangName = line1.Split(';')[1];
-                                                    LangName = LangName.Replace("\"", "");
+                                                    LangName = parts[Pos].Replace("\"", "");
                                                 }
                                             }
                                         }
