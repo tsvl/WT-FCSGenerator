@@ -19,7 +19,7 @@ use wt_blk::vromf::{File as VromfFile, VromfUnpacker};
 
 use fcsgen_core::ballistic::{BallisticCache, compute_ballistic_cached, should_skip};
 use fcsgen_core::parser::data::from_projectile;
-use fcsgen_core::{convert_vehicle, convert_vehicle_in_memory, emit_legacy_txt};
+use fcsgen_core::{convert_vehicle, convert_vehicle_in_memory, emit_legacy_txt, lookup_vehicle_id};
 
 use crate::extract;
 
@@ -302,9 +302,12 @@ fn run_pipeline_in_memory(
 				return vs;
 			}
 
+			// Look up correct-casing vehicle ID from unittags
+			let vehicle_id = lookup_vehicle_id(&extraction.unittags, name);
+
 			// Write Data/{vehicle}.txt (needed by C# sight generator)
 			let txt = emit_legacy_txt(&data);
-			let data_path = data_dir.join(format!("{name}.txt"));
+			let data_path = data_dir.join(format!("{vehicle_id}.txt"));
 			if let Err(e) = std::fs::write(&data_path, &txt) {
 				eprintln!("WRITE ERROR {name}: {e}");
 				vs.convert_failed += 1;
@@ -318,7 +321,7 @@ fn run_pipeline_in_memory(
 				return vs;
 			}
 
-			process_ballistic(&data, name, ballistic_dir, sensitivity, ballistic_cache, &mut vs);
+			process_ballistic(&data, vehicle_id, ballistic_dir, sensitivity, ballistic_cache, &mut vs);
 			vs
 		})
 		.reduce(VehicleStats::default, VehicleStats::merge);
@@ -348,6 +351,9 @@ fn run_pipeline_from_disk(
 		eprintln!("Run without --skip-extract to populate the datamine first.");
 		std::process::exit(1);
 	}
+
+	// Load unittags for vehicle ID casing lookup
+	let unittags = extract::extract_unittags(cfg.game_path);
 
 	// Collect vehicle files
 	let mut vehicles: Vec<_> = std::fs::read_dir(&tankmodels)
@@ -399,9 +405,12 @@ fn run_pipeline_from_disk(
 				return vs;
 			}
 
-			// Write Data/{vehicle}.txt
+			// Look up correct-casing vehicle ID from unittags
+			let vehicle_id = lookup_vehicle_id(&unittags, &name);
+
+			// Write Data/{vehicle}.txt using correct casing from unittags
 			let txt = emit_legacy_txt(&data);
-			let data_path = data_dir.join(format!("{name}.txt"));
+			let data_path = data_dir.join(format!("{vehicle_id}.txt"));
 			if let Err(e) = std::fs::write(&data_path, &txt) {
 				eprintln!("WRITE ERROR {name}: {e}");
 				vs.convert_failed += 1;
@@ -414,7 +423,8 @@ fn run_pipeline_from_disk(
 				return vs;
 			}
 
-			process_ballistic(&data, &name, ballistic_dir, sensitivity, ballistic_cache, &mut vs);
+			// Use unittags lookup for ballistic folder names (correct casing)
+			process_ballistic(&data, vehicle_id, ballistic_dir, sensitivity, ballistic_cache, &mut vs);
 			vs
 		})
 		.reduce(VehicleStats::default, VehicleStats::merge);

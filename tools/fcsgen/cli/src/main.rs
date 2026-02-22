@@ -232,7 +232,7 @@ fn run_convert(input: &PathBuf, output: &PathBuf, filter: Option<&[String]>) {
 		match convert_vehicle(&path, datamine_root) {
 			Ok(data) if data.is_armed() => {
 				let txt = emit_legacy_txt(&data);
-				let out_path = output.join(format!("{name}.txt"));
+				let out_path = output.join(format!("{}.txt", data.id));
 
 				if let Err(e) = std::fs::write(&out_path, &txt) {
 					eprintln!("WRITE ERROR {name}: {e}");

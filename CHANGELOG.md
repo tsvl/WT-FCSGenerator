@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **Vehicle ID casing**: Output folder and file names now use correct casing for War Thunder's case-sensitive `UserSights` matching (e.g., `germ_pzkpfw_VI_ausf_b_tiger_IIh_sla` instead of all-lowercase). Vehicle IDs are looked up from `char.vromfs.bin/config/unittags.blkx` at extraction time (#36).
+
 ## [2.2.0] - 2026-02-20
 
 ### Added

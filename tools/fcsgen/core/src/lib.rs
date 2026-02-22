@@ -18,7 +18,7 @@ pub use emit::emit_legacy_txt;
 pub use error::{ParseError, Result};
 pub use model::{Projectile, VehicleData};
 pub use parser::data::{from_projectile, parse_data_file, parse_data_text};
-pub use parser::{parse_vehicle, parse_weapon_module};
+pub use parser::{UnittagsMap, lookup_vehicle_id, parse_unittags, parse_unittags_str, parse_vehicle, parse_weapon_module};
 
 use std::collections::HashMap;
 use std::path::Path;
