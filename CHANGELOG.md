@@ -9,7 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Vehicle ID casing**: Output folder and file names now use correct casing for War Thunder's case-sensitive `UserSights` matching (e.g., `germ_pzkpfw_VI_ausf_b_tiger_IIh_sla` instead of all-lowercase). Vehicle IDs are looked up from `char.vromfs.bin/config/unittags.blkx` at extraction time (#36).
+- Output folder and file names now use correct casing for War Thunder's case-sensitive `UserSights` matching (e.g., `germ_pzkpfw_VI_ausf_b_tiger_IIh_sla` instead of all-lowercase). Vehicle IDs are looked up from `char.vromfs.bin/config/unittags.blkx` at extraction time (#36).
+- Luch and Luch Lite sights now respect nation selection instead of generating for all nations.
+- Generate button no longer stays disabled after early validation failures (missing `fcsgen` tool or game path).
+- Generate button is disabled during generation to prevent overlapping jobs.
+- Timer no longer shows `infinity:NaN` for Luch and Luch Lite sights (`IsRuning` flag was not being reset).
+- Removed dead commented-out code in Luch and Luch Lite generation blocks.
+
+### Changed
+
+- Sight type and language dropdowns now reject free-text input (dropdown-list only).
 
 ## [2.2.0] - 2026-02-20
 
