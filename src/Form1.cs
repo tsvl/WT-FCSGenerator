@@ -2651,16 +2651,46 @@ namespace FCS
                     bool MakeSight = false;
                     foreach (object itemChecked in checkedListBox2.CheckedItems)
                     {
-                        if (itemChecked.ToString().Contains("USA").Equals(true) && Country == "us") { MakeSight = true; }
-                        if (itemChecked.ToString().Contains("Germany").Equals(true) && Country == "germ") { MakeSight = true; }
-                        if (itemChecked.ToString().Contains("USSR").Equals(true) && Country == "ussr") { MakeSight = true; }
-                        if (itemChecked.ToString().Contains("Britain").Equals(true) && Country == "uk") { MakeSight = true; }
-                        if (itemChecked.ToString().Contains("Japan").Equals(true) && Country == "jp") { MakeSight = true; }
-                        if (itemChecked.ToString().Contains("China").Equals(true) && Country == "cn") { MakeSight = true; }
-                        if (itemChecked.ToString().Contains("Italy").Equals(true) && Country == "it") { MakeSight = true; }
-                        if (itemChecked.ToString().Contains("France").Equals(true) && Country == "fr") { MakeSight = true; }
-                        if (itemChecked.ToString().Contains("Sweden").Equals(true) && Country == "sw") { MakeSight = true; }
-                        if (itemChecked.ToString().Contains("Israel").Equals(true) && Country == "il") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("USA").Equals(true) && Country == "us")
+                        {
+                            MakeSight = true;
+                        }
+                        if (itemChecked.ToString().Contains("Germany").Equals(true) && Country == "germ")
+                        {
+                            MakeSight = true;
+                        }
+                        if (itemChecked.ToString().Contains("USSR").Equals(true) && Country == "ussr")
+                        {
+                            MakeSight = true;
+                        }
+                        if (itemChecked.ToString().Contains("Britain").Equals(true) && Country == "uk")
+                        {
+                            MakeSight = true;
+                        }
+                        if (itemChecked.ToString().Contains("Japan").Equals(true) && Country == "jp")
+                        {
+                            MakeSight = true;
+                        }
+                        if (itemChecked.ToString().Contains("China").Equals(true) && Country == "cn")
+                        {
+                            MakeSight = true;
+                        }
+                        if (itemChecked.ToString().Contains("Italy").Equals(true) && Country == "it")
+                        {
+                            MakeSight = true;
+                        }
+                        if (itemChecked.ToString().Contains("France").Equals(true) && Country == "fr")
+                        {
+                            MakeSight = true;
+                        }
+                        if (itemChecked.ToString().Contains("Sweden").Equals(true) && Country == "sw")
+                        {
+                            MakeSight = true;
+                        }
+                        if (itemChecked.ToString().Contains("Israel").Equals(true) && Country == "il")
+                        {
+                            MakeSight = true;
+                        }
                     }
                     if (MakeSight == true)
                     {
