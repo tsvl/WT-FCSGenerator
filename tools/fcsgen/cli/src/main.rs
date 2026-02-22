@@ -11,10 +11,10 @@ mod ballistic;
 mod extract;
 mod run;
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use clap::{Parser, Subcommand};
-use fcsgen_core::{VERSION, convert_vehicle, emit_legacy_txt};
+use fcsgen_core::{VERSION, convert_vehicle, emit_legacy_txt, lookup_vehicle_id};
 
 #[derive(Parser)]
 #[command(name = "fcsgen", version = VERSION, about = "War Thunder FCS generation tool")]
@@ -73,6 +73,10 @@ enum Commands {
 		/// Output directory for converted .txt files
 		#[arg(short, long)]
 		output: PathBuf,
+
+		/// Path to the War Thunder installation directory (for correct vehicle ID casing)
+		#[arg(long)]
+		game_path: Option<PathBuf>,
 
 		/// Only convert specific vehicle(s) by name (without .blkx extension)
 		#[arg(long)]
@@ -148,9 +152,10 @@ fn main() {
 		Commands::Convert {
 			input,
 			output,
+			game_path,
 			vehicle,
 		} => {
-			run_convert(&input, &output, vehicle.as_deref());
+			run_convert(&input, &output, game_path.as_deref(), vehicle.as_deref());
 		},
 		Commands::Extract {
 			game_path,
@@ -181,7 +186,7 @@ fn main() {
 	}
 }
 
-fn run_convert(input: &PathBuf, output: &PathBuf, filter: Option<&[String]>) {
+fn run_convert(input: &PathBuf, output: &PathBuf, game_path: Option<&Path>, filter: Option<&[String]>) {
 	// Input should be the aces.vromfs.bin_u directory itself
 	let tankmodels = input.join("gamedata").join("units").join("tankmodels");
 
@@ -194,6 +199,15 @@ fn run_convert(input: &PathBuf, output: &PathBuf, filter: Option<&[String]>) {
 
 	// convert_vehicle expects the parent of aces.vromfs.bin_u
 	let datamine_root = input.parent().unwrap_or(input);
+
+	// Load unittags for correct vehicle ID casing (optional)
+	let unittags = game_path.map_or_else(
+		|| {
+			eprintln!("Warning: --game-path not provided, vehicle ID casing may be incorrect.");
+			fcsgen_core::UnittagsMap::new()
+		},
+		|gp| extract::extract_unittags(gp),
+	);
 
 	// Create output directory
 	if let Err(e) = std::fs::create_dir_all(output) {
@@ -232,7 +246,8 @@ fn run_convert(input: &PathBuf, output: &PathBuf, filter: Option<&[String]>) {
 		match convert_vehicle(&path, datamine_root) {
 			Ok(data) if data.is_armed() => {
 				let txt = emit_legacy_txt(&data);
-				let out_path = output.join(format!("{name}.txt"));
+				let vehicle_id = lookup_vehicle_id(&unittags, &name);
+				let out_path = output.join(format!("{vehicle_id}.txt"));
 
 				if let Err(e) = std::fs::write(&out_path, &txt) {
 					eprintln!("WRITE ERROR {name}: {e}");

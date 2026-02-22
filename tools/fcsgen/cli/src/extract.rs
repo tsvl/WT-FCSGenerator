@@ -1,7 +1,7 @@
 //! Datamine extraction from War Thunder VROMFS archives.
 //!
-//! Uses the `wt_blk` crate to open `aces.vromfs.bin` and `lang.vromfs.bin`,
-//! unpack the files we need (tank models, weapons, localization CSVs), and
+//! Uses the `wt_blk` crate to open `aces.vromfs.bin`, `char.vromfs.bin`, and `lang.vromfs.bin`,
+//! unpack the files we need (tank models, weapons, unittags, localization CSVs), and
 //! either return them in memory or write them to disk.
 //!
 //! The default mode (`run_extract_in_memory`) keeps aces files in memory
@@ -12,7 +12,7 @@ use std::collections::{HashMap, HashSet};
 use std::io::BufRead;
 use std::path::Path;
 
-use fcsgen_core::Datamine;
+use fcsgen_core::{Datamine, UnittagsMap, parse_unittags_str};
 use wt_blk::vromf::{BlkOutputFormat, File as VromfFile, VromfUnpacker};
 
 /// Marker filename written to the extraction output directory after a
@@ -32,6 +32,10 @@ pub struct ExtractionResult {
 
 	/// War Thunder version string extracted from the archive metadata.
 	pub version: String,
+
+	/// Vehicle ID lookup map: lowercase ID → correctly-cased ID.
+	/// Built from unittags.blkx in char.vromfs.bin.
+	pub unittags: UnittagsMap,
 }
 
 /// Extract datamine into memory, only writing lang CSVs to disk.
@@ -193,6 +197,9 @@ pub fn run_extract_in_memory(
 	// Sort vehicle names for deterministic processing order
 	vehicle_names.sort();
 
+	// --- Extract char archive for unittags ---
+	let unittags = extract_unittags(game_path);
+
 	// --- Extract lang archive ---
 	extract_lang(game_path, output);
 
@@ -204,6 +211,7 @@ pub fn run_extract_in_memory(
 		datamine,
 		vehicle_names,
 		version: version_str,
+		unittags,
 	}
 }
 
@@ -299,6 +307,66 @@ fn extract_lang(game_path: &Path, output: &Path) {
 	}
 
 	eprintln!("Extracted {lang_count} lang files");
+}
+
+/// Extract unittags.blkx from char.vromfs.bin and build vehicle ID lookup map.
+///
+/// The unittags file contains all vehicle IDs with their correct casing,
+/// which is required for War Thunder's case-sensitive UserSights folder matching.
+pub fn extract_unittags(game_path: &Path) -> UnittagsMap {
+	let char_bin = game_path.join("char.vromfs.bin");
+
+	if !char_bin.exists() {
+		eprintln!("Warning: char.vromfs.bin not found at {char_bin:?}");
+		eprintln!("Vehicle ID casing may be incorrect.");
+		return UnittagsMap::new();
+	}
+
+	let char_file = match VromfFile::new(&char_bin) {
+		Ok(f) => f,
+		Err(e) => {
+			eprintln!("Warning: failed to read {char_bin:?}: {e}");
+			return UnittagsMap::new();
+		},
+	};
+
+	let char_unpacker = match VromfUnpacker::from_file(&char_file, false) {
+		Ok(u) => u,
+		Err(e) => {
+			eprintln!("Warning: failed to parse {char_bin:?}: {e}");
+			return UnittagsMap::new();
+		},
+	};
+
+	// Unpack with JSON output format for BLK conversion
+	let char_files = match char_unpacker.unpack_all(Some(BlkOutputFormat::Json), false) {
+		Ok(files) => files,
+		Err(e) => {
+			eprintln!("Warning: failed to unpack {char_bin:?}: {e}");
+			return UnittagsMap::new();
+		},
+	};
+
+	// Find and parse config/unittags.blk
+	let target_path = "config/unittags.blk";
+	for file in &char_files {
+		let file_path = file.path();
+		let path_str = file_path.to_string_lossy().replace('\\', "/");
+
+		if path_str == target_path {
+			let content = String::from_utf8_lossy(file.buf());
+			if let Some(map) = parse_unittags_str(&content) {
+				eprintln!("Loaded {} vehicle IDs from unittags", map.len());
+				return map;
+			} else {
+				eprintln!("Warning: failed to parse unittags.blk");
+				return UnittagsMap::new();
+			}
+		}
+	}
+
+	eprintln!("Warning: config/unittags.blk not found in char.vromfs.bin");
+	UnittagsMap::new()
 }
 
 /// Write `data` to `path`, creating parent directories as needed.
