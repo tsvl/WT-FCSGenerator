@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generate button is disabled during generation to prevent overlapping jobs.
 - Timer no longer shows `infinity:NaN` for Luch and Luch Lite sights (`IsRuning` flag was not being reset).
 - Removed dead commented-out code in Luch and Luch Lite generation blocks.
+- Luch sights now support all 20 UI languages for weapon name localization (previously only English worked; `Русский` comparisons were unreachable from the dropdown).
+- Fixed Luch English rocket names using the wrong CSV column (was reading column 6/Russian instead of the selected language).
 
 ### Changed
 
