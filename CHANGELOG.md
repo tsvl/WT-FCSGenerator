@@ -9,7 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Luch/Luch Lite nation filtering**: Luch and Luch Lite sights now respect the selected nations in the UI instead of generating sights for every vehicle regardless of nation selection.
+- Output folder and file names now use correct casing for War Thunder's case-sensitive `UserSights` matching (e.g., `germ_pzkpfw_VI_ausf_b_tiger_IIh_sla` instead of all-lowercase). Vehicle IDs are looked up from `char.vromfs.bin/config/unittags.blkx` at extraction time (#36).
+- Luch and Luch Lite sights now respect nation selection instead of generating for all nations.
+- Generate button no longer stays disabled after early validation failures (missing `fcsgen` tool or game path).
+- Generate button is disabled during generation to prevent overlapping jobs.
+- Timer no longer shows `infinity:NaN` for Luch and Luch Lite sights (`IsRuning` flag was not being reset).
+- Removed dead commented-out code in Luch and Luch Lite generation blocks.
+- Luch sights now support all 20 UI languages for weapon name localization (previously only English worked; `Русский` comparisons were unreachable from the dropdown).
+- Fixed Luch English rocket names using the wrong CSV column (was reading column 6/Russian instead of the selected language).
+
+### Changed
+
+- Sight type and language dropdowns now reject free-text input (dropdown-list only).
+- Intermediate pipeline output (`Data`, `Ballistic`, `Datamine`) is now generated inside the `assets/` folder instead of at the top level.
+- Default sight output folder renamed from `Output` to `output` (lowercase) for consistent casing with other shipped folders.
+- Output path textbox now shows `Output Path` as placeholder (matching `Game Path` style); defaults to `output/` next to `FCS.exe` if not changed.
 
 ## [2.2.0] - 2026-02-20
 

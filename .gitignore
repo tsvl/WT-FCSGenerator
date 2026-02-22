@@ -445,8 +445,7 @@ FodyWeavers.xsd
 /tools/fcsgen/target/
 
 
-Output/
-!Output/.gitkeep
+output/
 Datamine/aces.vromfs.bin_u/gamedata/units/tankmodels/*
 !Datamine/aces.vromfs.bin_u/gamedata/units/tankmodels/.gitkeep
 Datamine/aces.vromfs.bin_u/gamedata/weapons/groundmodels_weapons/*
@@ -454,11 +453,13 @@ Datamine/aces.vromfs.bin_u/gamedata/weapons/groundmodels_weapons/*
 Datamine/lang.vromfs.bin_u/lang/*
 !Datamine/lang.vromfs.bin_u/lang/.gitkeep
 
-# Extracted datamine under assets/ (fcsgen extract output)
+# Generated pipeline output under assets/ (fcsgen extract/convert/ballistic)
+assets/Data/
+assets/Ballistic/
 assets/Datamine/aces.vromfs.bin_u/gamedata/units/tankmodels/*
 !assets/Datamine/aces.vromfs.bin_u/gamedata/units/tankmodels/.gitkeep
 assets/Datamine/aces.vromfs.bin_u/gamedata/weapons/groundmodels_weapons/*
 !assets/Datamine/aces.vromfs.bin_u/gamedata/weapons/groundmodels_weapons/.gitkeep
-assets/Datamine/.fcsgen-version
+assets/Datamine/.fcsgen-version\nassets/Datamine/lang.vromfs.bin_u/lang/*\n!assets/Datamine/lang.vromfs.bin_u/lang/.gitkeep
 
 tools/fcsgen/test_data/output/*

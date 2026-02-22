@@ -17,8 +17,8 @@ namespace FCS
         double[] ProgressSpeed = new double[20];
 
         // Hardcoded paths (previously editable via textboxes)
-        private static string DataPath => Path.Combine(Application.StartupPath, "Data");
-        private static string BallisticPath => Path.Combine(Application.StartupPath, "Ballistic");
+        private static string DataPath => Path.Combine(Application.StartupPath, "assets", "Data");
+        private static string BallisticPath => Path.Combine(Application.StartupPath, "assets", "Ballistic");
         public Form1()
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -512,13 +512,16 @@ namespace FCS
 
         private void Button2_Click(object sender, EventArgs e)
         {
+            button2.Enabled = false;
+
             // --- Input validation ---
             string sightType = comboBox1.Text;
-            if (sightType == "Sight type" || comboBox1.SelectedIndex < 0)
+            if (comboBox1.SelectedIndex < 0)
             {
                 MessageBox.Show(
                     "Please select a sight type before generating sights.",
                     "No Sight Type", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                button2.Enabled = true;
                 return;
             }
 
@@ -532,6 +535,7 @@ namespace FCS
                     "fcsgen.exe not found at:\n" + toolPath +
                     "\n\nPlace the fcsgen binary in the tools/ subfolder next to FCS.exe.",
                     "Tool Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                button2.Enabled = true;
                 return;
             }
 
@@ -543,12 +547,13 @@ namespace FCS
                     "aces.vromfs.bin not found at:\n" + acesBin +
                     "\n\nMake sure the path points to the War Thunder installation directory.",
                     "Game Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                button2.Enabled = true;
                 return;
             }
 
             // --- Run fcsgen pipeline (skips automatically if up-to-date) ---
             string ignoreFile = Path.Combine(Application.StartupPath, "assets", "ignore.txt");
-            Directory.CreateDirectory(Path.Combine(Application.StartupPath, "Datamine"));
+            Directory.CreateDirectory(Path.Combine(Application.StartupPath, "assets", "Datamine"));
 
             StartTime = DateTime.Now;
             IsRuning = true;
@@ -561,8 +566,9 @@ namespace FCS
                 double sensitivity = Convert.ToDouble(trackBar1.Value) / 100.0;
                 string baseDir = Application.StartupPath.TrimEnd('\\');
 
+                string assetsDir = Path.Combine(baseDir, "assets");
                 string runArgs = "run --game-path \"" + gamePath.TrimEnd('\\') + "\""
-                    + " --output \"" + baseDir + "\""
+                    + " --output \"" + assetsDir + "\""
                     + " --sensitivity " + sensitivity.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 if (File.Exists(ignoreFile))
                 {
@@ -577,6 +583,7 @@ namespace FCS
                     progressBar1.Style = ProgressBarStyle.Blocks;
                     progressBar1.Value = 0;
                     SpeedNumbers = 0;
+                    button2.Enabled = true;
                     return;
                 }
             }
@@ -591,6 +598,7 @@ namespace FCS
                 progressBar1.Style = ProgressBarStyle.Blocks;
                 progressBar1.Value = 0;
                 SpeedNumbers = 0;
+                button2.Enabled = true;
                 return;
             }
 
@@ -600,7 +608,12 @@ namespace FCS
 
             // --- Sight generation ---
             double Sensivity = Convert.ToDouble(trackBar1.Value) / 100;
-            string sightOutputBase = Path.Combine(textBox4.Text, comboBox1.Text);
+            string outputDir = textBox4.Text;
+            if (outputDir == "Output Path" || string.IsNullOrWhiteSpace(outputDir))
+            {
+                outputDir = Path.Combine(Application.StartupPath, "output");
+            }
+            string sightOutputBase = Path.Combine(outputDir, comboBox1.Text);
             if (comboBox1.Text == "Tochka-SM2")
             {
                 string[] file_list = Directory.GetFiles(DataPath, "*.txt");
@@ -804,7 +817,7 @@ namespace FCS
 
                         string LangData = null;
                         string LangData2 = null;
-                        using (System.IO.StreamReader sr = new System.IO.StreamReader("Datamine\\lang.vromfs.bin_u\\lang\\units_weaponry.csv"))
+                        using (System.IO.StreamReader sr = new System.IO.StreamReader(Path.Combine(Application.StartupPath, "assets", "Datamine", "lang.vromfs.bin_u", "lang", "units_weaponry.csv")))
                         {
                             LangData = sr.ReadToEnd();
                         }
@@ -2275,10 +2288,25 @@ namespace FCS
                 progressBar1.Maximum = file_list.Length;
                 progressBar1.Step = 1;
                 string Language = "English";
-                if (comboBox2.Text == "Русский")
-                {
-                    Language = "Русский";
-                }
+                if (comboBox2.Text == "French") { Language = "French"; }
+                if (comboBox2.Text == "Italian") { Language = "Italian"; }
+                if (comboBox2.Text == "German") { Language = "German"; }
+                if (comboBox2.Text == "Spanish") { Language = "Spanish"; }
+                if (comboBox2.Text == "Russian") { Language = "Russian"; }
+                if (comboBox2.Text == "Polish") { Language = "Polish"; }
+                if (comboBox2.Text == "Czech") { Language = "Czech"; }
+                if (comboBox2.Text == "Turkish") { Language = "Turkish"; }
+                if (comboBox2.Text == "Chinese") { Language = "Chinese"; }
+                if (comboBox2.Text == "Japanese") { Language = "Japanese"; }
+                if (comboBox2.Text == "Portuguese") { Language = "Portuguese"; }
+                if (comboBox2.Text == "Ukrainian") { Language = "Ukrainian"; }
+                if (comboBox2.Text == "Serbian") { Language = "Serbian"; }
+                if (comboBox2.Text == "Hungarian") { Language = "Hungarian"; }
+                if (comboBox2.Text == "Korean") { Language = "Korean"; }
+                if (comboBox2.Text == "Belarusian") { Language = "Belarusian"; }
+                if (comboBox2.Text == "Romanian") { Language = "Romanian"; }
+                if (comboBox2.Text == "TChinese") { Language = "TChinese"; }
+                if (comboBox2.Text == "HChinese") { Language = "HChinese"; }
                 foreach (string file in file_list)
                 {
                     progressBar1.PerformStep();
@@ -2286,52 +2314,21 @@ namespace FCS
                     bool MakeSight = false;
                     foreach (object itemChecked in checkedListBox2.CheckedItems)
                     {
-                        if (itemChecked.ToString().Contains("USA").Equals(true) && Country == "us")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("Germany").Equals(true) && Country == "germ")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("USSR").Equals(true) && Country == "ussr")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("Britain").Equals(true) && Country == "uk")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("Japan").Equals(true) && Country == "jp")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("China").Equals(true) && Country == "cn")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("Italy").Equals(true) && Country == "it")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("France").Equals(true) && Country == "fr")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("Sweden").Equals(true) && Country == "sw")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("Israel").Equals(true) && Country == "il")
-                        {
-                            MakeSight = true;
-                        }
+                        if (itemChecked.ToString().Contains("USA").Equals(true) && Country == "us") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Germany").Equals(true) && Country == "germ") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("USSR").Equals(true) && Country == "ussr") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Britain").Equals(true) && Country == "uk") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Japan").Equals(true) && Country == "jp") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("China").Equals(true) && Country == "cn") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Italy").Equals(true) && Country == "it") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("France").Equals(true) && Country == "fr") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Sweden").Equals(true) && Country == "sw") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Israel").Equals(true) && Country == "il") { MakeSight = true; }
                     }
                     if (MakeSight == true)
                     {
                         label1.Text = Path.GetFileNameWithoutExtension(file);
                         label1.Refresh();
-                        string TankPath2 = sightOutputBase + "//" + Path.GetFileNameWithoutExtension(file);
                         double ZoomIn = 0;
                         double ZoomOut = 0;
                         string BulletName = null;
@@ -2459,60 +2456,57 @@ namespace FCS
                                                     }
                                                     string LangName = null;
                                                     string LangRocketName = null;
-                                                    using (System.IO.StreamReader sr = new System.IO.StreamReader("Datamine\\lang.vromfs.bin_u\\lang\\units_weaponry.csv"))
+                                                    using (System.IO.StreamReader sr = new System.IO.StreamReader(Path.Combine(Application.StartupPath, "assets", "Datamine", "lang.vromfs.bin_u", "lang", "units_weaponry.csv")))
                                                     {
                                                         LangData = sr.ReadToEnd();
                                                     }
-                                                    if (Language == "Русский")
+                                                    FileName = "Luch_";
+                                                    int Pos = 1;
+                                                    if (Language == "English") { Pos = 1; }
+                                                    if (Language == "French") { Pos = 2; }
+                                                    if (Language == "Italian") { Pos = 3; }
+                                                    if (Language == "German") { Pos = 4; }
+                                                    if (Language == "Spanish") { Pos = 5; }
+                                                    if (Language == "Russian") { Pos = 6; }
+                                                    if (Language == "Polish") { Pos = 7; }
+                                                    if (Language == "Czech") { Pos = 8; }
+                                                    if (Language == "Turkish") { Pos = 9; }
+                                                    if (Language == "Chinese") { Pos = 10; }
+                                                    if (Language == "Japanese") { Pos = 11; }
+                                                    if (Language == "Portuguese") { Pos = 12; }
+                                                    if (Language == "Ukrainian") { Pos = 13; }
+                                                    if (Language == "Serbian") { Pos = 14; }
+                                                    if (Language == "Hungarian") { Pos = 15; }
+                                                    if (Language == "Korean") { Pos = 16; }
+                                                    if (Language == "Belarusian") { Pos = 17; }
+                                                    if (Language == "Romanian") { Pos = 18; }
+                                                    if (Language == "TChinese") { Pos = 19; }
+                                                    if (Language == "HChinese") { Pos = 20; }
+                                                    StringReader reader1 = new StringReader(LangData);
+                                                    string line1 = String.Empty;
+                                                    while ((line1 = reader1.ReadLine()) != null)
                                                     {
-                                                        FileName = "Luch_";
-                                                        StringReader reader1 = new StringReader(LangData);
-                                                        string line1 = String.Empty;
-                                                        while ((line1 = reader1.ReadLine()) != null)
+                                                        if (line1.Contains("\"" + BulletName + "\""))
                                                         {
-                                                            if (line1.Contains("\"" + BulletName + "\""))
+                                                            var parts = line1.Split(';');
+                                                            if (Pos < parts.Length)
                                                             {
-                                                                LangName = line1.Split(';')[6];
-                                                                LangName = LangName.Replace("\"", "");
-                                                            }
-                                                        }
-                                                        if (HasRocket == true)
-                                                        {
-                                                            StringReader reader3 = new StringReader(LangData);
-                                                            line1 = String.Empty;
-                                                            while ((line1 = reader3.ReadLine()) != null)
-                                                            {
-                                                                if (line1.Contains("\"" + RocketName + "\""))
-                                                                {
-                                                                    LangRocketName = line1.Split(';')[6];
-                                                                    LangRocketName = LangRocketName.Replace("\"", "");
-                                                                }
+                                                                LangName = parts[Pos].Replace("\"", "");
                                                             }
                                                         }
                                                     }
-                                                    if (Language == "English")
+                                                    if (HasRocket == true)
                                                     {
-                                                        FileName = "Luch_";
-                                                        StringReader reader1 = new StringReader(LangData);
-                                                        string line1 = String.Empty;
-                                                        while ((line1 = reader1.ReadLine()) != null)
+                                                        StringReader reader3 = new StringReader(LangData);
+                                                        line1 = String.Empty;
+                                                        while ((line1 = reader3.ReadLine()) != null)
                                                         {
-                                                            if (line1.Contains("\"" + BulletName + "\""))
+                                                            if (line1.Contains("\"" + RocketName + "\""))
                                                             {
-                                                                LangName = line1.Split(';')[1];
-                                                                LangName = LangName.Replace("\"", "");
-                                                            }
-                                                        }
-                                                        if (HasRocket == true)
-                                                        {
-                                                            StringReader reader3 = new StringReader(LangData);
-                                                            line1 = String.Empty;
-                                                            while ((line1 = reader3.ReadLine()) != null)
-                                                            {
-                                                                if (line1.Contains("\"" + RocketName + "\""))
+                                                                var parts = line1.Split(';');
+                                                                if (Pos < parts.Length)
                                                                 {
-                                                                    LangRocketName = line1.Split(';')[6];
-                                                                    LangRocketName = LangRocketName.Replace("\"", "");
+                                                                    LangRocketName = parts[Pos].Replace("\"", "");
                                                                 }
                                                             }
                                                         }
@@ -2571,35 +2565,42 @@ namespace FCS
                                         }
                                         string LangName = null;
                                         string LangRocketName = null;
-                                        using (System.IO.StreamReader sr = new System.IO.StreamReader("Datamine\\lang.vromfs.bin_u\\lang\\units_weaponry.csv"))
+                                        using (System.IO.StreamReader sr = new System.IO.StreamReader(Path.Combine(Application.StartupPath, "assets", "Datamine", "lang.vromfs.bin_u", "lang", "units_weaponry.csv")))
                                         {
                                             LangData = sr.ReadToEnd();
                                         }
-                                        if (Language == "Русский")
+                                        FileName = "Luch_";
+                                        int Pos = 1;
+                                        if (Language == "English") { Pos = 1; }
+                                        if (Language == "French") { Pos = 2; }
+                                        if (Language == "Italian") { Pos = 3; }
+                                        if (Language == "German") { Pos = 4; }
+                                        if (Language == "Spanish") { Pos = 5; }
+                                        if (Language == "Russian") { Pos = 6; }
+                                        if (Language == "Polish") { Pos = 7; }
+                                        if (Language == "Czech") { Pos = 8; }
+                                        if (Language == "Turkish") { Pos = 9; }
+                                        if (Language == "Chinese") { Pos = 10; }
+                                        if (Language == "Japanese") { Pos = 11; }
+                                        if (Language == "Portuguese") { Pos = 12; }
+                                        if (Language == "Ukrainian") { Pos = 13; }
+                                        if (Language == "Serbian") { Pos = 14; }
+                                        if (Language == "Hungarian") { Pos = 15; }
+                                        if (Language == "Korean") { Pos = 16; }
+                                        if (Language == "Belarusian") { Pos = 17; }
+                                        if (Language == "Romanian") { Pos = 18; }
+                                        if (Language == "TChinese") { Pos = 19; }
+                                        if (Language == "HChinese") { Pos = 20; }
+                                        StringReader reader1 = new StringReader(LangData);
+                                        string line1 = String.Empty;
+                                        while ((line1 = reader1.ReadLine()) != null)
                                         {
-                                            FileName = "Luch_";
-                                            StringReader reader1 = new StringReader(LangData);
-                                            string line1 = String.Empty;
-                                            while ((line1 = reader1.ReadLine()) != null)
+                                            if (line1.Contains("\"" + BulletName + "\""))
                                             {
-                                                if (line1.Contains("\"" + BulletName + "\""))
+                                                var parts = line1.Split(';');
+                                                if (Pos < parts.Length)
                                                 {
-                                                    LangName = line1.Split(';')[6];
-                                                    LangName = LangName.Replace("\"", "");
-                                                }
-                                            }
-                                        }
-                                        if (Language == "English")
-                                        {
-                                            FileName = "Luch_";
-                                            StringReader reader1 = new StringReader(LangData);
-                                            string line1 = String.Empty;
-                                            while ((line1 = reader1.ReadLine()) != null)
-                                            {
-                                                if (line1.Contains("\"" + BulletName + "\""))
-                                                {
-                                                    LangName = line1.Split(';')[1];
-                                                    LangName = LangName.Replace("\"", "");
+                                                    LangName = parts[Pos].Replace("\"", "");
                                                 }
                                             }
                                         }
@@ -2633,9 +2634,10 @@ namespace FCS
                         }
                     }
                 }
-                label1.Text = "";
+                label1.Text = "File: ";
                 label1.Refresh();
                 progressBar1.Value = 0;
+                IsRuning = false;
             }
             if (comboBox1.Text == "Luch Lite")
             {
@@ -2651,46 +2653,16 @@ namespace FCS
                     bool MakeSight = false;
                     foreach (object itemChecked in checkedListBox2.CheckedItems)
                     {
-                        if (itemChecked.ToString().Contains("USA").Equals(true) && Country == "us")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("Germany").Equals(true) && Country == "germ")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("USSR").Equals(true) && Country == "ussr")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("Britain").Equals(true) && Country == "uk")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("Japan").Equals(true) && Country == "jp")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("China").Equals(true) && Country == "cn")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("Italy").Equals(true) && Country == "it")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("France").Equals(true) && Country == "fr")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("Sweden").Equals(true) && Country == "sw")
-                        {
-                            MakeSight = true;
-                        }
-                        if (itemChecked.ToString().Contains("Israel").Equals(true) && Country == "il")
-                        {
-                            MakeSight = true;
-                        }
+                        if (itemChecked.ToString().Contains("USA").Equals(true) && Country == "us") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Germany").Equals(true) && Country == "germ") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("USSR").Equals(true) && Country == "ussr") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Britain").Equals(true) && Country == "uk") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Japan").Equals(true) && Country == "jp") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("China").Equals(true) && Country == "cn") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Italy").Equals(true) && Country == "it") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("France").Equals(true) && Country == "fr") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Sweden").Equals(true) && Country == "sw") { MakeSight = true; }
+                        if (itemChecked.ToString().Contains("Israel").Equals(true) && Country == "il") { MakeSight = true; }
                     }
                     if (MakeSight == true)
                     {
@@ -2799,9 +2771,10 @@ namespace FCS
                         }
                     }
                 }
-                label1.Text = "";
+                label1.Text = "File: ";
                 label1.Refresh();
                 progressBar1.Value = 0;
+                IsRuning = false;
             }
             if (comboBox1.Text == "Duga")
             {
@@ -3625,6 +3598,9 @@ namespace FCS
                 progressBar1.Value = 0;
                 IsRuning = false;
             }
+
+            IsRuning = false;
+            button2.Enabled = true;
         }
 
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)

@@ -8,7 +8,8 @@ use serde::{Deserialize, Serialize};
 /// Complete vehicle data extracted from datamine, ready for emission.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VehicleData {
-	/// Vehicle identifier (basename of .blkx file, e.g. "ussr_bmp_2m").
+	/// Vehicle identifier (e.g. "cn_ztz_99a", "germ_pzkpfw_VI_ausf_h1_tiger").
+	/// Note: Casing is determined by unittags lookup at output time, not at parse time.
 	pub id: String,
 
 	/// Path to the primary weapon module (e.g. "gameData/Weapons/groundModels_weapons/...").
