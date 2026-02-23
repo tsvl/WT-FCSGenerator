@@ -38,7 +38,7 @@ namespace FCS
             double Scaling = 43 * Math.Pow(ZoomOut, -1.02);
             InnerDiameter = InnerDiameter * Size / 150;
             double Radius = 1000000;
-            double ScrollStep = 2.8 * Math.Pow(Sensitivity, 2);
+            double ScrollStep = 2.8 * (SightConfig.VerticalResolution / 1080.0) * Math.Pow(Sensitivity, 2);
             double ScrollAngle = 0.05;
             double ScrollSpeed = ScrollAngle * Radius / ScrollStep * (Math.PI / 180.0);
             double TargetDistance = 0;

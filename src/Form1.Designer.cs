@@ -35,12 +35,15 @@ namespace FCS
             comboBox1 = new System.Windows.Forms.ComboBox();
             comboBox2 = new System.Windows.Forms.ComboBox();
             textBox4 = new System.Windows.Forms.TextBox();
+            textBoxVertRes = new System.Windows.Forms.TextBox();
+            labelVertRes = new System.Windows.Forms.Label();
             progressBar1 = new System.Windows.Forms.ProgressBar();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             groupBox1 = new System.Windows.Forms.GroupBox();
             checkedListBox2 = new System.Windows.Forms.CheckedListBox();
+            labelSightInfo = new System.Windows.Forms.Label();
             groupBox2 = new System.Windows.Forms.GroupBox();
             label22 = new System.Windows.Forms.Label();
             trackBar6 = new System.Windows.Forms.TrackBar();
@@ -77,7 +80,6 @@ namespace FCS
             pictureBox1 = new System.Windows.Forms.PictureBox();
             label3 = new System.Windows.Forms.Label();
             trackBar1 = new System.Windows.Forms.TrackBar();
-            labelSightInfo = new System.Windows.Forms.Label();
             colorDialog1 = new System.Windows.Forms.ColorDialog();
             label18 = new System.Windows.Forms.Label();
             label19 = new System.Windows.Forms.Label();
@@ -120,8 +122,8 @@ namespace FCS
             //
             // comboBox1
             //
-            comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
             comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
             comboBox1.FormattingEnabled = true;
             comboBox1.Items.AddRange(new object[] { "Tochka-SM2", "Duga", "Duga-2", "Luch", "Luch Lite", "Sector" });
             comboBox1.Location = new System.Drawing.Point(4, 93);
@@ -131,10 +133,32 @@ namespace FCS
             comboBox1.TabIndex = 5;
             comboBox1.SelectedIndexChanged += ComboBox1_SelectedIndexChanged;
             //
+            // labelVertRes
+            //
+            labelVertRes.AutoSize = true;
+            labelVertRes.BackColor = System.Drawing.Color.Transparent;
+            labelVertRes.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
+            labelVertRes.Location = new System.Drawing.Point(4, 120);
+            labelVertRes.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            labelVertRes.Name = "labelVertRes";
+            labelVertRes.Size = new System.Drawing.Size(97, 13);
+            labelVertRes.TabIndex = 130;
+            labelVertRes.Text = "Vertical Resolution";
+            //
+            // textBoxVertRes
+            //
+            textBoxVertRes.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
+            textBoxVertRes.Location = new System.Drawing.Point(110, 117);
+            textBoxVertRes.Margin = new System.Windows.Forms.Padding(2);
+            textBoxVertRes.Name = "textBoxVertRes";
+            textBoxVertRes.Size = new System.Drawing.Size(175, 20);
+            textBoxVertRes.TabIndex = 131;
+            textBoxVertRes.Text = "1080";
+            //
             // comboBox2
             //
-            comboBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
             comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            comboBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
             comboBox2.FormattingEnabled = true;
             comboBox2.Items.AddRange(new object[] { "English", "French", "Italian", "German", "Spanish", "Russian", "Polish", "Czech", "Turkish", "Chinese", "Japanese", "Portuguese", "Ukrainian", "Serbian", "Hungarian", "Korean", "Belarusian", "Romanian", "TChinese", "HChinese" });
             comboBox2.Location = new System.Drawing.Point(4, 68);
@@ -193,34 +217,22 @@ namespace FCS
             label2.Text = "Sensitivity";
             label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             //
-            // labelSightInfo
-            //
-            labelSightInfo.BackColor = System.Drawing.Color.Transparent;
-            labelSightInfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
-            labelSightInfo.ForeColor = System.Drawing.Color.Gray;
-            labelSightInfo.Location = new System.Drawing.Point(4, 118);
-            labelSightInfo.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            labelSightInfo.MaximumSize = new System.Drawing.Size(281, 0);
-            labelSightInfo.Name = "labelSightInfo";
-            labelSightInfo.Size = new System.Drawing.Size(281, 56);
-            labelSightInfo.TabIndex = 129;
-            labelSightInfo.Text = "";
-            labelSightInfo.Visible = false;
-            //
             // checkedListBox1
             //
             checkedListBox1.CheckOnClick = true;
             checkedListBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
             checkedListBox1.FormattingEnabled = true;
-            checkedListBox1.Location = new System.Drawing.Point(4, 179);
+            checkedListBox1.Location = new System.Drawing.Point(4, 239);
             checkedListBox1.Margin = new System.Windows.Forms.Padding(2);
             checkedListBox1.Name = "checkedListBox1";
-            checkedListBox1.Size = new System.Drawing.Size(281, 154);
+            checkedListBox1.Size = new System.Drawing.Size(281, 94);
             checkedListBox1.TabIndex = 6;
             //
             // groupBox1
             //
             groupBox1.Controls.Add(checkedListBox2);
+            groupBox1.Controls.Add(textBoxVertRes);
+            groupBox1.Controls.Add(labelVertRes);
             groupBox1.Controls.Add(textBox1);
             groupBox1.Controls.Add(labelSightInfo);
             groupBox1.Controls.Add(checkedListBox1);
@@ -249,6 +261,20 @@ namespace FCS
             checkedListBox2.Name = "checkedListBox2";
             checkedListBox2.Size = new System.Drawing.Size(281, 64);
             checkedListBox2.TabIndex = 7;
+            //
+            // labelSightInfo
+            //
+            labelSightInfo.BackColor = System.Drawing.Color.Transparent;
+            labelSightInfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
+            labelSightInfo.ForeColor = System.Drawing.Color.Gray;
+            labelSightInfo.Location = new System.Drawing.Point(6, 179);
+            labelSightInfo.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            labelSightInfo.MaximumSize = new System.Drawing.Size(281, 0);
+            labelSightInfo.Name = "labelSightInfo";
+            labelSightInfo.Size = new System.Drawing.Size(281, 58);
+            labelSightInfo.TabIndex = 129;
+            labelSightInfo.Text = "";
+            labelSightInfo.Visible = false;
             //
             // groupBox2
             //
@@ -906,6 +932,8 @@ namespace FCS
         private System.Windows.Forms.TrackBar trackBar5;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Label labelSightInfo;
+        private System.Windows.Forms.TextBox textBoxVertRes;
+        private System.Windows.Forms.Label labelVertRes;
     }
 }
 

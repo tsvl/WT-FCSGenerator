@@ -351,7 +351,7 @@ namespace FCS
             {
                 demarreCaliberPow = 1.07;
             }
-            double ScrollStep = 2.8 * Math.Pow(Sensivity, 2);
+            double ScrollStep = 2.8 * (SightConfig.VerticalResolution / 1080.0) * Math.Pow(Sensivity, 2);
             double[,] BallisticData = new double[3, Convert.ToInt32(Math.Floor((Math.PI / 180) * 60 * 1000 / ScrollStep))];
             for (int i = 0; i < BallisticData.GetLength(1); i++)
             {
@@ -608,6 +608,7 @@ namespace FCS
 
             // --- Sight generation ---
             double Sensivity = Convert.ToDouble(trackBar1.Value) / 100;
+            SightConfig.VerticalResolution = double.TryParse(textBoxVertRes.Text, out double vr) && vr > 0 ? vr : 1080.0;
             string outputDir = textBox4.Text;
             if (outputDir == "Output Path" || string.IsNullOrWhiteSpace(outputDir))
             {
