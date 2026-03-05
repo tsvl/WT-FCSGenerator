@@ -4,12 +4,26 @@
 		{
 			"type": "dotnet",
 			"task": "build",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "dotnet: build"
+		},
+		{
+			"label": "clean and build",
+			"type": "dotnet",
+			"task": "build",
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
 			"problemMatcher": [],
-			"label": "dotnet: build"
+			"dependsOn": "dotnet: clean"
 		},
+		{
+			"type": "dotnet",
+			"task": "clean",
+			"problemMatcher": [],
+			"label": "dotnet: clean"
+		}
 	]
 }

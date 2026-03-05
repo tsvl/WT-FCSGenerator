@@ -25,6 +25,10 @@ namespace FCS
             InitializeComponent();
             Text = $"WT-FCSGenerator v{Application.ProductVersion}";
             checkedListBox2.ItemCheck += ItemCheck;
+
+            string wtInstall = Environment.GetEnvironmentVariable("FCS_WT_INSTALL");
+            if (!string.IsNullOrEmpty(wtInstall))
+                textBox1.Text = wtInstall;
         }
 
         private void timer1_Tick(object sender, EventArgs e)

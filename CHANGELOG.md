@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Debug build now uses `portable` PDB format (fixes VS Code C# extension warning).
+- `dotnet clean` now removes copied `assets/`, `tools/`, and `README.md` from the build output directory.
+- F5 launch in VS Code now runs a clean build first (`preLaunchTask`).
+- Game path text box is pre-filled from `FCS_WT_INSTALL` environment variable when set.
+
 ## [2.2.1] - 2026-02-21
 
 ### Fixed

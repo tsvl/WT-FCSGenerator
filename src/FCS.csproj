@@ -8,7 +8,7 @@
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>full</DebugType>
+    <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>none</DebugType>
@@ -45,6 +45,12 @@
     <Copy SourceFiles="$(MSBuildProjectDirectory)\..\tools\fcsgen\target\release\fcsgen.exe"
           DestinationFiles="$(OutputPath)tools\fcsgen.exe"
           SkipUnchangedFiles="true" />
+  </Target>
+  <!-- Remove copied assets and tools from output on clean -->
+  <Target Name="CleanCopiedContent" AfterTargets="CoreClean">
+    <RemoveDir Directories="$(OutputPath)assets" />
+    <RemoveDir Directories="$(OutputPath)tools" />
+    <Delete Files="$(OutputPath)README.md" Condition="Exists('$(OutputPath)README.md')" />
   </Target>
   <!-- Copy fcsgen.exe to publish output -->
   <Target Name="CopyFcsgenToPublish" AfterTargets="Publish">
