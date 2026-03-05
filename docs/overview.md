@@ -23,9 +23,14 @@ tools/fcsgen/               Rust workspace (stages 1 + 2)
     main.rs                 CLI entry point (clap subcommands)
     extract.rs              Stage 1: VROMFS extraction + datamine parsing
     run.rs                  Unified pipeline: extract → convert → ballistic
+    ballistic.rs            Standalone ballistic subcommand
   core/src/
-    stage1.rs               Stage 1: datamine → Data/*.txt conversion
-    stage2.rs               Stage 2: Data/*.txt → Ballistic/*/*.txt
+    lib.rs                  Crate root, public API
+    model.rs                Shared data types (Vehicle, Projectile, etc.)
+    ballistic.rs            Stage 2: trajectory + penetration computation
+    error.rs                Error types
+    parser/                 Stage 1: datamine parsing (vehicle, weapon, unittags)
+    emit/                   Stage 1: Data/*.txt output (legacy format)
 
 assets/                     Localization CSVs, ignore list, utility scripts
   Data/                     Extracted per-vehicle parameter files (generated)
