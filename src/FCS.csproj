@@ -46,10 +46,11 @@
           DestinationFiles="$(OutputPath)tools\fcsgen.exe"
           SkipUnchangedFiles="true" />
   </Target>
-  <!-- Remove copied assets and tools from output on clean -->
+  <!-- Remove copied assets, tools, and generated output from build dir on clean -->
   <Target Name="CleanCopiedContent" AfterTargets="CoreClean">
     <RemoveDir Directories="$(OutputPath)assets" />
     <RemoveDir Directories="$(OutputPath)tools" />
+    <RemoveDir Directories="$(OutputPath)output" />
     <Delete Files="$(OutputPath)README.md" Condition="Exists('$(OutputPath)README.md')" />
   </Target>
   <!-- Copy fcsgen.exe to publish output -->
