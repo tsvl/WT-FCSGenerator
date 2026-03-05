@@ -23,7 +23,8 @@ docs/                  Architecture docs, format specs, sight family notes
 - After making changes, update:
   1. `CHANGELOG.md` — add entries under `## [Unreleased]`.
   2. `AGENTS.md` — if the change affects anything documented here (e.g., directory structure).
-  3. Relevant docs in `docs/` if the change affects architecture or formats.
+  3. `CONTRIBUTING.md` — if the change affects development workflow or setup.
+  4. Relevant docs in `docs/` if the change affects architecture or formats.
 
 ## Versioning and releases
 

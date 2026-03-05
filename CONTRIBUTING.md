@@ -2,22 +2,45 @@
 
 Thanks for your interest in contributing! This document outlines the development workflow and conventions for this project.
 
+## Prerequisites
+
+- [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) (preview)
+- [Rust toolchain](https://rustup.rs/) (stable) — needed to build the `fcsgen` CLI tool
+
 ## Quick Start
 
 1. **Fork and clone** the repository
-2. **Install .NET 10 SDK** (preview): [Download here](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
-3. **Build the project:**
+2. **Build the project** (this builds both the Rust `fcsgen` tool and the .NET app):
 
    ```powershell
    cd src
    dotnet build
    ```
 
-4. **Run the application:**
+3. **Run the application:**
 
    ```powershell
    dotnet run
    ```
+
+## Development Setup (VS Code)
+
+The repo includes `.vscode/` configs for VS Code:
+
+- **F5** launches the app with a clean build (removes stale assets/tools from previous builds first).
+- **Ctrl+F5** launches without the debugger attached.
+- `settings.json` configures `rust-analyzer` to find the `tools/fcsgen/` workspace.
+
+### Game Path
+
+The app needs the War Thunder install directory. To avoid re-entering it every debug session, set the `FCS_WT_INSTALL` environment variable:
+
+```powershell
+# User-level (persists across sessions)
+[Environment]::SetEnvironmentVariable('FCS_WT_INSTALL', 'D:\Games\Steam\steamapps\common\War Thunder', 'User')
+```
+
+If set, the game path text box is pre-filled on startup. Otherwise it defaults to the placeholder.
 
 ## Branching Strategy
 
@@ -56,7 +79,7 @@ Use descriptive names with prefixes:
 
 ### Historical Note
 
-The `dev` branch exists from the v2.0.0 cleanup effort and may be used in the future for major long-running refactors. For normal development, **always branch from `main`**.
+The `dev` branch exists from the v2.0.0 cleanup effort. For normal development, **always branch from `main`**.
 
 ## Commit Conventions
 
@@ -120,8 +143,8 @@ Users will need to regenerate all sights.
 
 1. **Ensure CI passes** - GitHub Actions will build and test your changes
 2. **Keep PRs focused** - One feature/fix per PR when possible
-3. **Update documentation** - If your changes affect user-facing behavior, update README.md
-4. **Update CHANGELOG.md** - Add your changes under `## [Unreleased]`
+3. **Update documentation** - If your changes affect user-facing behavior, update `README.md`, relevant `docs/`, `CONTRIBUTING.md`, and `AGENTS.md`
+4. **Update `CHANGELOG.md`** - Add your changes under `## [Unreleased]`
 5. **Self-review** - Even if you have write access, open a PR for review and discussion
 
 ### PR Title Format
@@ -150,41 +173,45 @@ Use Conventional Commit format for PR titles:
 
 ## Project Structure
 
-```
-WT-FCSGenerator/
-├── .github/          # GitHub Actions workflows, templates, etc.
-├── assets/           # Pre-generated data files (transitional, to be removed)
-├── src/              # C# source code
-│   ├── FCS.csproj   # Project file
-│   ├── Program.cs   # Entry point
-│   └── *.cs         # Application code
-└── README.md         # User-facing documentation
-```
+See [AGENTS.md](AGENTS.md) for the repository layout. Key points:
+
+- `src/` — C# / .NET 10 WinForms app (UI + sight generation)
+- `tools/fcsgen/` — Rust workspace (datamine extraction + ballistic computation)
+- `assets/` — Runtime data (localization CSVs, ignore list, generated intermediates)
+- `docs/` — Architecture docs, format specs, sight family notes
+
+See [docs/overview.md](docs/overview.md) for detailed architecture and data flow.
 
 ## Testing
 
-Currently, the project lacks automated tests (inherited technical debt). When making changes:
+The Rust crate (`tools/fcsgen/core`) has integration tests:
 
-1. **Manual testing** - Run the application and verify your changes work
-2. **Test edge cases** - Try invalid inputs, missing files, etc.
-3. **Test the build** - Ensure `dotnet publish` produces a working executable
+```powershell
+cd tools/fcsgen
+cargo test
+```
 
-**Future goal:** Add unit tests for core logic (ballistics calculations, file generation, etc.)
+The C# side currently lacks automated tests. When making changes:
+
+1. **Manual testing** — Run the application and verify your changes work
+2. **Test edge cases** — Try invalid inputs, missing files, etc.
+3. **Test the build** — Ensure `dotnet publish` produces a working executable
 
 ## Release Process
 
 Releases are automated via GitHub Actions:
 
 1. **Merge changes** to `main`
-2. **Update CHANGELOG.md** - Move items from `[Unreleased]` to a new version section
-3. **Create and push a tag**:
+2. **Bump the `VERSION` file** to the new version (e.g., `2.3.0`)
+3. **Update `CHANGELOG.md`** — set the `[Unreleased]` heading to the new version and date
+4. **Create and push a tag**:
 
    ```powershell
-   git tag -a v2.1.0 -m "Release v2.1.0"
-   git push origin v2.1.0
+   git tag v2.3.0
+   git push origin v2.3.0
    ```
 
-4. **GitHub Actions** builds, packages, and creates a release automatically
+5. **GitHub Actions** validates the tag matches `VERSION`, builds, packages, attests provenance, and creates a GitHub Release
 
 Tags must follow the format `vX.Y.Z` (e.g., `v2.0.0`, `v2.1.3`).
 
