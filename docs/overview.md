@@ -44,6 +44,7 @@ docs/                       Documentation
   datamine-to-data.md       Extraction rules reference (stage 1)
   sights.md                 Sight family summaries
   stage3-form1-core.md      Reverse-engineering notes for stage 3 rewrite
+  temp/                     Scratch/working docs (gitignored — never committed)
 ```
 
 ## Pipeline architecture
