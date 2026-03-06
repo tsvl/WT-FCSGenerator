@@ -13,6 +13,7 @@ tools/fcsgen/          Rust workspace — datamine extraction + ballistic comput
   core/                Library crate (parsing, conversion, ballistic math)
 assets/                Runtime data (localization CSVs, ignore list, generated intermediates)
 docs/                  Architecture docs, format specs, sight family notes
+  temp/                Scratch/working docs (gitignored — never committed)
 ```
 
 **Important:** `src/` is exclusively C#/.NET. `tools/fcsgen/` is exclusively Rust. Don't look for Rust code in `src/` or C# code in `tools/`.
