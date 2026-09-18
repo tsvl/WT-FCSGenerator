@@ -337,7 +337,8 @@ namespace FCS
                 }
             }
 
-            string fcs_data = @"drawAdditionalLines:b=no
+            string fcs_data = @"useSmoothEdge:b=no
+drawAdditionalLines:b=no
 thousandth:t=" + '\u0022' + Milliradian + '\u0022' + @"
 rangefinderProgressBarColor1:c=" + rangefinderProgressBarColor1 + @"
 rangefinderProgressBarColor2:c=" + rangefinderProgressBarColor2 + @"
